@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/pi/mqtt/subscriber_zigbeetomqtt/build",
+  "command": "/usr/bin/c++    -I/home/pi/mqtt/subscriber_zigbeetomqtt/src -I/home/pi/mqtt/subscriber_zigbeetomqtt/lib  -Wall -Wextra -pedantic-errors -std=c++11 -O3   -std=gnu++11 -o CMakeFiles/subscriber_zigbeetomqtt.dir/src/subscriber_zigbeetomqtt.cc.o -c /home/pi/mqtt/subscriber_zigbeetomqtt/src/subscriber_zigbeetomqtt.cc",
+  "file": "/home/pi/mqtt/subscriber_zigbeetomqtt/src/subscriber_zigbeetomqtt.cc"
+},
+{
+  "directory": "/home/pi/mqtt/subscriber_zigbeetomqtt/build/lib",
+  "command": "/usr/bin/c++    -I/home/pi/mqtt/subscriber_zigbeetomqtt/src  -Wall -Wextra -pedantic-errors -std=c++11 -O3   -std=gnu++11 -o CMakeFiles/Utils.dir/Utils.cc.o -c /home/pi/mqtt/subscriber_zigbeetomqtt/lib/Utils.cc",
+  "file": "/home/pi/mqtt/subscriber_zigbeetomqtt/lib/Utils.cc"
+}
+]

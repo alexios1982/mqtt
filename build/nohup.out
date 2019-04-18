@@ -1,0 +1,16 @@
+Running with 4 jobs, using args: -ferror-limit=50 -Wall -fspell-checking -Wno-unknown-warning-option
+Includepaths: "-isystem" /usr/lib/llvm-3.8/lib/clang/3.8.1/include/
+Restoring /home/pi/gstreamer/multifiles_saving/ ...
+/usr/bin/rc -m --elisp
+/usr/bin/rc -m --elisp
+Running with 4 jobs, using args: -ferror-limit=50 -Wall -fspell-checking -Wno-unknown-warning-option
+Includepaths: "-isystem" /usr/lib/llvm-3.8/lib/clang/3.8.1/include/
+Restoring /home/pi/gstreamer/multifiles_saving/ ...
+Running with 4 jobs, using args: -ferror-limit=50 -Wall -fspell-checking -Wno-unknown-warning-option
+Includepaths: "-isystem" /usr/lib/llvm-3.8/lib/clang/3.8.1/include/
+Restoring /home/pi/gstreamer/multifiles_saving/ ...
+Running with 4 jobs, using args: -ferror-limit=50 -Wall -fspell-checking -Wno-unknown-warning-option
+Includepaths: "-isystem" /usr/lib/llvm-3.8/lib/clang/3.8.1/include/
+Restoring /home/pi/gstreamer/multifiles_saving/ ...
+/usr/bin/rc -m --elisp
+/usr/bin/rc -m --elisp

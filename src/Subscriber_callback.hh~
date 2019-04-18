@@ -1,0 +1,8 @@
+/////////////////////////////////////////////////////////////////////////////
+// Callbacks for the success or failures of requested actions.
+// This could be used to initiate further action, but here we just log the
+// results to the console.
+
+#include "mqtt/async_client.h"
+
+class Action_Listener: public virtual mqtt
