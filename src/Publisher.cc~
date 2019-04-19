@@ -1,0 +1,35 @@
+#include "Publisher.hh"
+
+Publisher::Publisher(const std::string &server_address,
+		     const std::string &client_id,
+		     mqtt::connect_options &conn_opts,
+		     Synchronized_queue<mqtt::const_message_ptr> &queue):
+  _client{},
+  _server_address{server_address},
+  _client_id,
+  _conn_opts{conn_opts},
+  _queue(queue){}
+
+void Publisher::connect(mqtt::connect_options &conn_opts){
+  cout << "\nConnecting..." << endl;
+  mqtt::token_ptr conntok = client.connect(conopts);
+  cout << "Waiting for the connection..." << endl;
+  conntok->wait();
+  cout << "  ...OK" << endl;
+}
+
+void Publisher::set_callback(callback &cb){
+  _client.set_callback(cb);
+}
+
+void Publisher::run(){
+  while(true){
+    mqtt::const_message_ptr msg = _queue.get();
+    _client.publish(pubmsg, nullptr, deliveryListener);
+    while (!deliveryListener.is_done()) {
+      this_thread::sleep_for(std::chrono::milliseconds(100));
+
+      sss
+    }
+  }
+}

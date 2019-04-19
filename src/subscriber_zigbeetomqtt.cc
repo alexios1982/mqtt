@@ -38,6 +38,7 @@
 #include "mqtt/async_client.h"
 #include <boost/core/ignore_unused.hpp>
 #include "Subscriber_callback_listener.hh"
+#include "Publisher.hh"
 
 using namespace std;
 
@@ -55,27 +56,6 @@ const std::string ABLY_TOPIC            { "notifications" };
 const auto PUBLISHER_TIMEOUT = std::chrono::seconds(10);
 
 const int  QOS = 1;
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/**
- * A callback class for use with the main MQTT client.
- */
-class ably_subscriber_callback : public virtual mqtt::callback
-{
-public:
-  void connection_lost(const std::string& cause) override {
-    std::cout << "\nConnection lost" << std::endl;
-    if (!cause.empty())
-      std::cout << "\tcause: " << cause << std::endl;
-  }
-
-  void delivery_complete(mqtt::delivery_token_ptr tok) override {
-    std::cout << "\tDelivery complete for token: "
-	      << (tok ? tok->get_message_id() : -1) << std::endl;
-  }
-};
-
-/////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char* argv[])
 {
@@ -110,28 +90,32 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  //Create the async_client object
-  mqtt::async_client ably_client(ABLY_SERVER_ADDRESS, ABLY_CLIENT_ID);
-  ably_subscriber_callback ab_cb;
-  ably_client.set_callback(ab_cb);
-
-  // mqtt::connect_options ably_conn_opts{"Wb7GPA.RVtWzA", "bEEvvyn1bxDFw0-s"};  
-  // mqtt::ssl_options ably_sslopts;
-  // ably_conn_opts.set_ssl(ably_sslopts);
-
-  // try {
-  //   cout << "\nConnecting to the ABLY MQTT server..." << endl;
-  //   mqtt::token_ptr conntok = ably_client.connect(ably_conn_opts);
-  //   cout << "Waiting for the connection..." << endl;
-  //   conntok->wait();
-  //   cout << "  ... CONNECTION TO ABLY OK" << endl;
-  // }
-  // catch (const mqtt::exception& exc) {
-  //   std::cerr << "\nERROR: Unable to connect to ABLY MQTT  server: '" <<endl;
-  //   cerr << exc.what() << endl;
-  //   return 1;
-  // }
   
+  //Create the async_client object
+   mqtt::async_client ably_client(ABLY_SERVER_ADDRESS, ABLY_CLIENT_ID);
+   Subscriber_callback ably_subscriber_callback;
+   ably_client.set_callback(ably_subscriber_callback);
+   mqtt::connect_options ably_conn_opts{"Wb7GPA.RVtWzA", "bEEvvyn1bxDFw0-s"};  
+   mqtt::ssl_options ably_sslopts;
+   ably_conn_opts.set_ssl(ably_sslopts);
+
+  try {
+    cout << "\nConnecting to the ABLY MQTT server..." << endl;
+    mqtt::token_ptr conntok = ably_client.connect(ably_conn_opts);
+    cout << "Waiting for the connection..." << endl;
+    conntok->wait();
+    cout << "  ... CONNECTION TO ABLY OK" << endl;
+  }
+  catch (const mqtt::exception& exc) {
+    std::cerr << "\nERROR: Unable to connect to ABLY MQTT  server: '" <<endl;
+    cerr << exc.what() << endl;
+    return 1;
+  }
+
+  Delivery_action_listener publisher_listener;
+  Publisher publisher(ably_client, ABLY_TOPIC, publisher_listener, queue);
+  std::thread t( std::bind(&Publisher::run, &publisher) );
+  t.detach();
   // Just block till user tells us to quit.
   while (std::tolower(std::cin.get()) != 'q')
     ;

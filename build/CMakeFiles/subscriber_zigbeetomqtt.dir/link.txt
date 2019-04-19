@@ -1,1 +1,0 @@
-/usr/bin/c++   -Wall -Wextra -pedantic-errors -std=c++11 -O3   CMakeFiles/subscriber_zigbeetomqtt.dir/src/subscriber_zigbeetomqtt.cc.o  -o ../bin/subscriber_zigbeetomqtt -Wl,-rpath,/usr/local/lib -rdynamic lib/libUtils.a /usr/local/lib/libpaho-mqttpp3.so 

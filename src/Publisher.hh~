@@ -1,0 +1,15 @@
+#ifndef _SUBSCRIBER_
+#define _SUBSCRIBER_
+
+#include "Synchronized_queue.hh"
+
+class Subscriber{
+  mqtt::async_client _client;
+public:
+  Subscriber(const std::string &server_address,
+	     const std::string &client_id,
+	     Synchronized_queue<);
+  
+}
+
+#endif

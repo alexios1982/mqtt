@@ -1,6 +1,0 @@
-/home/pi/mqtt/subscriber_zigbeetomqtt/build/CMakeFiles/rebuild_cache.dir
-/home/pi/mqtt/subscriber_zigbeetomqtt/build/CMakeFiles/edit_cache.dir
-/home/pi/mqtt/subscriber_zigbeetomqtt/build/CMakeFiles/subscriber_zigbeetomqtt.dir
-/home/pi/mqtt/subscriber_zigbeetomqtt/build/lib/CMakeFiles/rebuild_cache.dir
-/home/pi/mqtt/subscriber_zigbeetomqtt/build/lib/CMakeFiles/edit_cache.dir
-/home/pi/mqtt/subscriber_zigbeetomqtt/build/lib/CMakeFiles/Utils.dir

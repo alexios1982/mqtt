@@ -16,7 +16,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #message(STATUS "Output path ${EXECUTABLE_OUTPUT_PATH}")
 #to be able to use the src's include file
 include_directories(${PROJECT_SOURCE_DIR}/src)
-add_executable(subscriber_zigbeetomqtt src/subscriber_zigbeetomqtt.cc)
+add_executable(subscriber_zigbeetomqtt src/subscriber_zigbeetomqtt.cc
+  src/Publisher.cc)
 
 #section to include external libraries to compile
 #to tell cmake to compile the library using its own CMakeLists.txt file
@@ -44,10 +45,13 @@ find_library(MQTT_LIB
                                        #are in the predefined /usr/local path
 				       #to se the predefined include path: g++ -v -x c -E /dev/null (section #include) 
 ###################################
+#for threadhs, there is the FindThreads.cmake, so tu include thead supper
+find_package(Threads REQUIRED)
 
 #to link the lib to the executable
 target_link_libraries(subscriber_zigbeetomqtt PUBLIC
   #${GST_LIBRARIES}
   Utils
-  ${MQTT_LIB})
+  ${MQTT_LIB}
+  Threads::Threads)
 
