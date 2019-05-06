@@ -48,10 +48,10 @@ const string ZIGBEE_CLIENT_ID		{ "zigbee_subscribe_client" };
 //0x00158d0001cc99b3 is  the second levele created by the open-door sensor
 const string ZIGBEE_TOPIC 		{ "zigbee2mqtt/0x00158d0001cc99b3" };
 
-
-const std::string ABLY_SERVER_ADDRESS   { "ssl://mqtt.ably.io:8883" };
-const std::string ABLY_CLIENT_ID        { "ably_publish_client" };
-const std::string ABLY_TOPIC            { "notifications" };
+//const std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.ably.io:8883" };
+const std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.flespi.io:8883" };
+const std::string PUBLISHER_CLIENT_ID        { "publisher_client" };
+const std::string PUBLISHER_TOPIC            { "notifications" };
 
 const auto PUBLISHER_TIMEOUT = std::chrono::seconds(10);
 
@@ -92,28 +92,29 @@ int main(int argc, char* argv[])
 
   
   //Create the async_client object
-   mqtt::async_client ably_client(ABLY_SERVER_ADDRESS, ABLY_CLIENT_ID);
-   Subscriber_callback ably_subscriber_callback;
-   ably_client.set_callback(ably_subscriber_callback);
-   mqtt::connect_options ably_conn_opts{"Wb7GPA.RVtWzA", "bEEvvyn1bxDFw0-s"};  
-   mqtt::ssl_options ably_sslopts;
-   ably_conn_opts.set_ssl(ably_sslopts);
+   mqtt::async_client publisher_client(PUBLISHER_SERVER_ADDRESS, PUBLISHER_CLIENT_ID);
+   Publisher_callback publisher_subscriber_callback;
+   publisher_client.set_callback(publisher_subscriber_callback);
+   //mqtt::connect_options publisher_conn_opts{"Wb7GPA.RVtWzA", "bEEvvyn1bxDFw0-s"};
+   mqtt::connect_options publisher_conn_opts{"FlespiToken R4XF03Rp3KStynVTDRrOuju7odMxQjYxdJ32DKhuiYNGbwnEbEgvMBt0C3nid9Fe", "bEEvvyn1bxDFw0-s"};
+   mqtt::ssl_options publisher_sslopts;
+   publisher_conn_opts.set_ssl(publisher_sslopts);
 
   try {
-    cout << "\nConnecting to the ABLY MQTT server..." << endl;
-    mqtt::token_ptr conntok = ably_client.connect(ably_conn_opts);
+    cout << "\nConnecting to the PUBLISHER MQTT server..." << endl;
+    mqtt::token_ptr conntok = publisher_client.connect(publisher_conn_opts);
     cout << "Waiting for the connection..." << endl;
     conntok->wait();
-    cout << "  ... CONNECTION TO ABLY OK" << endl;
+    cout << "  ... CONNECTION TO PUBLISHER OK" << endl;
   }
   catch (const mqtt::exception& exc) {
-    std::cerr << "\nERROR: Unable to connect to ABLY MQTT  server: '" <<endl;
+    std::cerr << "\nERROR: Unable to connect to PUBLISHER MQTT  server: '" <<endl;
     cerr << exc.what() << endl;
     return 1;
   }
 
   Delivery_action_listener publisher_listener;
-  Publisher publisher(ably_client, ABLY_TOPIC, publisher_listener, queue);
+  Publisher publisher(publisher_client, PUBLISHER_TOPIC, publisher_listener, queue);
   std::thread t( std::bind(&Publisher::run, &publisher) );
   t.detach();
   // Just block till user tells us to quit.
@@ -121,9 +122,9 @@ int main(int argc, char* argv[])
     ;
 
   // cout << "\nSending message..." << endl;
-  // mqtt::message_ptr pubmsg = mqtt::make_message(ABLY_TOPIC, "ciao ciao");
+  // mqtt::message_ptr pubmsg = mqtt::make_message(PUBLISHER_TOPIC, "ciao ciao");
   // pubmsg->set_qos(QOS);
-  // ably_client.publish(pubmsg)->wait_for(PUBLISHER_TIMEOUT);
+  // publisher_client.publish(pubmsg)->wait_for(PUBLISHER_TIMEOUT);
   // cout << "  ...OK" << endl;
   
   // Disconnect

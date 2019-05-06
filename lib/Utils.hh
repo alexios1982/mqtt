@@ -72,21 +72,4 @@ public:
     std::cout << std::chrono::duration <double, T> (diff).count() << " ms" << std::endl;
   }
 };
-
-#include<queue>
-#include<mutex>
-#include<condition_variable>
-template<class T>
-class Synchronized_queue{
-  std::queue<T> _queue;
-  std::mutex _mutex;
-  std::condition_variable _condition_variable;
-  Synchronized_queue(const Synchronized_queue &);
-  Synchronized_queue& operator=(const Synchronized_queue &);
-public:
-  Synchronized_queue(){}
-  T get();
-  void push(const T &data);
-};
-#include "Synchronized_queue.cxx"
 #endif

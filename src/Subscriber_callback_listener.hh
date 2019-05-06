@@ -7,7 +7,8 @@
 
 #include "mqtt/async_client.h"
 #include <iostream>
-#include "Utils.hh"
+#include "Synchronized_queue.hh"
+#include <boost/property_tree/json_parser.hpp>
 
 const int N_RETRY_ATTEMPTS = 5;
 
@@ -105,14 +106,37 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
 
   // Callback for when a message arrives.
   void message_arrived(mqtt::const_message_ptr msg) override {
-    std::cout << "Message arrived" << std::endl;
-    std::cout << "\ttopic: '" << msg->get_topic() << "'" << std::endl;
-    std::cout << "\tpayload: '" << msg->to_string() << "'\n" << std::endl;
-    _queue.push(msg);
+    std::string topic = msg->get_topic();
+    if (!topic.compare(26,4, "99b3")){
+      std::cout<<"is the door sensor"<<std::endl;
+      parse_door_sensor_message(msg);
+    }
   }
 
   void delivery_complete(mqtt::delivery_token_ptr token) override {}
 
+  void parse_door_sensor_message(mqtt::const_message_ptr msg){
+    //solution to double notification problems
+    //we discard the second message because sensor port always
+    //sends two messages for each event: closed door and opened door
+    static int previous_contact = -1;
+    std::string payload(msg->to_string());
+    std::stringstream ss;
+    
+    std::cout << "\tpayload: '" << payload << "'\n" << std::endl;
+    ss << payload;
+
+    boost::property_tree::ptree pt;
+    boost::property_tree::read_json(ss, pt);
+    //contact value is true or false, but we want to convert to an int value
+    int actual_contact = pt.get<bool>("contact");
+    std::cout << "actual contact: " << actual_contact << std::endl;	
+    if(actual_contact != previous_contact){
+      _queue.push(msg);
+      previous_contact = actual_contact;
+    }
+  }
+  
 public:
   Subscriber_callback_listener(mqtt::async_client &client,
 			       mqtt::connect_options &conn_opts,

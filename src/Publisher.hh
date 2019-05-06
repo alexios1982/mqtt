@@ -1,7 +1,7 @@
 #ifndef _PUBLISHER_
 #define _PUBLISHER_
 
-#include "Utils.hh"
+#include "Synchronized_queue.hh"
 #include "mqtt/async_client.h"
 #include "Publisher_callback_listener.hh"
 

@@ -7,7 +7,7 @@
 /**
  * A callback class for use with the main MQTT client.
  */
-class Subscriber_callback: public virtual mqtt::callback{
+class Publisher_callback: public virtual mqtt::callback{
   
 public:
   void connection_lost(const std::string &cause) override {
@@ -32,12 +32,12 @@ class Publisher_action_listener : public virtual mqtt::iaction_listener
 {
 protected:
   void on_failure(const mqtt::token& tok) override {
-    std::cout << "\tListener failure for token: "
+    std::cout <<"[Publisher_action_listener::"<<__func__<<"]" << "\tListener failure for token: "
 	      << tok.get_message_id() << std::endl;
   }
 
   void on_success(const mqtt::token& tok) override {
-    std::cout << "\tListener success for token: "
+    std::cout<<"[Publisher_action_listener::"<<__func__<<"]" << "\tListener success for token: "
 	      << tok.get_message_id() << std::endl;
   }
 };

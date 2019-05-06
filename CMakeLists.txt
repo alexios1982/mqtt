@@ -19,7 +19,8 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 add_executable(subscriber_zigbeetomqtt src/subscriber_zigbeetomqtt.cc
   src/Publisher.cc)
 
-#section to include external libraries to compile
+######################################################################
+#section to include external libraries TO COMPILE
 #to tell cmake to compile the library using its own CMakeLists.txt file
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 #to be able to use the library's include file
@@ -34,6 +35,7 @@ include_directories(${PROJECT_SOURCE_DIR}/lib)
 # target_compile_options(multifiles_saving PUBLIC ${GST_CFLAGS})
 # #######################################################################
 
+############################################################################################
 #for mqtt libraries
 find_library(MQTT_LIB
   NAMES paho-mqttpp3 paho-mqtt3a
@@ -43,15 +45,20 @@ find_library(MQTT_LIB
 #  NAMES include/
 # /where_to_find_1 /where_to_find_ 2   #this rule is not necessary beacuse mqtt include files
                                        #are in the predefined /usr/local path
-				       #to se the predefined include path: g++ -v -x c -E /dev/null (section #include) 
-###################################
-#for threadhs, there is the FindThreads.cmake, so tu include thead supper
+				       #to se the predefined include path: g++ -v -x c -E /dev/null (section #include)
+######################################################################################################
+
+####################################################################
+#for threads, there is the FindThreads.cmake, so to include thead support
+#we can use the find_package command
 find_package(Threads REQUIRED)
+################################################################
 
 #to link the lib to the executable
 target_link_libraries(subscriber_zigbeetomqtt PUBLIC
   #${GST_LIBRARIES}
   Utils
+  base64
   ${MQTT_LIB}
   Threads::Threads)
 
