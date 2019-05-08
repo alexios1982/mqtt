@@ -1,1 +1,6 @@
-#empty for the moment
+#ignoring object files
+*.o
+#ignoring library
+*.a *.so
+#ignoring all emacs temp files
+*~
