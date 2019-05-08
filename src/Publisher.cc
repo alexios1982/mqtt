@@ -1,10 +1,10 @@
 #include "Publisher.hh"
 #include <iostream>
 #include <thread>
-#include <base64.hh> //for base64_file_converter
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "Utils.hh"
+#include <base64.hh> //for base64_file_converter
 
 Publisher::Publisher(mqtt::async_client &client,
 		     const std::string &topic,
@@ -21,7 +21,9 @@ void Publisher::run(){
     mqtt::const_message_ptr msg = _queue.get();
     boost::property_tree::ptree pt;
     pt.put("filename", "2019-04-30_14:46:22_cam02_5.mp4");
-    pt.put("data", base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-04-30_14:46:22_cam02_5.mp4") );
+    pt.put( "data", base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-04-30_14:46:22_cam02_5.mp4") );
+    //pt.put("data", base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/ex_file_300x400.jpg") );
+    //pt.put("data", padded_base64::base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/ex_file_300x400.jpg") );
     std::stringstream ss;
     boost::property_tree::json_parser::write_json(ss, pt);
     mqtt::message_ptr pubmsg = mqtt::make_message( _topic, ss.str() );

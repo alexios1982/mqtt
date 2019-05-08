@@ -1,5 +1,0 @@
-#include "Utils.hh"
-
-template<class T>
-T Synchronized_queue<T>::get(){
-}

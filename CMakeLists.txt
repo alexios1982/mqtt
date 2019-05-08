@@ -62,3 +62,8 @@ target_link_libraries(subscriber_zigbeetomqtt PUBLIC
   ${MQTT_LIB}
   Threads::Threads)
 
+
+#to include tests
+add_subdirectory (tests)
+enable_testing ()
+add_test (NAME MyTest COMMAND Test)

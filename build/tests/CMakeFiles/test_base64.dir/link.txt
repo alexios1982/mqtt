@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -Wextra -pedantic-errors -std=c++11 -O3   CMakeFiles/test_base64.dir/test_base64.cc.o  -o ../../bin/test_base64 -rdynamic ../lib/libbase64.a ../lib/libUtils.a 

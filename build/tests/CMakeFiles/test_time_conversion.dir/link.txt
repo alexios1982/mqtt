@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -Wextra -pedantic-errors -std=c++11 -O3   CMakeFiles/test_time_conversion.dir/test_time_conversion.cc.o  -o ../../bin/test_time_conversion -rdynamic 
