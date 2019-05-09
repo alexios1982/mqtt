@@ -53,7 +53,7 @@ const std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.flespi.io:8883" };
 const std::string PUBLISHER_CLIENT_ID        { "publisher_client" };
 const std::string PUBLISHER_TOPIC            { "notifications" };
 
-const auto PUBLISHER_TIMEOUT = std::chrono::seconds(10);
+
 
 const int  QOS = 1;
 
@@ -92,13 +92,13 @@ int main(int argc, char* argv[])
 
   
   //Create the async_client object
-   mqtt::async_client publisher_client(PUBLISHER_SERVER_ADDRESS, PUBLISHER_CLIENT_ID);
-   Publisher_callback publisher_subscriber_callback;
-   publisher_client.set_callback(publisher_subscriber_callback);
-   //mqtt::connect_options publisher_conn_opts{"Wb7GPA.RVtWzA", "bEEvvyn1bxDFw0-s"};
-   mqtt::connect_options publisher_conn_opts{"FlespiToken R4XF03Rp3KStynVTDRrOuju7odMxQjYxdJ32DKhuiYNGbwnEbEgvMBt0C3nid9Fe", "bEEvvyn1bxDFw0-s"};
-   mqtt::ssl_options publisher_sslopts;
-   publisher_conn_opts.set_ssl(publisher_sslopts);
+  mqtt::async_client publisher_client(PUBLISHER_SERVER_ADDRESS, PUBLISHER_CLIENT_ID);
+  Publisher_callback publisher_callback;
+  publisher_client.set_callback(publisher_callback);
+  //mqtt::connect_options publisher_conn_opts{"Wb7GPA.RVtWzA", "bEEvvyn1bxDFw0-s"};
+  mqtt::connect_options publisher_conn_opts{"FlespiToken R4XF03Rp3KStynVTDRrOuju7odMxQjYxdJ32DKhuiYNGbwnEbEgvMBt0C3nid9Fe", "bEEvvyn1bxDFw0-s"};
+  mqtt::ssl_options publisher_sslopts;
+  publisher_conn_opts.set_ssl(publisher_sslopts);
 
   try {
     cout << "\nConnecting to the PUBLISHER MQTT server..." << endl;
