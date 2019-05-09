@@ -1,5 +1,6 @@
 #find_package (Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
 include_directories (${PROJECT_SOURCE_DIR}/lib
+  ${PROJECT_SOURCE_DIR}/tests
 #  ${Boost_INCLUDE_DIRS}
 )
 
