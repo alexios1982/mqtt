@@ -7,7 +7,7 @@ include_directories (${PROJECT_SOURCE_DIR}/lib
 ############################################################################################
 #for mqtt libraries
 find_library(MQTT_LIB
-  NAMES paho-mqttpp3 paho-mqtt3a
+  NAMES paho-mqttpp3 paho-mqtt3a #we provide two names because these paho-mqtt may have different names in different systems
   )#these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
    #to see the predefined linker paths: g++ -v -x c -E /dev/null (section LIBRARY_PATH)
 #find_path(MQTT_INC
@@ -17,6 +17,19 @@ find_library(MQTT_LIB
 				       #to se the predefined include path: g++ -v -x c -E /dev/null (section #include)
 ######################################################################################################
 
+################################################################
+#### for boost/filesystem #############
+find_library(BOOST_FILESYSTEM
+  NAMES boost_filesystem
+  ) #these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
+# ################################################################
+
+################################################################
+####for boost_system library needed by boost/filesystem
+find_library(BOOST_SYSTEM
+  NAMES boost_system
+  ) #these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
+# ################################################################
 
 #add_definitions (-DBOOST_TEST_DYN_LINK)
 add_executable (test_base64 test_base64.cc)
@@ -27,7 +40,12 @@ target_link_libraries (test_base64
 #  ${Boost_SYSTEM_LIBRARY}
 #  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 )
-add_executable (test_time_conversion test_string_to_time_conversion.cc)
+add_executable (test_string_to_time_conversion test_string_to_time_conversion.cc)
+target_link_libraries(test_string_to_time_conversion PUBLIC
+  ${BOOST_FILESYSTEM}
+  ${BOOST_SYSTEM}
+  )
+  
 add_executable (test_single_sending test_single_sending.cc)
 target_link_libraries(test_single_sending PUBLIC
   Utils
