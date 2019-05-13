@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Synchronized_queue.hh"
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/core/ignore_unused.hpp>
 
 const int N_RETRY_ATTEMPTS = 5;
 
@@ -71,6 +72,7 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
 
   // Re-connection failure
   void on_failure(const mqtt::token& tok) override {
+    boost::ignore_unused(tok);
     std::cout << "Connection attempt failed" << std::endl;
     if (++_n_retry > N_RETRY_ATTEMPTS)
       exit(1);
@@ -79,10 +81,11 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
 
   // (Re)connection success
   // Either this or connected() can be used for callbacks.
-  void on_success(const mqtt::token& tok) override {}
+  void on_success(const mqtt::token& tok) override { boost::ignore_unused(tok);}
 
   // (Re)connection success
   void connected(const std::string& cause) override {
+    boost::ignore_unused(cause);
     std::cout << "\nConnection success" << std::endl;
     std::cout << "\nSubscribing to topic '" << _topic << "'\n"
 	      << "\tfor client " << _client_id
@@ -113,7 +116,7 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
     }
   }
 
-  void delivery_complete(mqtt::delivery_token_ptr token) override {}
+  void delivery_complete(mqtt::delivery_token_ptr token) override { boost::ignore_unused(token);}
 
   void parse_door_sensor_message(mqtt::const_message_ptr msg){
     //solution to double notification problems

@@ -1,6 +1,7 @@
 #include "mqtt/async_client.h"
 #include <iostream>
 #include <sstream>
+#include <boost/core/ignore_unused.hpp>
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -74,6 +75,7 @@ class Test_subscriber_action_listener : public virtual mqtt::callback,
 
   // Re-connection failure
   void on_failure(const mqtt::token& tok) override {
+    boost::ignore_unused(tok);
     std::cout << "Connection attempt failed" << std::endl;
     if (++nretry_ > N_RETRY_ATTEMPTS)
       exit(1);
@@ -82,10 +84,11 @@ class Test_subscriber_action_listener : public virtual mqtt::callback,
 
   // (Re)connection success
   // Either this or connected() can be used for callbacks.
-  void on_success(const mqtt::token& tok) override {}
+  void on_success(const mqtt::token& tok) override { boost::ignore_unused(tok); }
 
   // (Re)connection success
   void connected(const std::string& cause) override {
+    boost::ignore_unused(cause);
     std::cout << "\nConnection success" << std::endl;
     std::cout << "\nSubscribing to topic '" << _topic << "'\n"
 	      << "\tfor client " << _client_id
@@ -121,7 +124,7 @@ class Test_subscriber_action_listener : public virtual mqtt::callback,
     // std::cout << "\tpayload: '" << msg->to_string() << "'\n" << std::endl;
   }
 
-  void delivery_complete(mqtt::delivery_token_ptr token) override {}
+  void delivery_complete(mqtt::delivery_token_ptr token) override { boost::ignore_unused(token); }
 
 public:
   Test_subscriber_action_listener(mqtt::async_client& cli,

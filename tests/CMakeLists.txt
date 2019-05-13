@@ -17,19 +17,6 @@ find_library(MQTT_LIB
 				       #to se the predefined include path: g++ -v -x c -E /dev/null (section #include)
 ######################################################################################################
 
-################################################################
-#### for boost/filesystem #############
-find_library(BOOST_FILESYSTEM
-  NAMES boost_filesystem
-  ) #these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
-# ################################################################
-
-################################################################
-####for boost_system library needed by boost/filesystem
-find_library(BOOST_SYSTEM
-  NAMES boost_system
-  ) #these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
-# ################################################################
 
 #add_definitions (-DBOOST_TEST_DYN_LINK)
 add_executable (test_base64 test_base64.cc)
@@ -40,12 +27,30 @@ target_link_libraries (test_base64
 #  ${Boost_SYSTEM_LIBRARY}
 #  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 )
+
+# ################################################################
+# #### for boost/filesystem #############
+# find_library(BOOST_FILESYSTEM
+#   NAMES boost_filesystem
+#   ) #these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
+# # ################################################################
+
+# ################################################################
+# ####for boost_system library needed by boost/filesystem
+# find_library(BOOST_SYSTEM
+#   NAMES boost_system
+#   ) #these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
+# # ################################################################
+
 add_executable (test_string_to_time_conversion test_string_to_time_conversion.cc)
+
+#BOOST_FILESYSTEM and BOOST_SYSTEM are defined in Utils CMakelists
 target_link_libraries(test_string_to_time_conversion PUBLIC
+  Utils
   ${BOOST_FILESYSTEM}
   ${BOOST_SYSTEM}
   )
-  
+
 add_executable (test_single_sending test_single_sending.cc)
 target_link_libraries(test_single_sending PUBLIC
   Utils

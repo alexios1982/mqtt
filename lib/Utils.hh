@@ -72,4 +72,41 @@ public:
     std::cout << std::chrono::duration <double, T> (diff).count() << " ms" << std::endl;
   }
 };
+
+#include <ctime>        // struct std::tm
+#include <boost/filesystem.hpp>
+#include <boost/iterator/filter_iterator.hpp> //for boost filter iterator
+#include <map>
+#include <string>
+
+namespace bf = boost::filesystem;
+
+class Dir_handler{
+  struct Match_file_extension{
+    bool operator() (const bf::path &path,
+		     const std::string &extension) const{
+      std::string string_path = path.string();
+      std::string string_extension = string_path.substr(string_path.length() - extension.size() );
+    return string_extension == extension;
+    }
+    //this typedef must be defined after the operator() definition
+    //and are necessary for working with std::bind
+    typedef bf::path first_argument_type;
+    typedef std::string second_argument_type;
+    typedef bool result_type;
+};
+
+  typedef std::multimap<std::time_t, bf::path> Timed_ord_mmap;
+  Timed_ord_mmap _timed_ord_mmap;
+  bf::path _path;
+				  
+public:
+  
+  Dir_handler(const std::string &path);
+  bool exists() const ;
+  void lists() const;
+  std::pair<const std::time_t, std::string>
+  get_last_modified_file(const std::string &extension = "");
+  
+};
 #endif
