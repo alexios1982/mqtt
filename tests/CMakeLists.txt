@@ -42,10 +42,10 @@ target_link_libraries (test_base64
 #   ) #these libraries are in /usr/local/lib and so it is not necessary to specify the third argument 
 # # ################################################################
 
-add_executable (test_string_to_time_conversion test_string_to_time_conversion.cc)
+add_executable (test_dir_handler test_dir_handler.cc)
 
 #BOOST_FILESYSTEM and BOOST_SYSTEM are defined in Utils CMakelists
-target_link_libraries(test_string_to_time_conversion PUBLIC
+target_link_libraries(test_dir_handler PUBLIC
   Utils
   ${BOOST_FILESYSTEM}
   ${BOOST_SYSTEM}
@@ -59,3 +59,11 @@ target_link_libraries(test_single_sending PUBLIC
   )
   
   
+add_executable(test_multiple_sending test_multiple_sending.cc)
+target_link_libraries(test_multiple_sending PUBLIC
+  Utils
+  base64
+  ${MQTT_LIB}
+  ${BOOST_FILESYSTEM}
+  ${BOOST_SYSTEM}
+  )

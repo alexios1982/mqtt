@@ -97,9 +97,21 @@ class Dir_handler{
 };
 
   typedef std::multimap<std::time_t, bf::path> Time_ord_mmap;
-  typedef std::vector<bf::path> Files_list;
-  typedef std::pair<const std::time_t, std::string> Return_type;
 
+  //I need to define Files_list and Time_string_pair public
+  //because they will be return values
+  //I cannot move these definition more down,
+  //because Files_list is the type of private member value
+public:
+  typedef std::vector<bf::path> Files_list;
+  typedef std::pair<const std::time_t, bf::path> Time_path_pair;
+
+  enum Order{
+    NORMAL,
+    REVERSE
+  };
+  
+private:
   Time_ord_mmap _time_ord_mmap;
   Files_list _files_list;
   bf::path _path;
@@ -108,13 +120,14 @@ class Dir_handler{
   void fill_files_list(const std::string &extension);
   void fill_time_ord_mmap(const std::string &extension);
 public:
-  
+
   Dir_handler(const std::string &path, const int FILES_NUMBER=0);
   bool exists() const;
   void list(const std::string &extension = "");
-  void time_ordered_list(const std::string &extension = "");
-  Return_type
+  void time_ordered_list(const std::string &extension = "", Order = NORMAL);
+  Time_path_pair
   get_last_modified_file(const std::string &extension = "");
-  
+  const Files_list&
+  get_files_list(const std::string &extension = "");
 };
 #endif
