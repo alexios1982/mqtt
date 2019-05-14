@@ -96,16 +96,24 @@ class Dir_handler{
     typedef bool result_type;
 };
 
-  typedef std::multimap<std::time_t, bf::path> Timed_ord_mmap;
-  Timed_ord_mmap _timed_ord_mmap;
+  typedef std::multimap<std::time_t, bf::path> Time_ord_mmap;
+  typedef std::vector<bf::path> Files_list;
+  typedef std::pair<const std::time_t, std::string> Return_type;
+
+  Time_ord_mmap _time_ord_mmap;
+  Files_list _files_list;
   bf::path _path;
-				  
+  const int _FILES_NUMBER;
+
+  void fill_files_list(const std::string &extension);
+  void fill_time_ord_mmap(const std::string &extension);
 public:
   
-  Dir_handler(const std::string &path);
-  bool exists() const ;
-  void lists() const;
-  std::pair<const std::time_t, std::string>
+  Dir_handler(const std::string &path, const int FILES_NUMBER=0);
+  bool exists() const;
+  void list(const std::string &extension = "");
+  void time_ordered_list(const std::string &extension = "");
+  Return_type
   get_last_modified_file(const std::string &extension = "");
   
 };
