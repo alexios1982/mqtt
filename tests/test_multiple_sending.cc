@@ -75,35 +75,53 @@ int main(int argc, char* argv[]){
   }
 
   Dir_handler dir_handler{"/home/pi/gstreamer/multifiles_saving"};
-  if( !dir_handler.exists() ){
-    std::cerr << "[test_multiple_sending]. Specified directory not exists" << std::endl;
-    return -1;
-  }
-  Dir_handler::Files_list files_to_send = dir_handler.get_files_list(".mp4");
-  for(const auto &item: files_to_send){
+
+  Delivery_action_listener delivery_listener;
+
+  int iter = 0, n_of_sending = 12;
+  while( iter < n_of_sending){
     boost::property_tree::ptree pt;
-    std::string file_to_send =  ( item.filename() ).string();
-    std::cout << "file to send: " << file_to_send << '\n';
-    pt.put("filename", file_to_send);
-    pt.put( "data", base64_file_converter( item.string() ) );
+    if( !dir_handler.exists() ){
+      std::cerr << "[test_multiple_sending::" << __func__ << "]. " << "no directory with mp4 file. " << std::endl; 
+      exit(-1);
+    }
+    Dir_handler::Time_path_pair to_send = dir_handler.get_last_modified_file(".mp4");
+    std::string to_send_filename = ( (to_send.second).filename() ).string();
+    std::time_t now;
+    std::time (&now);
+    std::cout << "The current local time is: " << std::ctime(&now)  << '\n';
+    std::cout << "[Publisher::" << __func__ << "]. " << "video " << (iter + 1) << " to publish is " << to_send_filename << '\n';
+    //let's wait until the video chunk to send is finished:
+    //the condition for this to happen is the presence of a next video chunk 
+    while(true){
+      Dir_handler::Time_path_pair next = dir_handler.get_last_modified_file(".mp4");
+      if( ( (next.second).filename() ).string() != to_send_filename )
+	break;
+      std::this_thread::sleep_for ( std::chrono::milliseconds(500) ); 
+    }
+    
+    pt.put("filename", to_send_filename);
+    pt.put( "data", base64_file_converter( (to_send.second).string() ) );
+    
     std::stringstream ss;
     boost::property_tree::json_parser::write_json(ss, pt);
     mqtt::message_ptr pubmsg = mqtt::make_message( PUBLISHER_TOPIC, ss.str() );
-    Delivery_action_listener delivery_listener;
-
-    try {
-      publisher_client.publish (pubmsg, nullptr, delivery_listener);
-      while ( !(delivery_listener.is_done() ) ) 
-  	std::this_thread::sleep_for ( std::chrono::milliseconds(100) );
+    
+    //no json
+    //mqtt::message_ptr pubmsg = mqtt::make_message( _topic, base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-04-30_14:46:22_cam02_5.mp4") );
+    ////////////////////////////////////////////////////////////////
+    std::cout << "[test_multiple_sending::" << __func__ << "]. " << "publishing ..." << '\n';
+    try{
+      publisher_client.publish(pubmsg, nullptr, delivery_listener);
+      while( !delivery_listener.is_done() ) 
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    catch (const mqtt::exception& exc) {
+    catch(const mqtt::exception& exc) {
       std::cerr << exc.what() << std::endl;
-      return 1;
+      exit(-1) ;
     }
-    //let's wait some time before sending the other message
-    std::this_thread::sleep_for ( std::chrono::milliseconds(1000) );
-  }
-
+    ++iter;
+  } //END OF WHILE LOOP FOR N_OF_SENDING
   return 0;
 }
 
