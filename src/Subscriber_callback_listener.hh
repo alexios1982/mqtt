@@ -17,20 +17,20 @@ class Action_listener: public virtual mqtt::iaction_listener{
   std::string _name;
 
   void on_failure(const mqtt::token &token) override{
-    std::cout << _name << " failure";
+    std::cout << "[Action_listener::" << __func__ << "]. " << _name << " failure";
     if(token.get_message_id() != 0)
-      std::cout << " for token: [" << token.get_message_id() << "]" << std::endl;
-    std::cout << std::endl;
+      std::cout << " for token: [" << token.get_message_id() << "]" << '\n';
+    std::cout << '\n';
   }
 
   void on_success(const mqtt::token &token) override{
-    std::cout << _name << " success";
+    std::cout << "[Action_listener::" << __func__ << "]. "  << _name << " success";
     if (token.get_message_id() != 0)
-      std::cout << " for token: [" << token.get_message_id() << "]" << std::endl;
+      std::cout << " for token: [" << token.get_message_id() << "]" << '\n';
     auto top = token.get_topics();
     if (top && !top->empty())
-      std::cout << "\ttoken topic: '" << (*top)[0] << "', ..." << std::endl;
-    std::cout << std::endl;
+      std::cout << "\ttoken topic: '" << (*top)[0] << "', ..." << '\n';
+    std::cout << '\n';
   }
 public:
   Action_listener(const std::string &name): _name(name){}
@@ -73,7 +73,7 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
   // Re-connection failure
   void on_failure(const mqtt::token& tok) override {
     boost::ignore_unused(tok);
-    std::cout << "Connection attempt failed" << std::endl;
+    std::cout << "[Subscriber_callback_listener::" << __func__ << "]. "  << "Connection attempt failed" << '\n';
     if (++_n_retry > N_RETRY_ATTEMPTS)
       exit(1);
     reconnect();
@@ -86,11 +86,11 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
   // (Re)connection success
   void connected(const std::string& cause) override {
     boost::ignore_unused(cause);
-    std::cout << "\nConnection success" << std::endl;
+    std::cout << "\n[Subscriber_callback_listener::" << __func__ << "]. "; 
+    std::cout << "\nConnection success" << '\n';
     std::cout << "\nSubscribing to topic '" << _topic << "'\n"
 	      << "\tfor client " << _client_id
-	      << " using QoS" << _qos << "\n"
-	      << "\nPress Q<Enter> to quit\n" << std::endl;
+	      << " using QoS" << _qos << "\n";
 
     _client.subscribe(_topic, _qos, nullptr, _sub_listener);
   }
@@ -98,11 +98,12 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
   // Callback for when the connection is lost.
   // This will initiate the attempt to manually reconnect.
   void connection_lost(const std::string& cause) override {
-    std::cout << "\nConnection lost" << std::endl;
+    std::cout << "\n[Subscriber_callback_listener::" << __func__ << "]. ";
+    std::cout << "\nConnection lost" << '\n';
     if (!cause.empty())
-      std::cout << "\tcause: " << cause << std::endl;
+      std::cout << "\tcause: " << cause << '\n';
 
-    std::cout << "Reconnecting..." << std::endl;
+    std::cout << "Reconnecting..." << '\n';
     _n_retry = 0;
     reconnect();
   }
@@ -111,7 +112,7 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
   void message_arrived(mqtt::const_message_ptr msg) override {
     std::string topic = msg->get_topic();
     if (!topic.compare(26,4, "99b3")){
-      std::cout<<"is the door sensor"<<std::endl;
+      std::cout << "[Subscriber_callback_listener::" << __func__ << "]. " <<"is the door sensor"<<'\n';
       parse_door_sensor_message(msg);
     }
   }
@@ -126,14 +127,14 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
     std::string payload(msg->to_string());
     std::stringstream ss;
     
-    std::cout << "\tpayload: '" << payload << "'\n" << std::endl;
+    std::cout << "[Subscriber_action_listener::" << __func__ << "]. "  << "payload: '" << payload << '\n';
     ss << payload;
 
     boost::property_tree::ptree pt;
     boost::property_tree::read_json(ss, pt);
     //contact value is true or false, but we want to convert to an int value
     int actual_contact = pt.get<bool>("contact");
-    std::cout << "actual contact: " << actual_contact << std::endl;	
+    std::cout << "actual contact: " << actual_contact << '\n';	
     if(actual_contact != previous_contact){
       _queue.push(msg);
       previous_contact = actual_contact;

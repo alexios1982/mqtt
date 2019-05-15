@@ -22,7 +22,6 @@ int main(){
   if(dir_handler.exists() )
     dir_handler.time_ordered_list(".mp4", Dir_handler::REVERSE);
 
- 
   std::cout << "\nRetrieve the last modified mp4 file" << '\n';
   if(dir_handler.exists() )
     std::cout << ( dir_handler.get_last_modified_file(".mp4").second).string() << '\n';

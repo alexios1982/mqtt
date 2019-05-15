@@ -14,9 +14,9 @@ const std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.flespi.io:8883" };
 const std::string PUBLISHER_CLIENT_ID        { "publisher_client" };
 const std::string PUBLISHER_TOPIC            { "Notifications" };
 
-const std::string SUBSCRIBER_SERVER_ADDRESS {"ssl://mqtt.flespi.io:8883"};
-const std::string SUBSCRIBER_CLIENT_ID {"subscriber_client"};
-const std::string SUBSCRIBER_TOPIC {"Response"};
+const std::string SUBSCRIBER_SERVER_ADDRESS  {"ssl://mqtt.flespi.io:8883"};
+const std::string SUBSCRIBER_CLIENT_ID       {"subscriber_client"};
+const std::string SUBSCRIBER_TOPIC           {"Response"};
 
 int QOS = 1;
 

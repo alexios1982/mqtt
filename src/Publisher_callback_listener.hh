@@ -11,14 +11,16 @@ class Publisher_callback: public virtual mqtt::callback{
   
 public:
   void connection_lost(const std::string &cause) override {
-    std::cout << "\nConnection lost" << std::endl;
+    std::cout << "\n[Publisher_callback::" << __func__ << "]. "; 
+    std::cout << "\nConnection lost" << '\n';
     if (!cause.empty())
-      std::cout << "\tcause: " << cause << std::endl;
+      std::cout << "\tcause: " << cause << '\n';
   }
 
   void delivery_complete(mqtt::delivery_token_ptr tok) override {
+    std::cout << "\n[Publisher_callback::" << __func__ << "]. "; 
     std::cout << "\tDelivery complete for token: "
-	      << (tok ? tok->get_message_id() : -1) << std::endl;
+	      << (tok ? tok->get_message_id() : -1) << '\n';
   }
 };
 
@@ -32,13 +34,15 @@ class Publisher_action_listener : public virtual mqtt::iaction_listener
 {
 protected:
   void on_failure(const mqtt::token& tok) override {
-    std::cout <<"[Publisher_action_listener::"<<__func__<<"]" << "\tListener failure for token: "
-	      << tok.get_message_id() << std::endl;
+    std::cout << "[Publisher_action_listener::"<<__func__<<"]."
+	      << "\tListener failure for token: "
+	      << tok.get_message_id() << '\n';
   }
 
   void on_success(const mqtt::token& tok) override {
-    std::cout<<"[Publisher_action_listener::"<<__func__<<"]" << "\tListener success for token: "
-	      << tok.get_message_id() << std::endl;
+    std::cout<<"[Publisher_action_listener::"<<__func__<<"]."
+	     << "\tListener success for token: "
+	     << tok.get_message_id() << '\n';
   }
 };
 

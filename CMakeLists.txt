@@ -1,4 +1,4 @@
-project(subscriber_zigbeetomqtt)
+project(alarm_system)
 cmake_minimum_required(VERSION 3.1)
 set(CMAKE_CXX_STANDARD 11)
 # Set build type if not set.
@@ -16,7 +16,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #message(STATUS "Output path ${EXECUTABLE_OUTPUT_PATH}")
 #to be able to use the src's include file
 include_directories(${PROJECT_SOURCE_DIR}/src)
-add_executable(subscriber_zigbeetomqtt src/subscriber_zigbeetomqtt.cc
+add_executable(alarm_system src/alarm_system.cc
   src/Publisher.cc)
 
 ######################################################################
@@ -55,7 +55,7 @@ find_package(Threads REQUIRED)
 ################################################################
 
 #to link the lib to the executable
-target_link_libraries(subscriber_zigbeetomqtt PUBLIC
+target_link_libraries(alarm_system PUBLIC
   #${GST_LIBRARIES}
   Utils
   base64
