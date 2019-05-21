@@ -40,15 +40,13 @@
 #include "Subscriber_callback_listener.hh"
 #include "Publisher.hh"
 
-using namespace std;
-
-const string ZIGBEE_SERVER_ADDRESS	{ "tcp://localhost:1883" };
-const string ZIGBEE_CLIENT_ID		{ "zigbee_subscribe_client" };
+const std::string ZIGBEE_SERVER_ADDRESS	{ "tcp://localhost:1883" };
+const std::string ZIGBEE_CLIENT_ID		{ "zigbee_subscribe_client" };
 //# is a wildcard to subscribe to all zigbee2mqtt topics
 //0x00158d0001cc99b3 is  the second levele created by the open-door sensor
-const string ZIGBEE_TOPIC 		{ "zigbee2mqtt/0x00158d0001cc99b3" };
+const std::string ZIGBEE_TOPIC 		{ "zigbee2mqtt/0x00158d0001cc99b3" };
 
-//const std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.ably.io:8883" };
+//const std::std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.ably.io:8883" };
 const std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.flespi.io:8883" };
 const std::string PUBLISHER_CLIENT_ID        { "publisher_client" };
 const std::string PUBLISHER_TOPIC            { "Notifications" };
@@ -101,15 +99,15 @@ int main(int argc, char* argv[])
   publisher_conn_opts.set_ssl(publisher_sslopts);
 
   try {
-    cout << "\nConnecting to the PUBLISHER MQTT server..." << endl;
+    std::cout << "\nConnecting to the PUBLISHER MQTT server..." << std::endl;
     mqtt::token_ptr conntok = publisher_client.connect(publisher_conn_opts);
-    cout << "Waiting for the connection..." << endl;
+    std::cout << "Waiting for the connection..." << std::endl;
     conntok->wait();
-    cout << "  ... CONNECTION TO PUBLISHER OK" << endl;
+    std::cout << "  ... CONNECTION TO PUBLISHER OK" << std::endl;
   }
   catch (const mqtt::exception& exc) {
-    std::cerr << "\nERROR: Unable to connect to PUBLISHER MQTT server: '" <<endl;
-    cerr << exc.what() << endl;
+    std::cerr << "\nERROR: Unable to connect to PUBLISHER MQTT server: '" <<std::endl;
+    std::cerr << exc.what() << std::endl;
     return 1;
   }
 

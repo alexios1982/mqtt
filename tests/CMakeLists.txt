@@ -67,3 +67,9 @@ target_link_libraries(test_multiple_sending PUBLIC
   ${BOOST_FILESYSTEM}
   ${BOOST_SYSTEM}
   )
+
+add_executable(test_subscriber_mqtt test_subscriber_mqtt.cc)
+target_link_libraries(test_subscriber_mqtt PUBLIC
+  ${MQTT_LIB}
+  ${BOOST_SYSTEM}
+  )

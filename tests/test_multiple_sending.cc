@@ -95,9 +95,11 @@ int main(int argc, char* argv[]){
     //the condition for this to happen is the presence of a next video chunk 
     while(true){
       Dir_handler::Time_path_pair next = dir_handler.get_last_modified_file(".mp4");
+      //let's check if another file is ready: this condition means
+      //that the current file to send is complete
       if( ( (next.second).filename() ).string() != to_send_filename )
 	break;
-      std::this_thread::sleep_for ( std::chrono::milliseconds(500) ); 
+      std::this_thread::sleep_for ( std::chrono::milliseconds(100) ); 
     }
     
     pt.put("filename", to_send_filename);
@@ -122,6 +124,9 @@ int main(int argc, char* argv[]){
     }
     ++iter;
   } //END OF WHILE LOOP FOR N_OF_SENDING
+  //let's wait some time for video publishing to finish
+  std::cout << "[test_multiple_sending::" << __func__ << "]. " << "let's wait for 20 seconds for video publishing to finish ..." << '\n';
+  std::this_thread::sleep_for( std::chrono::seconds(20) );
   return 0;
 }
 
