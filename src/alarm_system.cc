@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
     mqtt::token_ptr conntok = publisher_client.connect(publisher_conn_opts);
     std::cout << "Waiting for the connection..." << std::endl;
     conntok->wait();
-    std::cout << "  ... CONNECTION TO PUBLISHER OK" << std::endl;
+    std::cout << "  ... CONNECTION TO SERVER IS OK" << std::endl;
   }
   catch (const mqtt::exception& exc) {
     std::cerr << "\nERROR: Unable to connect to PUBLISHER MQTT server: '" <<std::endl;
@@ -124,9 +124,19 @@ int main(int argc, char* argv[])
   while (std::tolower(std::cin.get()) != 'q')
     ;
 
-  // Disconnect
+  //Disconnecting the subscriber
   try {
-    std::cout << "\nDisconnecting from the ZIGBEE MQTT server..." << std::flush;
+    std::cout << "\nDisconnecting from the MQTT server..." << std::flush;
+    publisher_client.disconnect()->wait();
+    std::cout << "OK" << std::endl;
+  }
+  catch (const mqtt::exception& exc) {
+    std::cerr << exc.what() << std::endl;
+    return 1;
+  }
+    //Disconnecting the subscriber
+  try {
+    std::cout << "\nDisconnecting from the ZIGBEE2MQTT server..." << std::flush;
     zigbee_client.disconnect()->wait();
     std::cout << "OK" << std::endl;
   }
