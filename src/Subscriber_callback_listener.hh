@@ -13,18 +13,19 @@
 
 const int N_RETRY_ATTEMPTS = 5;
 
-class Action_listener: public virtual mqtt::iaction_listener{
+///This is the listener that will be used in the subscribe method
+class Subscription_listener: public virtual mqtt::iaction_listener{
   std::string _name;
 
   void on_failure(const mqtt::token &token) override{
-    std::cout << "[Action_listener::" << __func__ << "]. " << _name << " failure";
+    std::cout << "[Subscription_listener::" << __func__ << "]. " << _name << " failure";
     if(token.get_message_id() != 0)
       std::cout << " for token: [" << token.get_message_id() << "]" << '\n';
     std::cout << '\n';
   }
 
   void on_success(const mqtt::token &token) override{
-    std::cout << "[Action_listener::" << __func__ << "]. "  << _name << " success";
+    std::cout << "[Subscription_listener::" << __func__ << "]. "  << _name << " success";
     if (token.get_message_id() != 0)
       std::cout << " for token: [" << token.get_message_id() << "]" << '\n';
     auto top = token.get_topics();
@@ -33,10 +34,16 @@ class Action_listener: public virtual mqtt::iaction_listener{
     std::cout << '\n';
   }
 public:
-  Action_listener(const std::string &name): _name(name){}
+  Subscription_listener(const std::string &name): _name(name){}
 };
+///////////////////////////////////////////////////////////////////////////////////
 
-
+//this class represents an advance callback that can handle
+//lost of connections, trying to reconnect 5 times.
+//to do this it has to mantain info about the client and
+//the topic.
+//At the moment, It tries to reconnect to the same topic,
+//but this can be customize by passing the appropraite topic argument to ctor
 class Subscriber_callback_listener: public virtual mqtt::callback,
 				    public virtual mqtt::iaction_listener{
 
@@ -47,7 +54,7 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
   // Options to use if we need to reconnect
   mqtt::connect_options &_conn_opts;
   // An action listener to display the result of actions.
-  Action_listener _sub_listener;
+  Subscription_listener _sub_listener;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   const std::string &_topic;
   const std::string &_client_id;
@@ -151,7 +158,7 @@ public:
     : _n_retry{0},
       _client{client},
       _conn_opts{conn_opts},
-      _sub_listener{"Subscription"},
+      _sub_listener{"Subscription_listener"},
       _queue{queue},
       _topic{topic},
       _client_id{client_id},
