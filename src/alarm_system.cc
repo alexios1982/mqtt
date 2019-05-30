@@ -39,6 +39,7 @@
 #include <boost/core/ignore_unused.hpp>
 #include "Subscriber_callback_listener.hh"
 #include "Publisher.hh"
+#include "Notification_logic_controller.hh"
 
 const std::string ZIGBEE_SERVER_ADDRESS	{ "tcp://localhost:1883" };
 const std::string ZIGBEE_CLIENT_ID		{ "zigbee_subscribe_client" };

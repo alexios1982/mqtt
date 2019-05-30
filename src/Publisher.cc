@@ -64,5 +64,9 @@ void Publisher::run(){
       }
       ++iter;
     } //END OF WHILE LOOP FOR N_OF_SENDING
-  }
+  }//END OF WHILE(TRUE)
+}
+
+Delivery_action_listener& Publisher::get_listener(){
+  return _listener;
 }

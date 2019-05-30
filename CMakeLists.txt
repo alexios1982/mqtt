@@ -17,7 +17,9 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #to be able to use the src's include file
 include_directories(${PROJECT_SOURCE_DIR}/src)
 add_executable(alarm_system src/alarm_system.cc
-  src/Publisher.cc)
+  src/Publisher.cc
+  src/Notification_logic_controller.cc
+  src/Area_protection.cc)
 
 ######################################################################
 #section to include external libraries TO COMPILE

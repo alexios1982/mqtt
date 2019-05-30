@@ -18,6 +18,7 @@ public:
 	    Delivery_action_listener &listener,
 	    Synchronized_queue<mqtt::const_message_ptr> &queue,
 	    Dir_handler &dir_handler);
+  Delivery_action_listener& get_listener();
   void run();
 };
 

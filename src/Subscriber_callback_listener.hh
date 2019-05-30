@@ -117,11 +117,12 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
 
   // Callback for when a message arrives.
   void message_arrived(mqtt::const_message_ptr msg) override {
-    std::string topic = msg->get_topic();
-    if (!topic.compare(26,4, "99b3")){
-      std::cout << "[Subscriber_callback_listener::" << __func__ << "]. " <<"is the door sensor"<<'\n';
-      parse_door_sensor_message(msg);
-    }
+    // std::string topic = msg->get_topic();
+    // if (!topic.compare(26,4, "99b3")){
+    //   std::cout << "[Subscriber_callback_listener::" << __func__ << "]. " <<"is the door sensor"<<'\n';
+    //   parse_door_sensor_message(msg);
+    // }
+    _queue.push(msg);
   }
 
   void delivery_complete(mqtt::delivery_token_ptr token) override { boost::ignore_unused(token);}
