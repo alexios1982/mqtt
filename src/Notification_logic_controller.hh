@@ -8,18 +8,21 @@
 
 class Notification_logic_controller{
   Area_protection &_area_protection;
-  Synchronized_queue<mqtt::const_message_ptr> _queue;
+  Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
   std::map<std::string, std::string> &_sensor_cam;
   std::map<std::string, std::string> &_cam_path;
   
   void classify_message(const mqtt::const_message_ptr &message_ptr);
   bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &message_ptr);
-  mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &message_ptr);
+  mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &message_ptr,
+						    const std::string &sensor_mini_id);
   mqtt::const_message_ptr prepare_classified_notification(const mqtt::const_message_ptr &message_ptr);
   void send_notification(const mqtt::const_message_ptr &message_ptr);
+  void analyze_ai_response(const mqtt::const_message_ptr &message_ptr);
 public:
   Notification_logic_controller(Area_protection &area_protection,
+				Synchronized_queue<mqtt::const_message_ptr> &queue,
 				Publisher &publisher,
 				std::map<std::string, std::string> &sensor_cam,
 				std::map<std::string, std::string> &cam_path);

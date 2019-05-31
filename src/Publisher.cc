@@ -67,6 +67,22 @@ void Publisher::run(){
   }//END OF WHILE(TRUE)
 }
 
+void Publisher::publish(const mqtt::const_message_ptr &to_publish){
+  try{
+    _client.publish(to_publish, nullptr, _listener);
+    while( !_listener.is_done() ) 
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+  catch(const mqtt::exception& exc) {
+    std::cerr << exc.what() << std::endl;
+    return ;
+  }
+}
+
 Delivery_action_listener& Publisher::get_listener(){
   return _listener;
+}
+
+const std::string& Publisher::get_topic() const{
+  return _topic;
 }

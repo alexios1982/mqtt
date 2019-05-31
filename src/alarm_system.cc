@@ -42,24 +42,33 @@
 #include "Notification_logic_controller.hh"
 
 const std::string ZIGBEE_SERVER_ADDRESS	{ "tcp://localhost:1883" };
-const std::string ZIGBEE_CLIENT_ID		{ "zigbee_subscribe_client" };
+const std::string ZIGBEE_SUBSCRIBER_ID { "zigbee_subscribe_client" };
 //# is a wildcard to subscribe to all zigbee2mqtt topics
 //0x00158d0001cc99b3 is  the second levele created by the open-door sensor
-const std::string ZIGBEE_TOPIC 		{ "zigbee2mqtt/0x00158d0001cc99b3" };
+const std::string ZIGBEE_SUBSCRIBER_TOPIC { "zigbee2mqtt/0x00158d0001cc99b3" };
 
-//const std::std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.ably.io:8883" };
-const std::string PUBLISHER_SERVER_ADDRESS   { "ssl://mqtt.flespi.io:8883" };
-const std::string PUBLISHER_CLIENT_ID        { "publisher_client" };
-const std::string PUBLISHER_TOPIC            { "Notifications" };
-
+//const std::std::string PUBLISHER_SERVER_ADDRESS { "ssl://mqtt.ably.io:8883" };
+const std::string REMOTE_SERVER_ADDRESS { "ssl://mqtt.flespi.io:8883" };
+const std::string REMOTE_PUBLISHER_ID { "remote_publisher_client" };
+const std::string REMOTE_SUBSCRIBER_ID { "remote_subscriber_client" };
+const std::string REMOTE_PUBLISHER_TOPIC { "Notifications" };
+const std::string REMOTE_SUBSCRIBER_TOPIC {"Response"};
 
 
 const int  QOS = 1;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]){
   boost::ignore_unused(argc);
   boost::ignore_unused(argv);
+
+  //here we have to build the map that will associates a sensor to a cam
+  //and the map that will associate the cam to its chunks folder
+  //lets' use the last 4 chars of sensor id to improve research speed in map
+  //if a sensor is present in the sensor_cam map, we have to send a rich
+  //notification, otherwise we will send a classify notification
+  std::map<std::string, std::string> sensor_cam = { {"01cc99b3", "cam02"} };
+  std::map<std::string, std::string> cam_path = { {"cam02", "/home/pi/gstreamer/multifiles_saving"} };
+  /////////////////////////////////////////////////////////////////////////
   
   mqtt::connect_options zigbee_conn_opts{"hub_raspberry", "hub_raspberry"};
   Synchronized_queue<mqtt::const_message_ptr> queue;
@@ -67,21 +76,20 @@ int main(int argc, char* argv[])
   zigbee_conn_opts.set_keep_alive_interval(20);
   zigbee_conn_opts.set_clean_session(true);
 
-  mqtt::async_client zigbee_client(ZIGBEE_SERVER_ADDRESS, ZIGBEE_CLIENT_ID);
-  Subscriber_callback_listener zig_callback_listener(zigbee_client,
+  mqtt::async_client zigbee_subscriber(ZIGBEE_SERVER_ADDRESS, ZIGBEE_SUBSCRIBER_ID);
+  Subscriber_callback_listener zig_callback_listener(zigbee_subscriber,
 						     zigbee_conn_opts,
 						     queue,
-						     ZIGBEE_TOPIC,
-						     ZIGBEE_CLIENT_ID,
+						     ZIGBEE_SUBSCRIBER_TOPIC,
+						     ZIGBEE_SUBSCRIBER_ID,
 						     QOS);
-  zigbee_client.set_callback(zig_callback_listener);
-  
-  
+  zigbee_subscriber.set_callback(zig_callback_listener);
+
   // Start the connection.
   // When completed, the callback will subscribe to topic.  
   try {
     std::cout << "Connecting to the ZIGBEE MQTT server..." << std::flush;
-    zigbee_client.connect(zigbee_conn_opts, nullptr, zig_callback_listener);
+    zigbee_subscriber.connect(zigbee_conn_opts, nullptr, zig_callback_listener);
   }
   catch (const mqtt::exception&) {
     std::cerr << "\nERROR: Unable to connect to MQTT server: '"
@@ -89,19 +97,18 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  
-  //Create the async_client object
-  mqtt::async_client publisher_client(PUBLISHER_SERVER_ADDRESS, PUBLISHER_CLIENT_ID);
+  mqtt::connect_options remote_conn_opts{"FlespiToken R4XF03Rp3KStynVTDRrOuju7odMxQjYxdJ32DKhuiYNGbwnEbEgvMBt0C3nid9Fe", "bEEvvyn1bxDFw0-s"};
+  mqtt::ssl_options remote_sslopts;
+  remote_conn_opts.set_ssl(remote_sslopts);
+
+  mqtt::async_client remote_publisher(REMOTE_SERVER_ADDRESS, REMOTE_PUBLISHER_ID);
   Publisher_callback publisher_callback;
-  publisher_client.set_callback(publisher_callback);
+  remote_publisher.set_callback(publisher_callback);
   //mqtt::connect_options publisher_conn_opts{"Wb7GPA.RVtWzA", "bEEvvyn1bxDFw0-s"};
-  mqtt::connect_options publisher_conn_opts{"FlespiToken R4XF03Rp3KStynVTDRrOuju7odMxQjYxdJ32DKhuiYNGbwnEbEgvMBt0C3nid9Fe", "bEEvvyn1bxDFw0-s"};
-  mqtt::ssl_options publisher_sslopts;
-  publisher_conn_opts.set_ssl(publisher_sslopts);
 
   try {
     std::cout << "\nConnecting to the PUBLISHER MQTT server..." << std::endl;
-    mqtt::token_ptr conntok = publisher_client.connect(publisher_conn_opts);
+    mqtt::token_ptr conntok = remote_publisher.connect(remote_conn_opts);
     std::cout << "Waiting for the connection..." << std::endl;
     conntok->wait();
     std::cout << "  ... CONNECTION TO SERVER IS OK" << std::endl;
@@ -111,16 +118,42 @@ int main(int argc, char* argv[])
     std::cerr << exc.what() << std::endl;
     return 1;
   }
-
   Delivery_action_listener publisher_listener;
   Dir_handler dir_handler{"/home/pi/gstreamer/multifiles_saving"};
-  Publisher publisher(publisher_client,
-		      PUBLISHER_TOPIC,
+  Publisher publisher(remote_publisher,
+		      REMOTE_PUBLISHER_TOPIC,
 		      publisher_listener,
 		      queue,
 		      dir_handler);
-  std::thread t( std::bind(&Publisher::run, &publisher) );
-  t.detach();
+
+
+  mqtt::async_client remote_subscriber(REMOTE_SERVER_ADDRESS, REMOTE_SUBSCRIBER_ID);
+  Subscriber_callback_listener remote_callback_listener(remote_subscriber,
+							remote_conn_opts,
+							queue,
+							REMOTE_SUBSCRIBER_TOPIC,
+							REMOTE_SUBSCRIBER_ID,
+							QOS);
+  remote_subscriber.set_callback(remote_callback_listener);
+
+  // Start the connection.
+  // When completed, the callback will subscribe to topic.  
+  try {
+    std::cout << "Connecting to the REMOTE MQTT server..." << std::flush;
+    remote_subscriber.connect(remote_conn_opts, nullptr, remote_callback_listener);
+  }
+  catch (const mqtt::exception&) {
+    std::cerr << "\nERROR: Unable to connect to REMOTE MQTT server: '"
+	      << REMOTE_SERVER_ADDRESS << "'" << std::endl;
+    return 1;
+  }
+
+    // std::thread t( std::bind(&Publisher::run, &publisher) );
+  // t.detach();
+  Area_protection area_protection;
+  Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
+  std::thread t( std::bind(&Notification_logic_controller::consume_message, &notification_logic_controller) );
+  
   // Just block till user tells us to quit.
   while (std::tolower(std::cin.get()) != 'q')
     ;
@@ -128,7 +161,7 @@ int main(int argc, char* argv[])
   //Disconnecting the subscriber
   try {
     std::cout << "\nDisconnecting from the MQTT server..." << std::flush;
-    publisher_client.disconnect()->wait();
+    remote_publisher.disconnect()->wait();
     std::cout << "OK" << std::endl;
   }
   catch (const mqtt::exception& exc) {
@@ -138,7 +171,7 @@ int main(int argc, char* argv[])
     //Disconnecting the subscriber
   try {
     std::cout << "\nDisconnecting from the ZIGBEE2MQTT server..." << std::flush;
-    zigbee_client.disconnect()->wait();
+    zigbee_subscriber.disconnect()->wait();
     std::cout << "OK" << std::endl;
   }
   catch (const mqtt::exception& exc) {
