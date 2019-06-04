@@ -68,10 +68,10 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   else if (topic_info == "Response"){
     analyze_ai_response(message_ptr);
   }
-  //it is a sensor associate to a rich notification
+  //it is a sensor associate to a classified notification
   else{
-    message_to_send = prepare_rich_notification(message_ptr, topic_info);
-    send_notification(message_to_send);
+    message_to_send = prepare_classified_notification(message_ptr);
+    //send_notification(message_to_send);
   }
 }
 
@@ -109,7 +109,8 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
 }
 
 mqtt::const_message_ptr Notification_logic_controller::prepare_classified_notification(const mqtt::const_message_ptr &message_ptr){
-
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << '\n';
+  return mqtt::make_message("", "");
 }
 
 void Notification_logic_controller::send_notification(const mqtt::const_message_ptr &message_ptr){
@@ -145,5 +146,7 @@ void Notification_logic_controller::send_notification(const mqtt::const_message_
 }
 
 void Notification_logic_controller::analyze_ai_response(const mqtt::const_message_ptr &message_ptr){
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << message_ptr->get_topic() <<'\n';  
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n';
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << message_ptr->get_payload() << '\n';  
+  
 }

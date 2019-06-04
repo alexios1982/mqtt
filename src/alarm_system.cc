@@ -44,15 +44,19 @@
 const std::string ZIGBEE_SERVER_ADDRESS	{ "tcp://localhost:1883" };
 const std::string ZIGBEE_SUBSCRIBER_ID { "zigbee_subscribe_client" };
 //# is a wildcard to subscribe to all zigbee2mqtt topics
-//0x00158d0001cc99b3 is  the second levele created by the open-door sensor
-const std::string ZIGBEE_SUBSCRIBER_TOPIC { "zigbee2mqtt/0x00158d0001cc99b3" };
+//0x00158d0001cc99b3 is the second level topic created by the open-door sensor
+//0x00158d000202c411 is the second level topic created by the motion sensor
+//const std::string ZIGBEE_SUBSCRIBER_TOPIC { "zigbee2mqtt/0x00158d0001cc99b3" };
+//const std::string ZIGBEE_SUBSCRIBER_TOPIC_2 { "zigbee2mqtt/0x00158d000202c411" };
+//to subscribe to all topics created by sensors
+const std::string ZIGBEE_SUBSCRIBER_ALL_TOPICS { "zigbee2mqtt/#" };
 
 //const std::std::string PUBLISHER_SERVER_ADDRESS { "ssl://mqtt.ably.io:8883" };
 const std::string REMOTE_SERVER_ADDRESS { "ssl://mqtt.flespi.io:8883" };
 const std::string REMOTE_PUBLISHER_ID { "remote_publisher_client" };
 const std::string REMOTE_SUBSCRIBER_ID { "remote_subscriber_client" };
-const std::string REMOTE_PUBLISHER_TOPIC { "Notifications" };
-const std::string REMOTE_SUBSCRIBER_TOPIC {"Response"};
+const std::string REMOTE_PUBLISHER_TOPIC { "User_Consitalia_1/Notifications" };
+const std::string REMOTE_SUBSCRIBER_TOPIC {"User_Consitalia_1/Response"};
 
 
 const int  QOS = 1;
@@ -80,7 +84,8 @@ int main(int argc, char* argv[]){
   Subscriber_callback_listener zig_callback_listener(zigbee_subscriber,
 						     zigbee_conn_opts,
 						     queue,
-						     ZIGBEE_SUBSCRIBER_TOPIC,
+						     //ZIGBEE_SUBSCRIBER_TOPIC,
+						     ZIGBEE_SUBSCRIBER_ALL_TOPICS,
 						     ZIGBEE_SUBSCRIBER_ID,
 						     QOS);
   zigbee_subscriber.set_callback(zig_callback_listener);
