@@ -1,10 +1,11 @@
+#define DEBUG
+
 #include <sstream>
 #include "Notification_logic_controller.hh"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "base64.hh"
-
-#define DEBUG
+#include <boost/core/ignore_unused.hpp>
 
 Notification_logic_controller::Notification_logic_controller(Area_protection &area_protection,
 							     Synchronized_queue<mqtt::const_message_ptr> &queue,
@@ -28,24 +29,12 @@ void Notification_logic_controller::consume_message(){
 }
 
 void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &message_ptr){
-  // //Let's retrieve the topic to undertand what to do
-  // std::string topic = message_ptr->get_topic();
-  // if (!topic.compare(26,4, "99b3")){
-  //   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "is the door sensor"<<'\n');
-  //   //let's check that it is not a duplicate sensor signal
-  //   if( is_a_door_sensor_notification_duplicate(message_ptr) )
-  //     //nothing to do
-  //     return;
-  //   //let's prepare the message and send
-  //   mqtt::const_message_ptr message_to_send = prepare_classified_notification(message_ptr);
-  //   send_notification(message_to_send);
-  // }
   //topic is in the form of zigbee2mqtt/0x00158d0001cc99b3
   //and we want to extract only the last 8 digits
   std::string topic = message_ptr->get_topic();
   std::string topic_info = topic.substr(topic.size() - 8);
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << "] " << reset
-     << "topic_info is: " << topic_info << '\n';
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
+    << "topic_info is: " << topic_info << '\n';)
   //let's do a search in the _sensor_cam map to decide if we have
   //to prepare a rich notification or a classified notification
   mqtt::const_message_ptr message_to_send;
@@ -76,6 +65,7 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
 }
 
 mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const mqtt::const_message_ptr &message_ptr, const std::string &sensor_mini_id){
+  boost::ignore_unused(message_ptr);
   boost::property_tree::ptree pt;
   Dir_handler dir_handler{ _cam_path[ _sensor_cam[sensor_mini_id] ] };
   if( !dir_handler.exists() ){
@@ -86,10 +76,10 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   std::string to_send_filename = ( (to_send.second).filename() ).string();
   std::time_t now;
   std::time (&now);
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << "] " << reset
-     << "The current local time is: " << std::ctime(&now)  << '\n';
-     std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset
-     << "video " /*<< (iter + 1) <<*/" to publish is " << to_send_filename << '\n';
+  D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+    << "The current local time is: " << std::ctime(&now) ); //ctime adds automatically a \n  
+  D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+      << "Video " /*<< (iter + 1) <<*/" to publish is " << to_send_filename << std::endl );
   //let's wait until the video chunk to send is finished:
   //the condition for this to happen is the presence of a next video chunk 
   while(true){
@@ -109,44 +99,51 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
 }
 
 mqtt::const_message_ptr Notification_logic_controller::prepare_classified_notification(const mqtt::const_message_ptr &message_ptr){
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << '\n';
+  boost::ignore_unused(message_ptr);
+  D(std::cout << info << "[Notification_logic_controller::"
+    << __func__ << "]. " << reset << '\n';)
   return mqtt::make_message("", "");
 }
 
 void Notification_logic_controller::send_notification(const mqtt::const_message_ptr &message_ptr){
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "publishing ..." << '\n';
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset << "publishing ..." << '\n');
   _publisher.publish(message_ptr);
 }
 
- bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &message_ptr){
-    //solution to double notification problems
-    //we discard the second message because sensor port always
-    //sends two messages for each event: closed door and opened door
-    static int previous_contact = -1;
-    std::string payload( message_ptr->to_string() );
-    std::stringstream ss;
-    
-    std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';
-    ss << payload;
-
-    boost::property_tree::ptree pt;
-    boost::property_tree::read_json(ss, pt);
-    //contact value is true or false, but we want to convert to an int value
-    int actual_contact = pt.get<bool>("contact");
-    std::cout << "actual contact: " << actual_contact << '\n';	
-    if(actual_contact != previous_contact){
-      return false;
-      previous_contact = actual_contact;
-    }
-    return true;
+bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &message_ptr){
+  //solution to double notification problems
+  //we discard the second message with the same value of contact tag
+  //because sensor port always
+  //sends two messages for each event: closed door and opened door
+  static int previous_contact = -1;
+  std::string payload( message_ptr->to_string() );
+  std::stringstream ss;
+   
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
+  ss << payload;
+   
+  boost::property_tree::ptree pt;
+  boost::property_tree::read_json(ss, pt);
+  //contact value is true or false, but we want to convert to an int value
+  int actual_contact = pt.get<bool>("contact");
+  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
+#if 0
+  D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
+    "actual contact: " << actual_contact << '\n';)
+#endif
+  if(actual_contact != previous_contact){
+    previous_contact = actual_contact;
+    return false;
+  }
+  return true;
 }
 
- void Notification_logic_controller::update_area_protection(){
+void Notification_logic_controller::update_area_protection(){
   _area_protection.update();
 }
 
 void Notification_logic_controller::analyze_ai_response(const mqtt::const_message_ptr &message_ptr){
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n';
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << message_ptr->get_payload() << '\n';  
+  D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n');
+  D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << message_ptr->get_payload() << std::endl);  
   
 }

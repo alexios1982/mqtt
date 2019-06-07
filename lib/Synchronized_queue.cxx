@@ -4,9 +4,11 @@
 template<class T>
 T Synchronized_queue<T>::get(){
   std::unique_lock<std::mutex> lock(_mutex);
-  std::cout<<"waiting...\n";
+  D(std::cout << warning << "[Synchronized_queue::"
+    << __func__<< "]. " << reset << "waiting..." << '\n';)
   _condition_variable.wait( lock, [this](){return _queue.size() > 0;} );
-  std::cout<<__func__<<": message_arrived "<<std::endl;
+  D(std::cout << warning << "[Synchronized_queue::"
+              << __func__<< "]. " << reset << "message_arrived" << '\n';)
   T result = _queue.front();
   _queue.pop();
   return result;

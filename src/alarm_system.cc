@@ -59,7 +59,7 @@ const std::string REMOTE_PUBLISHER_TOPIC { "User_Consitalia_1/Notifications" };
 const std::string REMOTE_SUBSCRIBER_TOPIC {"User_Consitalia_1/Response"};
 
 
-const int  QOS = 1;
+const int QOS = 2;
 
 int main(int argc, char* argv[]){
   boost::ignore_unused(argc);
