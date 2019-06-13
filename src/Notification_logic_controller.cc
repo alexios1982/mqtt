@@ -44,6 +44,8 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
       int iter = 0, n_of_sending = 1;
       while( iter < n_of_sending){
 	message_to_send = prepare_rich_notification(message_ptr, topic_info);
+	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
+	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
 	if(message_to_send->get_topic() != "")
 	  send_notification(message_to_send);
 	++iter;
@@ -74,43 +76,50 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
     std::cerr << "[Notification_logic_controller::" << __func__ << "]. " << "no directory with mp4 file. " << std::endl; 
     exit(-1);
   }
-  Dir_handler::Time_path_pair to_send = dir_handler.get_last_modified_file(".mp4");
-  std::string to_send_filename = ( (to_send.second).filename() ).string();
   std::time_t now;
   std::time (&now);
   D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-    << "The current local time is: " << std::ctime(&now) ); //ctime adds automatically a \n  
-  D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-      << "Video " /*<< (iter + 1) <<*/" to publish is " << to_send_filename << std::endl );
-  //we take only the last 6 chars because the filename is very
-  //long and the comparison between the entire filename can be heavy
-  std::string curr_filename = to_send_filename.substr(to_send_filename.size() - 6);
-  D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-     << "curr: " << curr_filename << " last: " << last_sent_file << std::endl);
-  if(curr_filename != last_sent_file){
-    last_sent_file = curr_filename;
-    //let's wait until the video chunk to send is finished:
-    //the condition for this to happen is the presence of a next video chunk 
-    while(true){
-      Dir_handler::Time_path_pair next = dir_handler.get_last_modified_file(".mp4");
-      if( ( (next.second).filename() ).string() != to_send_filename )
-	break;
-      std::this_thread::sleep_for ( std::chrono::milliseconds(500) ); 
-    }
-  
-    pt.put("filename", to_send_filename);
-    pt.put( "data", base64_file_converter( (to_send.second).string() ) );
-  
-    std::stringstream ss;
-    boost::property_tree::json_parser::write_json(ss, pt);
-    //if we put assignment here, we have double sending of the same file
-    //last_sent_file = curr_filename;
-    D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
-     << "filename: " << to_send_filename << " time: " << std::ctime(&now) << std::endl);
-    return mqtt::make_message( _publisher.get_topic(), ss.str() );
-  }else{
+     << "The current local time is: " << std::ctime(&now) ); //ctime adds automatically a \n
+  Dir_handler::Time_path_pair to_send = dir_handler.get_last_modified_file(".mp4");
+  std::string to_send_filename = ( (to_send.second).filename() ).string();
+  if( !( to_send_filename.empty() ) ){
     D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-      << "Video alredy sent" << std::endl );
+       << "Video " /*<< (iter + 1) <<*/" to publish is " << to_send_filename << std::endl );
+    //we take only the last 6 chars because the filename is very
+    //long and the comparison between the entire filename can be heavy
+    std::string curr_filename = to_send_filename.substr(to_send_filename.size() - 6);
+    D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+       << "curr: " << curr_filename << " last: " << last_sent_file << std::endl);
+    if(curr_filename != last_sent_file){
+      last_sent_file = curr_filename;
+      //let's wait until the video chunk to send is finished:
+      //the condition for this to happen is the presence of a next video chunk 
+      while(true){
+	Dir_handler::Time_path_pair next = dir_handler.get_last_modified_file(".mp4");
+	if( ( (next.second).filename() ).string() != to_send_filename )
+	  break;
+	std::this_thread::sleep_for ( std::chrono::milliseconds(500) ); 
+      }
+  
+      pt.put("filename", to_send_filename);
+      pt.put( "data", base64_file_converter( (to_send.second).string() ) );
+  
+      std::stringstream ss;
+      boost::property_tree::json_parser::write_json(ss, pt);
+      //if we put assignment here, we have double sending of the same file
+      //last_sent_file = curr_filename;
+      D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
+	 << "filename: " << to_send_filename << " time: " << std::ctime(&now) << std::endl);
+      return mqtt::make_message( _publisher.get_topic(), ss.str() );
+    }else{
+      D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+	 << "Video alredy sent" << std::endl );
+      return mqtt::make_message("", "");
+    }
+  }
+  else{
+    std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
+	      <<"Video to publish is an empty string: sending a null message" << std::endl;
     return mqtt::make_message("", "");
   }
 }
