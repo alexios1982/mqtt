@@ -68,7 +68,7 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
 }
 
 mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const mqtt::const_message_ptr &message_ptr, const std::string &sensor_mini_id){
-  static std::string last_sent_file{};
+  static std::string last_sent_short_filename{};
   boost::ignore_unused(message_ptr);
   boost::property_tree::ptree pt;
   Dir_handler dir_handler{ _cam_path[ _sensor_cam[sensor_mini_id] ] };
@@ -87,18 +87,18 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
        << "Video " /*<< (iter + 1) <<*/" to publish is " << to_send_filename << std::endl );
     //we take only the last 6 chars because the filename is very
     //long and the comparison between the entire filename can be heavy
-    std::string curr_filename = to_send_filename.substr(to_send_filename.size() - 6);
+    std::string curr_short_filename = to_send_filename.substr(to_send_filename.size() - 6);
     D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-       << "curr: " << curr_filename << " last: " << last_sent_file << std::endl);
-    if(curr_filename != last_sent_file){
-      last_sent_file = curr_filename;
+       << "curr: " << curr_short_filename << " last: " << last_sent_short_filename << std::endl);
+    if(curr_short_filename != last_sent_short_filename){
+      last_sent_short_filename = curr_short_filename;
       //let's wait until the video chunk to send is finished:
       //the condition for this to happen is the presence of a next video chunk 
       while(true){
 	Dir_handler::Time_path_pair next = dir_handler.get_last_modified_file(".mp4");
 	if( ( (next.second).filename() ).string() != to_send_filename )
 	  break;
-	std::this_thread::sleep_for ( std::chrono::milliseconds(500) ); 
+	std::this_thread::sleep_for ( std::chrono::milliseconds(200) ); 
       }
   
       pt.put("filename", to_send_filename);
@@ -107,7 +107,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
       std::stringstream ss;
       boost::property_tree::json_parser::write_json(ss, pt);
       //if we put assignment here, we have double sending of the same file
-      //last_sent_file = curr_filename;
+      //last_sent_short_filename = curr_short_filename;
       D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
 	 << "filename: " << to_send_filename << " time: " << std::ctime(&now) << std::endl);
       return mqtt::make_message( _publisher.get_topic(), ss.str() );
