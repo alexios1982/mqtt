@@ -41,7 +41,7 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   auto it = _sensor_cam.find(topic_info);
   if( it != _sensor_cam.end() ){
     if( !is_a_door_sensor_notification_duplicate(message_ptr) ){
-      int iter = 0, n_of_sending = 1;
+      int iter = 0, n_of_sending = 3;
       while( iter < n_of_sending){
 	message_to_send = prepare_rich_notification(message_ptr, topic_info);
 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset

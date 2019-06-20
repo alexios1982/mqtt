@@ -74,8 +74,8 @@ target_link_libraries(test_sensors PUBLIC
   ${BOOST_SYSTEM}
   )
 
-add_executable(test_publisher_subscriber test_publisher_subscriber.cc)
-target_link_libraries(test_publisher_subscriber PUBLIC
+add_executable(test_amazon_broker test_amazon_broker.cc)
+target_link_libraries(test_amazon_broker PUBLIC
   ${MQTT_LIB}
   ${BOOST_SYSTEM}
 )  
