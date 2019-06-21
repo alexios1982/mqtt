@@ -72,10 +72,18 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   boost::ignore_unused(message_ptr);
   boost::property_tree::ptree pt;
   Dir_handler dir_handler{ _cam_path[ _sensor_cam[sensor_mini_id] ] };
-  if( !dir_handler.exists() ){
-    std::cerr << "[Notification_logic_controller::" << __func__ << "]. " << "no directory with mp4 file. " << std::endl; 
-    exit(-1);
-  }
+  //this snippet must be executed just once to check that the dir exists
+  //to avoid unnecessary execution, we use this trick that uses lambda function
+  static bool once = [&dir_handler]{
+    std::cout << "just once" << std::endl;
+    if( !dir_handler.exists() ){
+      std::cerr << "[Notification_logic_controller::" << __func__ << "]. " << "no directory with mp4 file. " << std::endl; 
+      exit(1);
+    }
+    return true;
+  }();
+  /////////////////////////////////////////////////////////////////////////////////////
+  boost::ignore_unused(once);
   std::time_t now;
   std::time (&now);
   D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset

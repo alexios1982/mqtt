@@ -21,7 +21,7 @@ public:
   Delivery_action_listener& get_listener();
   const std::string& get_topic() const;
   void publish(const mqtt::const_message_ptr &to_publish);
-  void run();
+  //void run();
 };
 
 #endif

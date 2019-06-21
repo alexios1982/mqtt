@@ -79,3 +79,10 @@ target_link_libraries(test_amazon_broker PUBLIC
   ${MQTT_LIB}
   ${BOOST_SYSTEM}
 )  
+
+add_executable (test_amazon_single_sending test_amazon_single_sending.cc)
+target_link_libraries(test_amazon_single_sending PUBLIC
+  Utils
+  base64
+  ${MQTT_LIB}
+  )
