@@ -6,6 +6,10 @@
 #include <boost/property_tree/json_parser.hpp>
 #include "base64.hh"
 #include <boost/core/ignore_unused.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 
 Notification_logic_controller::Notification_logic_controller(Area_protection &area_protection,
 							     Synchronized_queue<mqtt::const_message_ptr> &queue,
@@ -93,9 +97,9 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   if( !( to_send_filename.empty() ) ){
     D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
        << "Video " /*<< (iter + 1) <<*/" to publish is " << to_send_filename << std::endl );
-    //we take only the last 6 chars because the filename is very
+    //we take only the last 10 chars because the filename is very
     //long and the comparison between the entire filename can be heavy
-    std::string curr_short_filename = to_send_filename.substr(to_send_filename.size() - 6);
+    std::string curr_short_filename = to_send_filename.substr(to_send_filename.size() - 10);
     D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
        << "curr: " << curr_short_filename << " last: " << last_sent_short_filename << std::endl);
     if(curr_short_filename != last_sent_short_filename){
@@ -110,8 +114,31 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
       }
   
       pt.put("filename", to_send_filename);
-      pt.put( "data", base64_file_converter( (to_send.second).string() ) );
-  
+      //pt.put( "data", base64_file_converter( (to_send.second).string() ) );
+      cv::VideoCapture cap( (to_send.second).string() );
+      if ( !cap.isOpened() ){
+	std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
+		  << reset << "Cannot open the video file" << std::endl;
+	exit(1);
+      }
+      //let's go to 0.8 second in the video
+      cap.set(CV_CAP_PROP_POS_MSEC, 800);
+      cv::Mat frame;
+      bool b_success = cap.read(frame);
+      if ( !b_success) {
+	std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
+		  << reset << "Cannot read the frame from video file" << std::endl;
+	exit(1);
+      }
+
+      std::string jpeg_filename( (to_send.second).string() + ".jpeg" );
+      std::vector<int> jpeg_params;
+      jpeg_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+      jpeg_params.push_back(80);
+      
+      imwrite(jpeg_filename, frame, jpeg_params);
+      pt.put( "data", base64_file_converter(jpeg_filename) );
+      
       std::stringstream ss;
       boost::property_tree::json_parser::write_json(ss, pt);
       //if we put assignment here, we have double sending of the same file

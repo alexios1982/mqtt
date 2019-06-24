@@ -38,6 +38,11 @@ int main(int argc, char **argv) {
 
   imwrite("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-06-24_14:39:34_cam02_5_opencv_end.jpg", frame);
 
+  std::vector<int> jpeg_params;
+  jpeg_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+  jpeg_params.push_back(65);
+      
+  imwrite("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-06-24_14:39:34_cam02_5_opencv_lower.jpg", frame, jpeg_params);
   return 0;
   
 }

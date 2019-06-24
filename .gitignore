@@ -10,3 +10,9 @@ build/
 bin/
 #ignoring nohup.out cmake file
 nohup.out
+#ignoring certificates
+33ac0ac8dc-certificate.pem.crt
+33ac0ac8dc-private.pem.key
+33ac0ac8dc-public.pem.key
+AmazonRootCA1.pem
+				

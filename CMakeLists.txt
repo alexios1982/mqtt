@@ -56,12 +56,21 @@ find_library(MQTT_LIB
 find_package(Threads REQUIRED)
 ################################################################
 
+#######################################################################
+#to be able to compile opencv
+find_package(OpenCV REQUIRED)
+#######################################################################
+target_include_directories(alarm_system PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_compile_options(alarm_system PUBLIC ${OpenCV_CFLAGS})
+
+
 #to link the lib to the executable
 target_link_libraries(alarm_system PUBLIC
   #${GST_LIBRARIES}
   Utils
   base64
   ${MQTT_LIB}
+  ${OpenCV_LIBS}
   Threads::Threads)
 
 
