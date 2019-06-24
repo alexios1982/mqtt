@@ -55,9 +55,11 @@ int main(int argc, char* argv[]){
   }
 
   boost::property_tree::ptree pt;
-  pt.put("filename", "2019-06-19_18:20:56_cam01_4.mp4");
-  pt.put( "data", base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-06-19_18:20:56_cam01_4.mp4") );
+  //pt.put("filename", "2019-06-19_18:20:56_cam01_4.mp4");
+  pt.put("filename", "2019-04-30_14:46:22_cam02_5.jpeg");
+  //pt.put( "data", base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-06-19_18:20:56_cam01_4.mp4") );
   //pt.put( "data", base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/ex_file_300x400.jpg") );
+  pt.put( "data", base64_file_converter("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-04-30_14:46:22_cam02_5.jpeg") );
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
   mqtt::message_ptr pubmsg = mqtt::make_message( PUBLISHER_TOPIC, ss.str() );

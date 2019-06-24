@@ -58,7 +58,6 @@ target_link_libraries(test_single_sending PUBLIC
   ${MQTT_LIB}
   )
   
-  
 add_executable(test_multiple_sending test_multiple_sending.cc)
 target_link_libraries(test_multiple_sending PUBLIC
   Utils
@@ -85,4 +84,17 @@ target_link_libraries(test_amazon_single_sending PUBLIC
   Utils
   base64
   ${MQTT_LIB}
+  )
+
+#######################################################################
+#to be able to compile opencv
+find_package(OpenCV REQUIRED)
+#######################################################################
+
+add_executable (test_image_extraction_with_opencv test_image_extraction_with_opencv.cc)
+target_include_directories(test_image_extraction_with_opencv PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_compile_options(test_image_extraction_with_opencv PUBLIC ${OpenCV_CFLAGS})
+target_link_libraries(test_image_extraction_with_opencv PUBLIC
+  Utils
+  ${OpenCV_LIBS}
   )
