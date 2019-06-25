@@ -15,17 +15,17 @@ class Notification_logic_controller{
 
   ///this method is called by consume_message when a message is present in the queue
   ///check the message type and call the appropriate handlers
-  void classify_message(const mqtt::const_message_ptr &message_ptr);
+  void classify_message(const mqtt::const_message_ptr &zigbee_message_ptr);
   ///the door sensor sent two messages associate to the same event
   ///this metod is used to recognize this case
-  bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &message_ptr);
+  bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr);
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a rich notification
-  mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &message_ptr,
+  mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr,
 						    const std::string &sensor_mini_id);
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a classified notification  
-  mqtt::const_message_ptr prepare_classified_notification(const mqtt::const_message_ptr &message_ptr);
+  mqtt::const_message_ptr prepare_classified_notification(const mqtt::const_message_ptr &zigbee_message_ptr);
   ///publish the notification
   void send_notification(const mqtt::const_message_ptr &message_ptr);
   ///handler called by classify_message when the message present in the queue is

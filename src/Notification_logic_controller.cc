@@ -32,10 +32,10 @@ void Notification_logic_controller::consume_message(){
   }
 }
 
-void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &message_ptr){
+void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &zigbee_message_ptr){
   //topic is in the form of zigbee2mqtt/0x00158d0001cc99b3
   //and we want to extract only the last 8 digits
-  std::string topic = message_ptr->get_topic();
+  std::string topic = zigbee_message_ptr->get_topic();
   std::string topic_info = topic.substr(topic.size() - 8);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
     << "topic_info is: " << topic_info << '\n';)
@@ -44,10 +44,10 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   mqtt::const_message_ptr message_to_send;
   auto it = _sensor_cam.find(topic_info);
   if( it != _sensor_cam.end() ){
-    if( !is_a_door_sensor_notification_duplicate(message_ptr) ){
+    if( !is_a_door_sensor_notification_duplicate(zigbee_message_ptr) ){
       int iter = 0, n_of_sending = 3;
       while( iter < n_of_sending){
-	message_to_send = prepare_rich_notification(message_ptr, topic_info);
+	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
 	if(message_to_send->get_topic() != "")
@@ -62,18 +62,18 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   //if it's not in the sensor_cam map, it could be a rich message or
   //an answer from the ai serder (in this case the topic is Response
   else if (topic_info == "Response"){
-    analyze_ai_response(message_ptr);
+    analyze_ai_response(zigbee_message_ptr);
   }
   //it is a sensor associate to a classified notification
   else{
-    message_to_send = prepare_classified_notification(message_ptr);
+    message_to_send = prepare_classified_notification(zigbee_message_ptr);
     //send_notification(message_to_send);
   }
 }
 
-mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const mqtt::const_message_ptr &message_ptr, const std::string &sensor_mini_id){
+mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr, const std::string &sensor_mini_id){
   static std::string last_sent_short_filename{};
-  boost::ignore_unused(message_ptr);
+  boost::ignore_unused(zigbee_message_ptr);
   boost::property_tree::ptree pt;
   Dir_handler dir_handler{ _cam_path[ _sensor_cam[sensor_mini_id] ] };
   //this snippet must be executed just once to check that the dir exists
@@ -159,8 +159,8 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   }
 }
 
-mqtt::const_message_ptr Notification_logic_controller::prepare_classified_notification(const mqtt::const_message_ptr &message_ptr){
-  boost::ignore_unused(message_ptr);
+mqtt::const_message_ptr Notification_logic_controller::prepare_classified_notification(const mqtt::const_message_ptr &zigbee_message_ptr){
+  boost::ignore_unused(zigbee_message_ptr);
   D(std::cout << info << "[Notification_logic_controller::"
     << __func__ << "]. " << reset << '\n';)
   return mqtt::make_message("", "");
@@ -171,13 +171,13 @@ void Notification_logic_controller::send_notification(const mqtt::const_message_
   _publisher.publish(message_ptr);
 }
 
-bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &message_ptr){
+bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr){
   //solution to double notification problems
   //we discard the second message with the same value of contact tag
   //because sensor port always
   //sends two messages for each event: closed door and opened door
   static int previous_contact = -1;
-  std::string payload( message_ptr->to_string() );
+  std::string payload( zigbee_message_ptr->to_string() );
   std::stringstream ss;
    
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
