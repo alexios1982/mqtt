@@ -122,7 +122,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
 	exit(1);
       }
       //let's go to 0.8 second in the video
-      cap.set(CV_CAP_PROP_POS_MSEC, 800);
+      cap.set(CV_CAP_PROP_POS_MSEC, 500);
       cv::Mat frame;
       bool b_success = cap.read(frame);
       if ( !b_success) {
