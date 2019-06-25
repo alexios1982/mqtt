@@ -159,6 +159,85 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   }
 }
 
+void Notification_logic_controller::send_rich_notifications(const std::string &sensor_mini_id,
+							    int which,
+							    int how_many_later){
+  static std::string last_sent_short_filename{};
+  std::time_t now;
+  std::time (&now);
+  D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+     << "The current local time is: " << std::ctime(&now) ); //ctime adds automatically a \n
+  std::unique_ptr<Dir_handler::Time_path_pair> to_send_ptr = select_video_chunk(sensor_mini_id, which);
+  std::string to_send_filename = ( (to_send_ptr->second).filename() ).string();
+  if( !( to_send_filename.empty() ) ){
+    //we take only the last 10 chars because the filename is very
+    //long and the comparison between the entire filename can be heavy
+    std::string curr_short_filename = to_send_filename.substr(to_send_filename.size() - 10);
+    D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+       << "curr: " << curr_short_filename << " last: " << last_sent_short_filename << std::endl);
+    if(curr_short_filename != last_sent_short_filename){
+      last_sent_short_filename = curr_short_filename;
+      mqtt::const_message_ptr message_to_send = prepare_rich_notification(to_send_ptr);
+      if(message_to_send->get_topic() != "")
+	  send_notification(message_to_send);
+    }
+    else{
+      D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+	 << "Video alredy sent" << std::endl );
+    }
+  }else{
+    std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
+	      <<"Video to publish is an empty string: sending a null message" << std::endl;
+  }
+}
+
+mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr){
+  boost::property_tree::ptree pt;
+  std::string to_send_filename = ( (to_send_ptr->second).filename() ).string(); 
+  pt.put("filename", to_send_filename );
+  pt.put( "data", base64_file_converter( (to_send_ptr->second).string() ) );
+  std::stringstream ss;
+  boost::property_tree::json_parser::write_json(ss, pt);
+  //if we put assignment here, we have double sending of the same file
+  //last_sent_short_filename = curr_short_filename;
+  D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
+     << "filename: " << to_send_filename /*<< " time: " << std::ctime(&now)*/ << std::endl);
+  return mqtt::make_message( _publisher.get_topic(), ss.str() );
+}
+
+std::unique_ptr<Dir_handler::Time_path_pair>
+Notification_logic_controller::select_video_chunk(const std::string &sensor_mini_id, int which){
+  Dir_handler dir_handler{ _cam_path[ _sensor_cam[sensor_mini_id] ] };
+  //this snippet must be executed just once to check that the dir exists
+  //to avoid unnecessary execution, we use this trick that uses lambda function
+  static bool once = [&dir_handler]{
+    std::cout << "just once" << std::endl;
+    if( !dir_handler.exists() ){
+      std::cerr << "[Notification_logic_controller::" << __func__ << "]. " << "no directory with mp4 file. " << std::endl; 
+      exit(1);
+    }
+    return true;
+  }();
+  /////////////////////////////////////////////////////////////////////////////////////
+  boost::ignore_unused(once);
+    
+  std::unique_ptr<Dir_handler::Time_path_pair> to_send_ptr{};
+  int iter{0};
+  while(iter <= which){
+    to_send_ptr = std::make_unique<Dir_handler::Time_path_pair>( dir_handler.get_last_modified_file(".mp4") );
+    std::string to_send_filename = ( (to_send_ptr->second).filename() ).string();
+    //let's wait until the video chunk to send is finished:
+    //the condition for this to happen is the presence of a next video chunk 
+    while(true){
+      Dir_handler::Time_path_pair next = dir_handler.get_last_modified_file(".mp4");
+      if( ( (next.second).filename() ).string() != to_send_filename )
+	break;
+      std::this_thread::sleep_for ( std::chrono::milliseconds(200) ); 
+    }
+  }
+  return to_send_ptr;
+}
+
 mqtt::const_message_ptr Notification_logic_controller::prepare_classified_notification(const mqtt::const_message_ptr &zigbee_message_ptr){
   boost::ignore_unused(zigbee_message_ptr);
   D(std::cout << info << "[Notification_logic_controller::"

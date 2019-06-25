@@ -1,6 +1,6 @@
 project(alarm_system)
 cmake_minimum_required(VERSION 3.1)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 # Set build type if not set.
 if(NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE Release)

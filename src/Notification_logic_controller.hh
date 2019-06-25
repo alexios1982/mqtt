@@ -4,6 +4,7 @@
 #include "Area_protection.hh"
 #include "Synchronized_queue.hh"
 #include "Publisher.hh"
+#include <memory> //for std::unique_ptr
 #include <map>
 
 class Notification_logic_controller{
@@ -23,6 +24,9 @@ class Notification_logic_controller{
   ///associated to a sensor that requests a rich notification
   mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr,
 						    const std::string &sensor_mini_id);
+
+  mqtt::const_message_ptr prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr);
+  
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a classified notification  
   mqtt::const_message_ptr prepare_classified_notification(const mqtt::const_message_ptr &zigbee_message_ptr);
@@ -31,6 +35,11 @@ class Notification_logic_controller{
   ///handler called by classify_message when the message present in the queue is
   ///received by the ai server 
   void analyze_ai_response(const mqtt::const_message_ptr &message_ptr);
+  std::unique_ptr<Dir_handler::Time_path_pair>
+  select_video_chunk(const std::string &sensor_mini_id, int which);
+  void send_rich_notifications(const std::string &sensor_mini_id,
+			      int which,
+			      int how_many_later);
 public:
   Notification_logic_controller(Area_protection &area_protection,
 				Synchronized_queue<mqtt::const_message_ptr> &queue,
