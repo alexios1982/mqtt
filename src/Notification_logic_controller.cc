@@ -39,21 +39,22 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   std::string topic_info = topic.substr(topic.size() - 8);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
     << "topic_info is: " << topic_info << '\n';)
-  //let's do a search in the _sensor_cam map to decide if we have
-  //to prepare a rich notification or a classified notification
-  mqtt::const_message_ptr message_to_send;
+    //let's do a search in the _sensor_cam map to decide if we have
+    //to prepare a rich notification or a classified notification
+    mqtt::const_message_ptr message_to_send;
   auto it = _sensor_cam.find(topic_info);
   if( it != _sensor_cam.end() ){
     if( !is_a_door_sensor_notification_duplicate(zigbee_message_ptr) ){
-      int iter = 0, n_of_sending = 3;
-      while( iter < n_of_sending){
-	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
-	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
-	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
-	if(message_to_send->get_topic() != "")
-	  send_notification(message_to_send);
-	++iter;
-      }
+      // int iter = 0, n_of_sending = 3;
+      // while( iter < n_of_sending){
+      // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
+      // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
+      // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
+      // 	if(message_to_send->get_topic() != "")
+      // 	  send_notification(message_to_send);
+      // 	++iter;
+      // }
+      send_rich_notifications(topic_info, 1, 2);
     }
     //nothing to do: the associate message has already been sent
     else
@@ -159,11 +160,12 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   }
 }
 
-void Notification_logic_controller::send_rich_notifications(const std::string &sensor_mini_id,
-							    int which,
-							    int how_many_later){
+void Notification_logic_controller::send_rich_notification(const std::string &sensor_mini_id,
+							   int which,
+							   File_type file_type){
   static std::string last_sent_short_filename{};
   std::time_t now;
+  //let's initialize the now varibile with the current time
   std::time (&now);
   D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
      << "The current local time is: " << std::ctime(&now) ); //ctime adds automatically a \n
@@ -177,9 +179,9 @@ void Notification_logic_controller::send_rich_notifications(const std::string &s
        << "curr: " << curr_short_filename << " last: " << last_sent_short_filename << std::endl);
     if(curr_short_filename != last_sent_short_filename){
       last_sent_short_filename = curr_short_filename;
-      mqtt::const_message_ptr message_to_send = prepare_rich_notification(to_send_ptr);
+      mqtt::const_message_ptr message_to_send = prepare_rich_notification(to_send_ptr, file_type);
       if(message_to_send->get_topic() != "")
-	  send_notification(message_to_send);
+	send_notification(message_to_send);
     }
     else{
       D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
@@ -191,11 +193,64 @@ void Notification_logic_controller::send_rich_notifications(const std::string &s
   }
 }
 
-mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr){
+void Notification_logic_controller::send_rich_notifications(const std::string &sensor_mini_id,
+							    int which,
+							    int how_many_later,
+							    File_type file_type){
+  //send firt message
+  D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+     << "Send the first rich notification" << std::endl );
+  send_rich_notification(sensor_mini_id, which, file_type);
+  //send the others
+  D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+     << "Send the other "<< how_many_later << " notifications" << std::endl );
+  for(int iter{0}; iter < how_many_later; ++iter)
+    send_rich_notification(sensor_mini_id, 0, file_type);
+}
+
+mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type){
   boost::property_tree::ptree pt;
   std::string to_send_filename = ( (to_send_ptr->second).filename() ).string(); 
-  pt.put("filename", to_send_filename );
-  pt.put( "data", base64_file_converter( (to_send_ptr->second).string() ) );
+  if(file_type == MP4){
+    pt.put("filename", to_send_filename );
+    pt.put( "data", base64_file_converter( (to_send_ptr->second).string() ) );
+  }
+  else if(file_type == JPEG){
+    static std::string last_jpeg_file{};
+    //let's remove last jpeg file
+    std::remove( last_jpeg_file.c_str() );
+    pt.put("filename", to_send_filename.replace(to_send_filename.find_last_of('.'), std::string::npos, ".jpeg") );
+    cv::VideoCapture cap( (to_send_ptr->second).string() );
+    if ( !cap.isOpened() ){
+      std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
+		<< reset << "Cannot open the video file" << std::endl;
+      exit(1);
+    }
+    //let's go to 0.5 second in the video
+    cap.set(CV_CAP_PROP_POS_MSEC, 500);
+    cv::Mat frame;
+    bool b_success = cap.read(frame);
+    if ( !b_success) {
+      std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
+		<< reset << "Cannot read the frame from video file" << std::endl;
+      exit(1);
+    }
+    std::string mp4_complete_filename = (to_send_ptr->second).string();
+    std::string jpeg_complete_filename( mp4_complete_filename.replace(mp4_complete_filename.find_last_of('.'), std::string::npos, ".jpeg") );
+    std::vector<int> jpeg_params;
+    jpeg_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+    jpeg_params.push_back(80);
+      
+    imwrite(jpeg_complete_filename, frame, jpeg_params);
+    
+    pt.put( "data", base64_file_converter(jpeg_complete_filename) );
+    last_jpeg_file = jpeg_complete_filename;
+  }
+  else{
+    std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
+	      << "Unknown file format" << std::endl;
+    exit(2);
+  }
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
   //if we put assignment here, we have double sending of the same file
@@ -227,13 +282,16 @@ Notification_logic_controller::select_video_chunk(const std::string &sensor_mini
     to_send_ptr = std::make_unique<Dir_handler::Time_path_pair>( dir_handler.get_last_modified_file(".mp4") );
     std::string to_send_filename = ( (to_send_ptr->second).filename() ).string();
     //let's wait until the video chunk to send is finished:
-    //the condition for this to happen is the presence of a next video chunk 
+    //the condition for this to happen is the presence of a next video chunk
+    D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+       << "current filename: " << to_send_filename <<  std::endl);
     while(true){
       Dir_handler::Time_path_pair next = dir_handler.get_last_modified_file(".mp4");
       if( ( (next.second).filename() ).string() != to_send_filename )
 	break;
       std::this_thread::sleep_for ( std::chrono::milliseconds(200) ); 
     }
+    ++iter;
   }
   return to_send_ptr;
 }
@@ -242,7 +300,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_classified_notifi
   boost::ignore_unused(zigbee_message_ptr);
   D(std::cout << info << "[Notification_logic_controller::"
     << __func__ << "]. " << reset << '\n';)
-  return mqtt::make_message("", "");
+    return mqtt::make_message("", "");
 }
 
 void Notification_logic_controller::send_notification(const mqtt::const_message_ptr &message_ptr){
@@ -260,7 +318,7 @@ bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(cons
   std::stringstream ss;
    
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
-  ss << payload;
+    ss << payload;
    
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
@@ -271,10 +329,10 @@ bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(cons
   D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
     "actual contact: " << actual_contact << '\n';)
 #endif
-  if(actual_contact != previous_contact){
-    previous_contact = actual_contact;
-    return false;
-  }
+    if(actual_contact != previous_contact){
+      previous_contact = actual_contact;
+      return false;
+    }
   return true;
 }
 

@@ -8,6 +8,10 @@
 #include <map>
 
 class Notification_logic_controller{
+  enum File_type{
+    JPEG,
+    MP4
+  };
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
@@ -25,7 +29,8 @@ class Notification_logic_controller{
   mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr,
 						    const std::string &sensor_mini_id);
 
-  mqtt::const_message_ptr prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr);
+  mqtt::const_message_ptr prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr,
+						    File_type file_type);
   
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a classified notification  
@@ -38,8 +43,12 @@ class Notification_logic_controller{
   std::unique_ptr<Dir_handler::Time_path_pair>
   select_video_chunk(const std::string &sensor_mini_id, int which);
   void send_rich_notifications(const std::string &sensor_mini_id,
+			       int which,
+			       int how_many_later,
+			       File_type file_type=JPEG);
+  void send_rich_notification(const std::string &sensor_mini_id,
 			      int which,
-			      int how_many_later);
+			      File_type file_type);
 public:
   Notification_logic_controller(Area_protection &area_protection,
 				Synchronized_queue<mqtt::const_message_ptr> &queue,
