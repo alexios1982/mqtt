@@ -4,6 +4,7 @@
 #include<iostream>
 #include<atomic>
 #include "Utils.hh"
+#include <boost/core/ignore_unused.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -21,6 +22,7 @@ public:
   }
 
   void delivery_complete(mqtt::delivery_token_ptr tok) override {
+    boost::ignore_unused(tok);
     D(std::cout << info << "\n[Publisher_callback::" << __func__ << "]. " << reset
       << "\tDelivery complete for token: "
       << (tok ? tok->get_message_id() : -1) << std::endl;)
@@ -43,6 +45,7 @@ protected:
   }
 
   void on_success(const mqtt::token& tok) override {
+    boost::ignore_unused(tok);
     D(std::cout << info << "[Publisher_action_listener::" << __func__ << "]." << reset
       << "\tListener success for token: "
       << tok.get_message_id() << std::endl);

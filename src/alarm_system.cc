@@ -52,14 +52,15 @@ const std::string ZIGBEE_SUBSCRIBER_ID { "zigbee_subscribe_client" };
 const std::string ZIGBEE_SUBSCRIBER_ALL_TOPICS { "zigbee2mqtt/#" };
 
 //const std::std::string PUBLISHER_SERVER_ADDRESS { "ssl://mqtt.ably.io:8883" };
-const std::string REMOTE_SERVER_ADDRESS { "ssl://mqtt.flespi.io:8883" };
+//const std::string REMOTE_SERVER_ADDRESS { "ssl://mqtt.flespi.io:8883" };
+const std::string REMOTE_SERVER_ADDRESS { "ssl://a2x7fkplgngdk8-ats.iot.us-east-1.amazonaws.com:8883" };
 const std::string REMOTE_PUBLISHER_ID { "remote_publisher_client" };
 const std::string REMOTE_SUBSCRIBER_ID { "remote_subscriber_client" };
 const std::string REMOTE_PUBLISHER_TOPIC { "User_Consitalia_1/Notifications" };
 const std::string REMOTE_SUBSCRIBER_TOPIC {"User_Consitalia_1/Response"};
 
 
-const int QOS = 2;
+const int QOS = 1;
 
 int main(int argc, char* argv[]){
   boost::ignore_unused(argc);
@@ -102,9 +103,14 @@ int main(int argc, char* argv[]){
     return 1;
   }
 
-  mqtt::connect_options remote_conn_opts{"FlespiToken R4XF03Rp3KStynVTDRrOuju7odMxQjYxdJ32DKhuiYNGbwnEbEgvMBt0C3nid9Fe", "bEEvvyn1bxDFw0-s"};
-  mqtt::ssl_options remote_sslopts;
+  // mqtt::connect_options remote_conn_opts{"FlespiToken R4XF03Rp3KStynVTDRrOuju7odMxQjYxdJ32DKhuiYNGbwnEbEgvMBt0C3nid9Fe", "bEEvvyn1bxDFw0-s"};
+  // mqtt::ssl_options remote_sslopts;
+  // remote_conn_opts.set_ssl(remote_sslopts);
+
+  mqtt::connect_options remote_conn_opts{};
+  mqtt::ssl_options remote_sslopts("AmazonRootCA1.pem", "33ac0ac8dc-certificate.pem.crt", "33ac0ac8dc-private.pem.key", "", "", true);
   remote_conn_opts.set_ssl(remote_sslopts);
+  
 
   mqtt::async_client remote_publisher(REMOTE_SERVER_ADDRESS, REMOTE_PUBLISHER_ID);
   Publisher_callback publisher_callback;
@@ -153,7 +159,7 @@ int main(int argc, char* argv[]){
     return 1;
   }
 
-    // std::thread t( std::bind(&Publisher::run, &publisher) );
+  // std::thread t( std::bind(&Publisher::run, &publisher) );
   // t.detach();
   Area_protection area_protection;
   Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
