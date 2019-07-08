@@ -28,7 +28,7 @@ int main(int argc, char **argv){
   //   "application/x-rtp,media=video,encoding-name=H264,payload=96 ! webrtcbin bundle-policy=max-bundle name=sendrecv" STUN_SERVER,
   //   &error);
     
-  data.pipeline = gst_parse_launch("rtspsrc location=rtsp://192.168.4.12:8554/test short-header=TRUE ! rtph264depay ! video/x-h264 ! h264parse ! kvssink stream-name=cam02 access-key=AKIATAX2NJNLYECM2OPQ secret-key=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 aws-region=us-east-1 name=kvssink",
+  data.pipeline = gst_parse_launch("rtspsrc location=rtsp://192.168.4.12:8554/test short-header=TRUE ! rtph264depay ! video/x-h264 ! h264parse ! kvssink stream-name=cam02 access-key= secret-key= aws-region=us-east-1 name=kvssink",
 				   &parse_error);
 
   if(parse_error) {
