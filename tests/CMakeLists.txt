@@ -98,3 +98,10 @@ target_link_libraries(test_image_extraction_with_opencv PUBLIC
   Utils
   ${OpenCV_LIBS}
   )
+
+
+add_executable (test_alarm_system_state_machine test_alarm_system_state_machine.cc)
+target_link_libraries(test_alarm_system_state_machine PUBLIC
+  Utils
+  ${BOOST_SYSTEM}
+  )

@@ -19,7 +19,8 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 add_executable(alarm_system src/alarm_system.cc
   src/Publisher.cc
   src/Notification_logic_controller.cc
-  src/Area_protection.cc)
+  src/Area_protection.cc
+  )
 
 ######################################################################
 #section to include external libraries TO COMPILE
