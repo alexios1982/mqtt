@@ -9,10 +9,10 @@
 static char const* const state_names[] = { "Init",
 					   "Waiting_for_configuration",
 					   "Green_alarm",
-					   "Orange_alarm_notified,",
+					   "Orange_alarm_notified",
 					   "Red_alarm_notified",
-					   "Exit",
-					   "Red_alarm_actuation"};
+					   "Red_alarm_actuation",
+					   "Exit"};
 
 void current_state(Alarm_system const &alarm_system){
   D(std::cout << warning << "Current states -> " << reset << state_names[alarm_system.current_state()[0]] << std::endl);
@@ -35,36 +35,57 @@ int main(int argc, char **argv){
   alarm_system.process_event(Orange_alarm{});
   current_state(alarm_system);
 
+  //transition from "Orange_alarm_notified" state to "Red_alarm_actuation" triggered by "User_confirmation" event
+  alarm_system.process_event(User_confirmation{});
+  current_state(alarm_system);
+
+  //transition from "Red_alarm_actuation" state to "Green_alarm" triggered by "Stop_actuation" event
+  alarm_system.process_event(Stop_actuation{});
+  current_state(alarm_system);
+
+   //transition from "Green_alarm" state to "Orange_alarm_notified" triggered by "Orange_alarm" event
+  alarm_system.process_event(Orange_alarm{});
+  current_state(alarm_system);
+
+  //transition from "Orange_alarm_notified" state to "Green_alarm" triggered by "User_cancellation" event
+  alarm_system.process_event(User_cancellation{});
+  current_state(alarm_system);
   
-    
-  // //transition from "Green_alarm" state to "Red_alarm_notified" triggered by "Red_alarm" event
-  // alarm_system.process_event(Red_alarm{});
-  // current_state(alarm_system);
+  //transition from "Green_alarm" state to "Red_alarm_notified" triggered by "Red_alarm" event
+  alarm_system.process_event(Red_alarm{});
+  current_state(alarm_system);
 
-  // //transition from "Green_alarm" state to "Exit" triggered by "Switch_off" event
-  // alarm_system.process_event(Switch_off{});
-  // current_state(alarm_system);
+  //transition from "Red_alarm_notified" state to "Green_alarm" triggered by "User_cancellation" event
+  alarm_system.process_event(User_cancellation{});
+  current_state(alarm_system);
 
-  // //transition from "Orange_alarm_notified" state to "Green_alarm" triggered by "User_cancellation" event
-  // alarm_system.process_event(User_cancellation{});
-  // current_state(alarm_system);
+  //transition from "Green_alarm" state to "Orange_alarm_notified" triggered by "Orange_alarm" event
+  alarm_system.process_event(Orange_alarm{});
+  current_state(alarm_system);
 
-  // //transition from "Orange_alarm_notified" state to "Red_alarm_actuation" triggered by "User_confirmation" event
-  // alarm_system.process_event(User_confirmation{});
-  // current_state(alarm_system);
+  //transition from "Orange_alarm_notified" state to "Red_alarm_actuation" triggered by "Red_alarm_timeout" event
+  alarm_system.process_event(Red_alarm_timeout{});
+  current_state(alarm_system);
+
+  //transition from "Red_alarm_actuation" state to "Green_alarm" triggered by "Stop_actuation" event
+  alarm_system.process_event(Stop_actuation{});
+  current_state(alarm_system);
+
+  //transition from "Green_alarm" state to "Orange_alarm_notified" triggered by "Orange_alarm" event
+  alarm_system.process_event(Orange_alarm{});
+  current_state(alarm_system);
+
+  //transition from "Orange_alarm_notified" state to "Green_alarm" triggered by "Automatic_cancellation" event
+  alarm_system.process_event(Automatic_cancellation{});
+  current_state(alarm_system);
   
-  // //transition from "Orange_alarm_notified" state to "Green_alarm" triggered by "Automatic_cancellation" event
-  // alarm_system.process_event(Automatic_cancellation{});
-  // current_state(alarm_system);
+  //transition from "Green_alarm" state to "Exit" triggered by "Switch_off" event
+  alarm_system.process_event(Switch_off{});
+  current_state(alarm_system);
 
-  // //transition from "Orange_alarm_notified" state to "Red_alarm_actuation" triggered by "Red_alarm_timeout" event
-  // alarm_system.process_event(Red_alarm_timeout{});
-  // current_state(alarm_system);
+  //transition from "Exit" state to "Green_alarm" triggered by "Switch_on" event
+  alarm_system.process_event(Switch_on{});
+  current_state(alarm_system);
 
-  // //transition from "Red_alarm_notified" state to "Green_alarm" triggered by "User_cancellation" event
-  // alarm_system.process_event(User_cancellation{});
-  // current_state(alarm_system);
-
-  
   return 0;
 }

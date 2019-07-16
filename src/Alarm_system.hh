@@ -45,7 +45,11 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     Row <Orange_alarm_notified,     Automatic_cancellation,   Green_alarm,               none,                       none >,
     Row <Orange_alarm_notified,     Red_alarm_timeout,        Red_alarm_actuation,       none,                       none >,
     // +---------------------------+-------------------------+--------------------------+---------------------------+-----------
-    Row <Red_alarm_notified,        User_cancellation,        Green_alarm,               none,                       none >
+    Row <Red_alarm_notified,        User_cancellation,        Green_alarm,               none,                       none >,
+    // +---------------------------+-------------------------+--------------------------+---------------------------+-----------
+    Row <Red_alarm_actuation,       Stop_actuation,           Green_alarm,               none,                       none >,
+    // +---------------------------+-------------------------+--------------------------+---------------------------+-----------
+    Row <Exit,                      Switch_on,                Green_alarm,               none,                       none >    
     > {};
 };
 
