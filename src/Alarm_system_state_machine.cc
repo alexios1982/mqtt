@@ -1,6 +1,6 @@
 #define DEBUG
 
-#include "Alarm_system.hh"
+#include "Alarm_system_state_machine.hh"
 #include <iostream>
 #include "Utils.hh"
 

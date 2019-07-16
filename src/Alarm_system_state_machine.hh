@@ -12,8 +12,8 @@
 // for func_state and func_state_machine
 #include <boost/msm/front/euml/state_grammar.hpp>
 
-#include "Alarm_system_states.hh"
-#include "Alarm_system_events.hh"
+#include "Alarm_system_state_machine_states.hh"
+#include "Alarm_system_state_machine_events.hh"
 
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
@@ -56,6 +56,6 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
 // back-end
 typedef msm::back::state_machine<Alarm_system_> Alarm_system;
 
-#include "Alarm_system.cc"
+#include "Alarm_system_state_machine.cc"
 
 #endif

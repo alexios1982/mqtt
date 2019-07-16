@@ -1,7 +1,7 @@
 #define DEBUG
 
 #include "Utils.hh"
-#include "Alarm_system.hh"
+#include "Alarm_system_state_machine.hh"
 
 //
 // Testing utilities.
