@@ -34,24 +34,96 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
 
   //the action must be inserted before transition table where they are used
  
-  //maybe this action could be collapsed into one using an superclass event from wheach each derives
-  void trigger_red_alarm(const Perimetral_sensor_sig &evt);
-  void trigger_red_alarm(const Int_wind_open_sensor_sig &evt);
-  void trigger_red_alarm(const Res_wind_open_sensor_sig &evt);
-  void trigger_red_alarm(const Int_motion_sensor_sig &evt);
-  void trigger_red_alarm(const Res_motion_sensor_sig &evt);   
-  void trigger_orange_alarm(const Ext_motion_sensor_sig &evt);
-  //void trigger_automatic_cancellation(const Rec_owner_in_ext &evt);
+  //maybe this action could be collapsed into one using an superclass event from which each derives
+  template<class Event_type>
+  void trigger_red_alarm(const Event_type &evt);
+  // void trigger_red_alarm(const Perimetral_sensor_sig &evt);
+  // void trigger_red_alarm(const Int_wind_open_sensor_sig &evt);
+  // void trigger_red_alarm(const Res_wind_open_sensor_sig &evt);
+  // void trigger_red_alarm(const Int_motion_sensor_sig &evt);
+  // void trigger_red_alarm(const Res_motion_sensor_sig &evt);   
+  // void trigger_red_alarm(const Rec_unk_in_ext &evt);
+  // void trigger_red_alarm(const Rec_unk_in_int &evt);
+  // void trigger_red_alarm(const Rec_unk_in_res &evt);
   
+  template<class Event_type>
+  void trigger_orange_alarm(const Event_type &evt);
+  // void trigger_orange_alarm(const Ext_motion_sensor_sig &evt);
+  // void trigger_orange_alarm(const Rec_monit_in_ext &evt);
+  // void trigger_orange_alarm(const Rec_monit_in_res &evt);
+  
+
+  //void trigger_automatic_cancellation(const Rec_owner_in_ext &evt);
  
-  //maybe this action could be collapsed into one using an superclass event from wheach each derives
-  void send_video_chunk(const Ext_door_open_sensor_sig &evt);
-  void send_video_chunk(const Int_door_open_sensor_sig &evt);
-  void send_video_chunk(const Res_door_open_sensor_sig &evt);
+  //maybe this action could be collapsed into one using an superclass event from which each derives
+  template<class Event_type>
+  void send_video_chunk(const Event_type &evt);
+  // void send_video_chunk(const Ext_door_open_sensor_sig &evt);
+  // void send_video_chunk(const Int_door_open_sensor_sig &evt);
+  // void send_video_chunk(const Res_door_open_sensor_sig &evt);
 
-  void counters_update(const Rec_owner_in_ext &evt);
+  template<class Event_type>
+  void ext_presence_flag_update(const Event_type &evt);  
+  template<class Event_type>
+  void int_presence_flag_update(const Event_type &evt);  
+  template<class Event_type>
+  void res_presence_flag_update(const Event_type &evt);  
+  // void presence_flag_update(const Rec_owner_in_ext &evt);
+  // void presence_flag_update(const Rec_owner_in_int &evt);
+  // void presence_flag_update(const Rec_owner_in_res &evt);
+  // void presence_flag_update(const Rec_monit_in_ext &evt);
+  // void presence_flag_update(const Rec_monit_in_int &evt);
+  // void presence_flag_update(const Rec_monit_in_res &evt);
+  // void presence_flag_update(const Rec_unk_in_ext &evt);
+  // void presence_flag_update(const Rec_unk_in_int &evt);
+  // void presence_flag_update(const Rec_unk_in_res &evt);
+  
 
-  void counters_update_and_trigger_automatic_cancellation(const Rec_owner_in_ext &evt);
+  template<class Event_type>
+  void ext_presence_flag_update_and_trigger_automatic_cancellation(const Event_type &evt);
+  template<class Event_type>
+  void int_presence_flag_update_and_trigger_automatic_cancellation(const Event_type &evt);
+  template<class Event_type>
+  void res_presence_flag_update_and_trigger_automatic_cancellation(const Event_type &evt);
+  // void presence_flag_update_and_trigger_automatic_cancellation(const Rec_owner_in_ext &evt);
+  // void presence_flag_update_and_trigger_automatic_cancellation(const Rec_owner_in_int &evt);
+  // void presence_flag_update_and_trigger_automatic_cancellation(const Rec_owner_in_res &evt);
+
+  template<class Event_type>
+  void ext_presence_flag_update_and_trigger_orange_alarm(const Event_type &evt);
+  template<class Event_type>
+  void int_presence_flag_update_and_trigger_orange_alarm(const Event_type &evt);
+  template<class Event_type>
+  void res_presence_flag_update_and_trigger_orange_alarm(const Event_type &evt);
+  // void presence_flag_update_and_trigger_orange_alarm(const Rec_monit_in_ext &evt);
+  // void presence_flag_update_and_trigger_orange_alarm(const Rec_monit_in_res &evt);
+
+  template<class Event_type>
+  void ext_presence_flag_update_and_trigger_red_alarm(const Event_type &evt);  
+  template<class Event_type>
+  void int_presence_flag_update_and_trigger_red_alarm(const Event_type &evt);  
+  template<class Event_type>
+  void res_presence_flag_update_and_trigger_red_alarm(const Event_type &evt);  
+
+  // void presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_ext &evt);
+  // void presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_int &evt);
+  // void presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_res &evt);
+  void reset_presence_flags(const Reset_risk &evt);
+
+  bool is_ext_empty();
+  bool is_int_empty();
+  bool is_res_empty();
+
+  template<class Event_type>  
+  void trigger_red_alarm_if_ext_empty(const Event_type &evt);
+  template<class Event_type>  
+  void trigger_red_alarm_if_int_empty(const Event_type &evt);
+  
+  template<class Event_type>
+  void send_video_chunk_and_trigger_orange_alarm(const Event_type &evt);  
+
+  template<class Event_type>
+  void send_video_chunk_and_trigger_red_alarm(const Event_type &evt);  
   
   struct transition_table : mpl::vector<
     //    Start                       Event                     Target                     Action                      Guard
@@ -77,26 +149,82 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     Row   <Exit,                     Switch_on,                Green_alarm,                 none,                       none     >,
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
     //Risk factor state machine orthogonal region
-    a_row <Waiting_for_risk,         Perimetral_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm    >,
-    a_row <Waiting_for_risk,         Ext_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk     >,
-    a_row <Waiting_for_risk,        Int_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk     >,
-    a_row <Waiting_for_risk,        Res_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk     >,
-    a_row <Waiting_for_risk,        Int_wind_open_sensor_sig, Evaluating_risk,             &Alarm_system_::trigger_red_alarm    >,
-    a_row <Waiting_for_risk,        Res_wind_open_sensor_sig, Evaluating_risk,             &Alarm_system_::trigger_red_alarm    >,
-    a_row <Waiting_for_risk,        Ext_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_orange_alarm >,
-    a_row <Waiting_for_risk,        Int_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm    >,
-    a_row <Waiting_for_risk,        Res_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm    >,
+    a_row <Waiting_for_risk,         Perimetral_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Perimetral_sensor_sig>    >,
+    a_row <Waiting_for_risk,         Ext_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig>     >,
+    a_row <Waiting_for_risk,        Int_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig>     >,
+    a_row <Waiting_for_risk,        Res_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk<Res_door_open_sensor_sig>     >,
+    a_row <Waiting_for_risk,        Int_wind_open_sensor_sig, Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Int_wind_open_sensor_sig>    >,
+    a_row <Waiting_for_risk,        Res_wind_open_sensor_sig, Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Res_wind_open_sensor_sig>    >,
+    a_row <Waiting_for_risk,        Ext_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_orange_alarm<Ext_motion_sensor_sig> >,
+    a_row <Waiting_for_risk,        Int_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Int_motion_sensor_sig>    >,
+    a_row <Waiting_for_risk,        Res_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>    >,
     // +---------------------------+-------------------------+----------------------------+---------------------------+-----------
-    a_irow<Evaluating_risk,         Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm    >,
-    a_irow<Evaluating_risk,         Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk     >,
-    a_irow<Evaluating_risk,         Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk     >,
-    a_irow<Evaluating_risk,         Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk     >,
-    a_irow<Evaluating_risk,         Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_orange_alarm >,
-    a_irow<Evaluating_risk,         Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm    >,
-    a_irow<Evaluating_risk,         Res_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm    >,
-    a_row<Evaluating_risk,          Rec_owner_in_ext,         Low_risk,                    &Alarm_system_::counters_update_and_trigger_automatic_cancellation >,        
-    //Fake transition to go back to Waiting_for_risk from Evaluating_risk just to test transitions
-    _row  <Evaluating_risk,         Reset_risk,               Waiting_for_risk                                                  >
+    a_irow<Evaluating_risk,         Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Perimetral_sensor_sig>    >,
+    a_irow<Evaluating_risk,         Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig>     >,
+    a_irow<Evaluating_risk,         Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig>     >,
+    a_irow<Evaluating_risk,         Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Res_door_open_sensor_sig>     >,
+    a_irow<Evaluating_risk,         Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_orange_alarm<Ext_motion_sensor_sig> >,
+    a_irow<Evaluating_risk,         Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Int_motion_sensor_sig>    >,
+    a_irow<Evaluating_risk,         Res_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>    >,
+    a_row<Evaluating_risk,          Rec_owner_in_ext,         Low_risk,                    &Alarm_system_::ext_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_ext> >,
+    a_row<Evaluating_risk,          Rec_owner_in_int,         Low_risk,                    &Alarm_system_::int_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_int> >,
+    a_row<Evaluating_risk,          Rec_owner_in_res,         Low_risk,                    &Alarm_system_::res_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_res> >,        
+    a_row<Evaluating_risk,          Rec_monit_in_ext,         Medium_risk,                 &Alarm_system_::ext_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_ext> >,
+    a_row<Evaluating_risk,          Rec_monit_in_int,         Medium_risk,                 &Alarm_system_::int_presence_flag_update<Rec_monit_in_int>                          >,
+    a_row<Evaluating_risk,          Rec_monit_in_res,         Medium_risk,                 &Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_res> >,
+    a_row<Evaluating_risk,          Rec_unk_in_ext,           High_risk,                   &Alarm_system_::ext_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_ext> >,
+    a_row<Evaluating_risk,          Rec_unk_in_int,           High_risk,                   &Alarm_system_::int_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_int> >,
+    a_row<Evaluating_risk,          Rec_unk_in_res,           High_risk,                   &Alarm_system_::res_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_res> >,         
+    // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
+    a_irow<Low_risk,                Perimetral_sensor_sig,                                 &Alarm_system_::trigger_orange_alarm<Perimetral_sensor_sig> >,
+    a_irow<Low_risk,                Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig> >,
+    a_irow<Low_risk,                Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig> >,
+    a_irow<Low_risk,                Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Res_door_open_sensor_sig> >,
+    a_irow<Low_risk,                Rec_owner_in_ext,                                      &Alarm_system_::ext_presence_flag_update<Rec_owner_in_ext> >,    
+    a_irow<Low_risk,                Rec_owner_in_int,                                      &Alarm_system_::int_presence_flag_update<Rec_owner_in_int> >,
+    a_irow<Low_risk,                Rec_owner_in_res,                                      &Alarm_system_::res_presence_flag_update<Rec_owner_in_res> >,
+    a_irow<Low_risk,                Rec_monit_in_ext,                                      &Alarm_system_::ext_presence_flag_update<Rec_monit_in_ext> >,    
+    a_irow<Low_risk,                Rec_monit_in_int,                                      &Alarm_system_::int_presence_flag_update<Rec_monit_in_int> >,
+    a_irow<Low_risk,                Rec_monit_in_res,                                      &Alarm_system_::res_presence_flag_update<Rec_monit_in_res> >,
+    a_irow<Low_risk,                Rec_unk_in_ext,                                        &Alarm_system_::ext_presence_flag_update<Rec_unk_in_ext> >,   
+    a_row<Low_risk,                 Reset_risk,               Waiting_for_risk,            &Alarm_system_::reset_presence_flags                     >,
+    // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
+    a_irow<Medium_risk,             Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm_if_ext_empty<Perimetral_sensor_sig> >,
+    a_irow<Medium_risk,             Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig> >,
+    a_irow<Medium_risk,             Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig> >,
+    a_irow<Medium_risk,             Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk_and_trigger_orange_alarm<Res_door_open_sensor_sig> >,
+    a_irow<Medium_risk,             Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm_if_ext_empty<Ext_motion_sensor_sig> >,
+    a_irow<Medium_risk,             Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm_if_int_empty<Int_motion_sensor_sig> >,
+    a_irow<Medium_risk,             Res_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig> >,
+    a_row<Medium_risk,              Rec_owner_in_ext,          Low_risk,                   &Alarm_system_::ext_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_ext> >,
+    a_row<Medium_risk,              Rec_owner_in_int,          Low_risk,                   &Alarm_system_::int_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_int> >,
+    a_row<Medium_risk,              Rec_owner_in_res,          Low_risk,                   &Alarm_system_::res_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_res> >,
+    a_irow<Medium_risk,             Rec_monit_in_ext,                                      &Alarm_system_::ext_presence_flag_update<Rec_monit_in_ext> >,
+    a_irow<Medium_risk,             Rec_monit_in_int,                                      &Alarm_system_::int_presence_flag_update<Rec_monit_in_int> >,
+    a_irow<Medium_risk,             Rec_monit_in_res,                                      &Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_res> >,
+    a_row<Medium_risk,              Rec_unk_in_ext,            High_risk,                  &Alarm_system_::ext_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_ext> >,
+    a_row<Medium_risk,              Rec_unk_in_int,            High_risk,                  &Alarm_system_::int_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_int> >,
+    a_row<Medium_risk,              Rec_unk_in_res,            High_risk,                  &Alarm_system_::res_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_res> >,
+    a_row<Medium_risk,              Reset_risk,                Waiting_for_risk,           &Alarm_system_::reset_presence_flags>,
+    // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
+    a_irow<High_risk,               Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Perimetral_sensor_sig> >,
+    a_irow<High_risk,               Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk_and_trigger_red_alarm<Ext_door_open_sensor_sig> >,
+    a_irow<High_risk,               Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk_and_trigger_red_alarm<Int_door_open_sensor_sig> >,
+    a_irow<High_risk,               Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk_and_trigger_red_alarm<Res_door_open_sensor_sig> >,
+    a_irow<High_risk,               Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Ext_motion_sensor_sig> >,
+    a_irow<High_risk,               Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Int_motion_sensor_sig> >,
+    a_irow<High_risk,               Res_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig> >,        
+    a_row<High_risk,                Rec_owner_in_ext,          Low_risk,                   &Alarm_system_::ext_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_ext> >,
+    a_row<High_risk,                Rec_owner_in_int,          Low_risk,                   &Alarm_system_::int_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_int> >,
+    a_row<High_risk,                Rec_owner_in_res,          Low_risk,                   &Alarm_system_::res_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_res> >,
+    a_irow<High_risk,               Rec_monit_in_ext,                                      &Alarm_system_::ext_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_ext> >,
+    a_irow<High_risk,               Rec_monit_in_int,                                      &Alarm_system_::int_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_int> >,
+    a_irow<High_risk,               Rec_monit_in_res,                                      &Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_res> >,
+    a_irow<High_risk,               Rec_unk_in_ext,                                        &Alarm_system_::ext_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_ext> >,
+    a_irow<High_risk,               Rec_unk_in_int,                                        &Alarm_system_::int_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_int> >,
+    a_irow<High_risk,               Rec_unk_in_res,                                        &Alarm_system_::res_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_res> >,
+    a_row<High_risk,                Reset_risk,                Waiting_for_risk,           &Alarm_system_::reset_presence_flags>    
+    // +----------------------------+-------------------------+----------------------------+---------------------------+-----------    
     > {};
 
   // Replaces the default no-transition response.

@@ -176,6 +176,8 @@ int main(int argc, char **argv){
   //This transition triggers "Automatic_cancellation" event that forces a transition form "Orange_alarm" to "Green_alarm" 
   alarm_system.process_event(Rec_owner_in_ext{});
   current_state(alarm_system);
+
+
   
   // //Fake transition to reset Evaluating_risk
   // alarm_system.process_event(Reset_risk{});
