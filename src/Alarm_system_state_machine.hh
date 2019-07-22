@@ -141,8 +141,13 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     Row   <Orange_alarm_notified,    User_confirmation,        Red_alarm_actuation,        none,                       none     >,
     Row   <Orange_alarm_notified,    Automatic_cancellation,   Green_alarm,                none,                       none     >,
     Row   <Orange_alarm_notified,    Red_alarm_timeout,        Red_alarm_actuation,        none,                       none     >,
+    Row   <Orange_alarm_notified,    Orange_alarm,             none,                       none,                       none     >,    
+    Row   <Orange_alarm_notified,    Red_alarm,                Red_alarm_notified,         none,                       none     >,    
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
     Row   <Red_alarm_notified,       User_cancellation,        Green_alarm,                none,                       none     >,
+    Row   <Red_alarm_notified,       Red_alarm,                none,                       none,                       none     >,
+    Row   <Red_alarm_notified,       Orange_alarm,             none,                       none,                       none     >,
+    Row   <Red_alarm_notified,       Automatic_cancellation,   Green_alarm,                none,                       none     >,    
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
     Row   <Red_alarm_actuation,      Stop_actuation,           Green_alarm,                 none,                       none     >,
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
@@ -166,9 +171,9 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_irow<Evaluating_risk,         Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_orange_alarm<Ext_motion_sensor_sig> >,
     a_irow<Evaluating_risk,         Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Int_motion_sensor_sig>    >,
     a_irow<Evaluating_risk,         Res_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>    >,
-    a_row<Evaluating_risk,          Rec_owner_in_ext,         Low_risk,                    &Alarm_system_::ext_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_ext> >,
-    a_row<Evaluating_risk,          Rec_owner_in_int,         Low_risk,                    &Alarm_system_::int_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_int> >,
-    a_row<Evaluating_risk,          Rec_owner_in_res,         Low_risk,                    &Alarm_system_::res_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_res> >,        
+    a_row<Evaluating_risk,          Rec_owner_in_ext,         Low_risk,                    &Alarm_system_::ext_presence_flag_update<Rec_owner_in_ext> >,
+    a_row<Evaluating_risk,          Rec_owner_in_int,         Low_risk,                    &Alarm_system_::int_presence_flag_update<Rec_owner_in_int> >,
+    a_row<Evaluating_risk,          Rec_owner_in_res,         Low_risk,                    &Alarm_system_::res_presence_flag_update<Rec_owner_in_res> >,        
     a_row<Evaluating_risk,          Rec_monit_in_ext,         Medium_risk,                 &Alarm_system_::ext_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_ext> >,
     a_row<Evaluating_risk,          Rec_monit_in_int,         Medium_risk,                 &Alarm_system_::int_presence_flag_update<Rec_monit_in_int>                          >,
     a_row<Evaluating_risk,          Rec_monit_in_res,         Medium_risk,                 &Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_res> >,
