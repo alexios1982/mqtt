@@ -18,7 +18,13 @@ static char const* const state_names[] = { "Init",
 					   "Evaluating_risk",
 					   "Low_risk",
 					   "Medium_risk",
-					   "High_risk"};
+					   "High_risk",
+					   "None",
+					   "Extern",
+					   "Intern",
+					   "Reserved",
+					   "Idle",
+					   "Waiting_for_ai_response"};
 
 void current_state(Alarm_system const &alarm_system){
   //D(std::cout << warning << "Current states -> " << reset << state_names[alarm_system.current_state()[0]] << std::endl);
@@ -111,6 +117,10 @@ int main(int argc, char **argv){
   current_state(alarm_system);
 
   //Risk factor state machine test
+
+  std::cout << std::endl;
+  std::cout << "Vediamo un po" << std::endl;
+  std::cout << std::endl;
   
   //transition from "Waiting_for_risk" state to "Evaluating_risk" triggered by "Perimetral sensor signal" event
   //This transition triggers "Red_alarm event that forces a transition form "Green_alarm" to "Red_alarm"

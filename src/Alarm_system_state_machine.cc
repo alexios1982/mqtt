@@ -333,3 +333,27 @@ void Alarm_system_::send_video_chunk_and_trigger_red_alarm(const Event_type &evt
   fsm.process_event(Red_alarm{});  
 }
 
+template<class Event_type>
+void Alarm_system_::ext_presence_flag_reset(const Event_type &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+template<class Event_type>
+void Alarm_system_::int_presence_flag_reset(const Event_type &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+template<class Event_type>
+void Alarm_system_::res_presence_flag_reset(const Event_type &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+template<class Event_type>
+void Alarm_system_::increase_ai_response_counter(const Event_type &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+template<class Event_type>
+void Alarm_system_::decrease_ai_response_counter(const Event_type &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
