@@ -20,6 +20,7 @@ add_executable(alarm_system src/alarm_system.cc
   src/Publisher.cc
   src/Notification_logic_controller.cc
   src/Area_protection.cc
+  src/Alarm_system_state_machine.cc
   )
 
 ######################################################################

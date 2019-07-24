@@ -4,11 +4,19 @@
 struct Perimetral_sensor_sig{};
 
 //Someone opened the external door
-struct Ext_door_open_sensor_sig{};
+struct Ext_door_open_sensor_sig{
+  std::string cam;
+};
+
 //Someone opened the internal door
-struct Int_door_open_sensor_sig{};
+struct Int_door_open_sensor_sig{
+  std::string cam;
+};
+
 //Someone opened the door associated to the reserved zone
-struct Res_door_open_sensor_sig{};
+struct Res_door_open_sensor_sig{
+  std::string cam;
+};
 
 //Someone opened the internal window
 struct Int_wind_open_sensor_sig{};

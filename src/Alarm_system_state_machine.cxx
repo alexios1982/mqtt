@@ -87,20 +87,8 @@ void Alarm_system_::trigger_orange_alarm(const Event_type &evt){
 //   fsm.process_event(Automatic_cancellation{});
 // }
 
-template<class Event_type>
-void Alarm_system_::send_video_chunk(const Event_type &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
-
-// void Alarm_system_::send_video_chunk(const Ext_door_open_sensor_sig &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-// }
-
-// void Alarm_system_::send_video_chunk(const Int_door_open_sensor_sig &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-// }
-
-// void Alarm_system_::send_video_chunk(const Res_door_open_sensor_sig &evt){
+// template<class Event_type>
+// void Alarm_system_::send_video_chunk(const Event_type &evt){
 //   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 // }
 
@@ -284,21 +272,6 @@ void Alarm_system_::res_presence_flag_update_and_trigger_red_alarm(const Event_t
 //   fsm.process_event(Red_alarm{});
 // }
 
-void Alarm_system_::reset_presence_flags(const Reset_risk &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
-
-bool Alarm_system_::is_ext_empty(){
-  return true;
-}
-
-bool Alarm_system_::is_int_empty(){
-  return true;
-}
-
-bool Alarm_system_::is_res_empty(){
-  return true;
-}
 
 template <class Event_type>
 void Alarm_system_::trigger_red_alarm_if_ext_empty(const Event_type &evt){

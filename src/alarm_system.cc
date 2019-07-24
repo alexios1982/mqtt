@@ -1,3 +1,5 @@
+#define DEBUG
+
 // async_consume.cpp
 //
 // This is a Paho MQTT C++ client, sample application.
@@ -40,6 +42,39 @@
 #include "Subscriber_callback_listener.hh"
 #include "Publisher.hh"
 #include "Notification_logic_controller.hh"
+#include "Sensor.hh"
+
+//
+// Testing utilities.
+//
+static char const* const state_names[] = { //"Init",
+					   "Waiting_for_configuration",
+					   "Green_alarm",
+					   "Orange_alarm_notified",
+					   "Red_alarm_notified",
+					   "Red_alarm_actuation",
+					   "Exit",
+					   "Waiting_for_risk",
+					   "Evaluating_risk",
+					   "Low_risk",
+					   "Medium_risk",
+					   "High_risk",
+					   "None",
+					   "Extern",
+					   "Intern",
+					   "Reserved",
+					   "Idle",
+					   "Waiting_for_ai_response"};
+
+void print_current_state(Alarm_system const &alarm_system){
+  D(std::cout << warning << __func__ << reset << std::endl);
+   // we have now several active states, which we show
+  for (unsigned int i = 0;
+       i < Alarm_system::nr_regions::value;
+       ++i){
+      D(std::cout << warning << "::print_current_states. Current states -> " << reset << state_names[alarm_system.current_state()[i]] << std::endl);
+    }
+}
 
 const std::string ZIGBEE_SERVER_ADDRESS	{ "tcp://localhost:1883" };
 const std::string ZIGBEE_SUBSCRIBER_ID { "zigbee_subscribe_client" };
@@ -74,6 +109,19 @@ int main(int argc, char* argv[]){
   std::map<std::string, std::string> sensor_cam = { {"01cc99b3", "cam02"} };
   std::map<std::string, std::string> cam_path = { {"cam02", "/home/pi/gstreamer/multifiles_saving"} };
   /////////////////////////////////////////////////////////////////////////
+
+  std::map< std::string, Sensor<Ext_door_open_sensor_sig> > sensors_map;
+
+  Ext_door_open_sensor_sig ext_door_open_sensor_sig;
+  ext_door_open_sensor_sig.cam = "cam02";
+  
+  //Sensor<Ext_door_open_sensor_sig> sensor1 = {"01cc99b3", ext_door_open_sensor_sig, "ext", "garden"};
+  sensors_map["01cc99b3"] = {"01cc99b3", ext_door_open_sensor_sig, "ext", "garden"};
+  
+  
+
+
+
   
   mqtt::connect_options zigbee_conn_opts{"hub_raspberry", "hub_raspberry"};
   Synchronized_queue<mqtt::const_message_ptr> queue;
@@ -162,9 +210,20 @@ int main(int argc, char* argv[]){
   // std::thread t( std::bind(&Publisher::run, &publisher) );
   // t.detach();
   Area_protection area_protection;
-  Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
-  std::thread t( std::bind(&Notification_logic_controller::consume_message, &notification_logic_controller) );
   
+  Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
+  notification_logic_controller.start();
+
+  D(  
+    std::cout << std::endl;
+    std::cout << std::endl;
+    print_current_state(notification_logic_controller);
+    std::cout << std::endl;
+    std::cout << std::endl;)
+      
+  
+  std::thread t( std::bind(&Notification_logic_controller::consume_message, &notification_logic_controller) );
+
   // Just block till user tells us to quit.
   while (std::tolower(std::cin.get()) != 'q')
     ;

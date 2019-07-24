@@ -6,8 +6,9 @@
 #include "Publisher.hh"
 #include <memory> //for std::unique_ptr
 #include <map>
+#include "Alarm_system_state_machine.hh"
 
-class Notification_logic_controller{
+class Notification_logic_controller : public Alarm_system{
   enum File_type{
     JPEG,
     MP4
@@ -63,5 +64,11 @@ public:
   ///classify_message in a thread to take the required actions
   void consume_message();
   void update_area_protection();
+
+
+  virtual void send_video_chunk(const Ext_door_open_sensor_sig &evt);
+  virtual void send_video_chunk(const Int_door_open_sensor_sig &evt);
+  virtual void send_video_chunk(const Res_door_open_sensor_sig &evt);  
+
 };
 #endif

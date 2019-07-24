@@ -7,7 +7,7 @@
 //
 // Testing utilities.
 //
-static char const* const state_names[] = { "Init",
+static char const* const state_names[] = {// "Init",
 					   "Waiting_for_configuration",
 					   "Green_alarm",
 					   "Orange_alarm_notified",

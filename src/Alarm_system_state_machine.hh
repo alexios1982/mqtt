@@ -33,7 +33,7 @@ using namespace msm::front::euml;
 // front-end: define the FSM structure
 struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
 
-  typedef mpl::vector<Init, Waiting_for_risk, None, Idle> initial_state;
+  typedef mpl::vector<Waiting_for_configuration, Waiting_for_risk, None, Idle> initial_state;
   
   template <class Event, class FSM>
   void on_entry(Event const&, FSM&);
@@ -62,11 +62,11 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   //void trigger_automatic_cancellation(const Rec_owner_in_ext &evt);
  
   //maybe this action could be collapsed into one using an superclass event from which each derives
-  template<class Event_type>
-  void send_video_chunk(const Event_type &evt);
-  // void send_video_chunk(const Ext_door_open_sensor_sig &evt);
-  // void send_video_chunk(const Int_door_open_sensor_sig &evt);
-  // void send_video_chunk(const Res_door_open_sensor_sig &evt);
+  // template<class Event_type>
+  // virtual void send_video_chunk(const Event_type &evt);
+  virtual  void send_video_chunk(const Ext_door_open_sensor_sig &evt);
+  virtual  void send_video_chunk(const Int_door_open_sensor_sig &evt);
+  virtual  void send_video_chunk(const Res_door_open_sensor_sig &evt);
 
   template<class Event_type>
   void ext_presence_flag_update(const Event_type &evt);  
@@ -150,7 +150,7 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     //    Start                       Event                     Target                     Action                      Guard
     //+-----------------------------+-------------------------+--------------------------+---------------------------+-----------
     // Alarm system state machine orthogonal region
-    Row   <Init,                      Switch_on,                Waiting_for_configuration, none,                       none     >,
+    //Row   <Init,                      Switch_on,                Waiting_for_configuration, none,                       none     >,
     // +-----------------------------+---------------------------+----------------------------+---------------------------+-----------
     Row   <Waiting_for_configuration, Initialization_completed, Green_alarm,               none,                       none     >,
     // +-----------------------------+-------------------------+----------------------------+---------------------------+-----------
@@ -176,9 +176,9 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
     //Risk factor state machine orthogonal region
     a_row <Waiting_for_risk,         Perimetral_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Perimetral_sensor_sig>    >,
-    a_row <Waiting_for_risk,         Ext_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig>     >,
-    a_row <Waiting_for_risk,        Int_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig>     >,
-    a_row <Waiting_for_risk,        Res_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk<Res_door_open_sensor_sig>     >,
+    a_row <Waiting_for_risk,         Ext_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk                             >,
+    a_row <Waiting_for_risk,        Int_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk                              >,
+    a_row <Waiting_for_risk,        Res_door_open_sensor_sig, Evaluating_risk,             &Alarm_system_::send_video_chunk                               >,
     a_row <Waiting_for_risk,        Int_wind_open_sensor_sig, Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Int_wind_open_sensor_sig>    >,
     a_row <Waiting_for_risk,        Res_wind_open_sensor_sig, Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Res_wind_open_sensor_sig>    >,
     a_row <Waiting_for_risk,        Ext_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_orange_alarm<Ext_motion_sensor_sig> >,
@@ -186,9 +186,9 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_row <Waiting_for_risk,        Res_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>    >,
     // +---------------------------+-------------------------+----------------------------+---------------------------+-----------
     a_irow<Evaluating_risk,         Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Perimetral_sensor_sig>    >,
-    a_irow<Evaluating_risk,         Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig>     >,
-    a_irow<Evaluating_risk,         Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig>     >,
-    a_irow<Evaluating_risk,         Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Res_door_open_sensor_sig>     >,
+    a_irow<Evaluating_risk,         Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk     >,
+    a_irow<Evaluating_risk,         Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk     >,
+    a_irow<Evaluating_risk,         Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk     >,
     a_irow<Evaluating_risk,         Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_orange_alarm<Ext_motion_sensor_sig> >,
     a_irow<Evaluating_risk,         Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Int_motion_sensor_sig>    >,
     a_irow<Evaluating_risk,         Res_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>    >,
@@ -203,9 +203,9 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_row<Evaluating_risk,          Rec_unk_in_res,           High_risk,                   &Alarm_system_::res_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_res> >,         
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
     a_irow<Low_risk,                Perimetral_sensor_sig,                                 &Alarm_system_::trigger_orange_alarm<Perimetral_sensor_sig> >,
-    a_irow<Low_risk,                Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig> >,
-    a_irow<Low_risk,                Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig> >,
-    a_irow<Low_risk,                Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Res_door_open_sensor_sig> >,
+    a_irow<Low_risk,                Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                            >,
+    a_irow<Low_risk,                Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                          >,
+    a_irow<Low_risk,                Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                          >,
     a_irow<Low_risk,                Rec_owner_in_ext,                                      &Alarm_system_::ext_presence_flag_update<Rec_owner_in_ext> >,    
     a_irow<Low_risk,                Rec_owner_in_int,                                      &Alarm_system_::int_presence_flag_update<Rec_owner_in_int> >,
     a_irow<Low_risk,                Rec_owner_in_res,                                      &Alarm_system_::res_presence_flag_update<Rec_owner_in_res> >,
@@ -216,8 +216,8 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_row<Low_risk,                 Reset_risk,               Waiting_for_risk,            &Alarm_system_::reset_presence_flags                     >,
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
     a_irow<Medium_risk,             Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm_if_ext_empty<Perimetral_sensor_sig> >,
-    a_irow<Medium_risk,             Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Ext_door_open_sensor_sig> >,
-    a_irow<Medium_risk,             Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk<Int_door_open_sensor_sig> >,
+    a_irow<Medium_risk,             Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                           >,
+    a_irow<Medium_risk,             Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                           >,
     a_irow<Medium_risk,             Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk_and_trigger_orange_alarm<Res_door_open_sensor_sig> >,
     a_irow<Medium_risk,             Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm_if_ext_empty<Ext_motion_sensor_sig> >,
     a_irow<Medium_risk,             Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm_if_int_empty<Int_motion_sensor_sig> >,
@@ -315,6 +315,6 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
 // back-end
 typedef msm::back::state_machine<Alarm_system_> Alarm_system;
 
-#include "Alarm_system_state_machine.cc"
+#include "Alarm_system_state_machine.cxx"
 
 #endif

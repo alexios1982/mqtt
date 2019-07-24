@@ -359,3 +359,15 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
 //     return mqtt::make_message("", "");
 //   }
 // }
+
+void Notification_logic_controller::send_video_chunk(const Ext_door_open_sensor_sig &evt){
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+void Notification_logic_controller::send_video_chunk(const Int_door_open_sensor_sig &evt){
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Notification_logic_controller::send_video_chunk(const Res_door_open_sensor_sig &evt){
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+
