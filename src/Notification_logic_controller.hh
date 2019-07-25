@@ -11,6 +11,11 @@
 //#include "Sensor.hh"
 
 class Notification_logic_controller : public Alarm_system{
+    enum class Sensor_type{
+    CONTACT,
+    MOTION
+  };
+
   enum File_type{
     JPEG,
     MP4
@@ -19,8 +24,14 @@ class Notification_logic_controller : public Alarm_system{
     bool is_a_duplicate;
     bool actual_contact;
   };
+  struct Motion_sensor_state{
+    bool is_a_duplicate;
+    bool actual_occupancy;
+  };
   typedef std::function<void()> Proc_events_ptr;
   typedef std::map<std::string, Proc_events_ptr> Sensor_proc_events_map;
+  typedef std::map<std::string, Sensor_type> Sensor_type_map;
+  Sensor_type_map _sensor_type_map;
   Sensor_proc_events_map _sensor_proc_events_map;
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
@@ -36,6 +47,7 @@ class Notification_logic_controller : public Alarm_system{
   ///this metod is used to recognize this case
   //bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr);
   Contact_sensor_state check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
+  Motion_sensor_state check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
   
   // ///handler called by classify_message when the message present in the queue is
   // ///associated to a sensor that requests a rich notification

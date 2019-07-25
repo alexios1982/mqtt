@@ -92,39 +92,61 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   //auto it = _sensor_cam.find(topic_info);
   auto it = _sensor_proc_events_map.find(topic_info);
   if( it != _sensor_proc_events_map.end() ){
-    Contact_sensor_state contact_state = check_contact_sensor_state(zigbee_message_ptr);
-    //the door is opened when the contact is false.
-    //we have to check if it is not a duplicate    
-    if( !(contact_state.actual_contact )
-	&&
-	!( contact_state.is_a_duplicate )
-	){
-      D( Time_spent<> to_send_notifications );
-      // int iter = 0, n_of_sending = 3;
-      // while( iter < n_of_sending){
-      // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
-      // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
-      // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
-      // 	if(message_to_send->get_topic() != "")
-      // 	  send_notification(message_to_send);
-      // 	++iter;
-      // }
-      //send_rich_notifications(topic_info, 1, 2);
-      (it->second)();
+    switch(_sensor_type_map[topic_info]){
+    case Sensor_type::CONTACT :
+      {  
+	Contact_sensor_state contact_sensor_state = check_contact_sensor_state(zigbee_message_ptr);
+	//the door is opened when the contact is false.
+	//we have to check if it is not a duplicate    
+	if( !(contact_sensor_state.actual_contact )
+	    &&
+	    !( contact_sensor_state.is_a_duplicate )
+	    ){
+	  D( Time_spent<> to_send_notifications );
+	  // int iter = 0, n_of_sending = 3;
+	  // while( iter < n_of_sending){
+	  // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
+	  // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
+	  // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
+	  // 	if(message_to_send->get_topic() != "")
+	  // 	  send_notification(message_to_send);
+	  // 	++iter;
+	  // }
+	  //send_rich_notifications(topic_info, 1, 2);
+	  (it->second)();
+	}
+	//nothing to do: the associate message has already been sent
+	else
+	  return;
+	break;
+      }
+    case Sensor_type::MOTION :
+      {
+	//we have to check if it is not a duplicate    
+	Motion_sensor_state motion_sensor_state = check_motion_sensor_state(zigbee_message_ptr);
+	if(  !( motion_sensor_state.is_a_duplicate ) ){
+	  D( Time_spent<> to_send_notifications );
+	  // int iter = 0, n_of_sending = 3;
+	  // while( iter < n_of_sending){
+	  // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
+	  // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
+	  // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
+	  // 	if(message_to_send->get_topic() != "")
+	  // 	  send_notification(message_to_send);
+	  // 	++iter;
+	  // }
+	  //send_rich_notifications(topic_info, 1, 2);
+	  (it->second)();
+	}
+	else return;
+	break;
+      }
     }
-    //nothing to do: the associate message has already been sent
-    else
-      return;
   }
-  //if it's not in the sensor_cam map, it could be a rich message or
+  //if it's not in the sensor_proc_events_map, it could be a rich message or
   //an answer from the ai serder (in this case the topic is Response
   else if (topic_info == "Response"){
     analyze_ai_response(zigbee_message_ptr);
-  }
-  //it is a sensor associate to a classified notification
-  else{
-    message_to_send = prepare_classified_notification(zigbee_message_ptr);
-    //send_notification(message_to_send);
   }
 }
 
@@ -296,10 +318,10 @@ Notification_logic_controller::check_contact_sensor_state(const mqtt::const_mess
    
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
-  Contact_sensor_state contact_state{false, false};
-  contact_state.actual_contact = pt.get<bool>("contact");
+  Contact_sensor_state contact_sensor_state{false, false};
+  contact_sensor_state.actual_contact = pt.get<bool>("contact");
   //contact value is true or false, but we want to convert to an int value
-  int actual_contact = contact_state.actual_contact;
+  int actual_contact = contact_sensor_state.actual_contact;
 
   //  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
   // #if 0
@@ -309,20 +331,74 @@ Notification_logic_controller::check_contact_sensor_state(const mqtt::const_mess
     
   //if actual_contact is true the door has been closed and we don't have to check
   //if it a dublicate because in this case no event will be triggered
-  if(contact_state.actual_contact)
-    return contact_state;
+  if(contact_sensor_state.actual_contact)
+    return contact_sensor_state;
   
   //if actual_contact is false the door has been open and we have to check
   //if it a dublicate because in this case no event will be trigger
   if(actual_contact != previous_contact){
     previous_contact = actual_contact;
-    contact_state.is_a_duplicate = false;
+    contact_sensor_state.is_a_duplicate = false;
   }
   else
-    contact_state.is_a_duplicate = true;
+    contact_sensor_state.is_a_duplicate = true;
 
-  return contact_state;
+  return contact_sensor_state;
 }
+
+
+
+
+Notification_logic_controller::Motion_sensor_state
+Notification_logic_controller::check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr){
+  //solution to double notification problems
+  //we discard the second message with the same value of occupancy tag
+  //because sensor port always
+  //sends two messages for each event: closed door and opened door
+  static int previous_occupancy = -1;
+  std::string payload( zigbee_message_ptr->to_string() );
+  std::stringstream ss;
+   
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
+    ss << payload;
+   
+  boost::property_tree::ptree pt;
+  boost::property_tree::read_json(ss, pt);
+  Motion_sensor_state motion_sensor_state{false, false};
+  motion_sensor_state.actual_occupancy = pt.get<bool>("occupancy");
+  //occupancy value is true or false, but we want to convert to an int value
+  int actual_occupancy = motion_sensor_state.actual_occupancy;
+
+  //  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
+  // #if 0
+  //   D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
+  //     "actual contact: " << actual_contact << '\n';)
+  // #endif
+
+  
+  //if actual_contact is false the door has been open and we have to check
+  //if it a dublicate because in this case no event will be trigger
+  if(actual_occupancy != previous_occupancy){
+    previous_occupancy = actual_occupancy;
+    motion_sensor_state.is_a_duplicate = false;
+  }
+  else
+    motion_sensor_state.is_a_duplicate = true;
+
+  return motion_sensor_state;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Notification_logic_controller::update_area_protection(){
   _area_protection.update();
@@ -442,15 +518,21 @@ void Notification_logic_controller::send_video_chunk(const Res_door_open_sensor_
 }
 
 void Notification_logic_controller::load_configuration(const std::string &configuration_file){
-  //I dont't konw this doesn't work
+  //I dont't know why boost::bind doesn't work
   //part in which we'll parse the file to retrieve information for loading the map
   // _sensor_proc_events_map["01cc99b3"] = std::bind(
   // 						    &Alarm_system::process_event,
   // 						    this,
   // 						    Ext_door_open_sensor_sig{"cam02"}
   // 						    );
+  _sensor_type_map["01cc99b3"] = Sensor_type::CONTACT;
+  _sensor_type_map["0202c411"] = Sensor_type::MOTION;
   _sensor_proc_events_map["01cc99b3"] = [this](){ return process_event(Ext_door_open_sensor_sig{"01cc99b3"}); };
-    
-
+  _sensor_proc_events_map["doorfkeI"] = [this](){ return process_event(Int_door_open_sensor_sig{"12345678"}); };
+  _sensor_proc_events_map["doorfkeR"] = [this](){ return process_event(Res_door_open_sensor_sig{"90123456"}); };
+  _sensor_proc_events_map["0202c411"] = [this](){ return process_event(Ext_motion_sensor_sig{}); };
+  _sensor_proc_events_map["motfke_I"] = [this](){ return process_event(Int_motion_sensor_sig{}); };
+  _sensor_proc_events_map["motfke_R"] = [this](){ return process_event(Res_motion_sensor_sig{}); };
+  
   process_event(Initialization_completed{});
 }

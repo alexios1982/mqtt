@@ -98,6 +98,7 @@ const std::string REMOTE_SUBSCRIBER_TOPIC {"User_Consitalia_1_aws/Response"};
 const int QOS = 1;
 
 int main(int argc, char* argv[]){
+    
   boost::ignore_unused(argc);
   boost::ignore_unused(argv);
 
@@ -106,6 +107,8 @@ int main(int argc, char* argv[]){
   //lets' use the last 4 chars of sensor id to improve research speed in map
   //if a sensor is present in the sensor_cam map, we have to send a rich
   //notification, otherwise we will send a classify notification
+  //TODO
+  //queste dovremmo riempirle in fase di configurazione della macchina a stati
   std::map<std::string, std::string> sensor_cam = { {"01cc99b3", "cam02"} };
   std::map<std::string, std::string> cam_path = { {"cam02", "/home/pi/gstreamer/multifiles_saving"} };
   /////////////////////////////////////////////////////////////////////////
@@ -117,9 +120,6 @@ int main(int argc, char* argv[]){
   
   // //Sensor<Ext_door_open_sensor_sig> sensor1 = {"01cc99b3", ext_door_open_sensor_sig, "ext", "garden"};
   // ext_sensors_map["01cc99b3"] = {"01cc99b3", Sensor_type::CONTACT, ext_door_open_sensor_sig, Ring_class::EXTERNAL, "garden"};
-  
-  
-
   
   mqtt::connect_options zigbee_conn_opts{"hub_raspberry", "hub_raspberry"};
   Synchronized_queue<mqtt::const_message_ptr> queue;
