@@ -2,11 +2,23 @@
 #define _SENSOR_
 #include <string>
 
+enum class Sensor_type{
+  PIR,
+  CONTACT
+ };
+
+enum class Ring_class{
+  EXTERNAL,
+  INTERNAL,
+  RESERVED
+};
+
 template <class Event_type>
 struct Sensor{
   std::string topic_mini_id;
+  Sensor_type sensor_type;
   Event_type event;
-  std::string ring;
+  Ring_class ring;
   std::string room;
 };
 

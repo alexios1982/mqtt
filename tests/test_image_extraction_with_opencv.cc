@@ -1,3 +1,5 @@
+#define DEBUG
+
 //this test is intended to show the performance in terms of time of Opencv to extract a single jpg image from an mp4 video
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -6,8 +8,12 @@
 #include <string>
 #include <sstream>
 #include "Utils.hh"
+#include <boost/core/ignore_unused.hpp>
 
 int main(int argc, char **argv) {
+  boost::ignore_unused(argc);
+  boost::ignore_unused(argv);
+
   Time_spent<> time_spent{};
   cv::VideoCapture cap("/home/pi/mqtt/mqtt/temp_saved_file_dir/2019-06-24_14:39:34_cam02_5.mp4"); // video
   if ( !cap.isOpened() ){

@@ -3,6 +3,7 @@
 #include "Alarm_system_state_machine.hh"
 #include <iostream>
 #include "Utils.hh"
+#include <boost/core/ignore_unused.hpp>
 
 template <class Event, class FSM>
 void Alarm_system_::on_entry(Event const&, FSM&){
@@ -11,6 +12,7 @@ void Alarm_system_::on_entry(Event const&, FSM&){
 
 template <class Event_type>
 void Alarm_system_::trigger_red_alarm(const Event_type &evt){
+  boost::ignore_unused(evt);
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Red_alarm{});
@@ -70,7 +72,7 @@ void Alarm_system_::trigger_red_alarm(const Event_type &evt){
 
 template <class Event_type>
 void Alarm_system_::trigger_orange_alarm(const Event_type &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+  boost::ignore_unused(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Orange_alarm{});
 }
@@ -94,16 +96,19 @@ void Alarm_system_::trigger_orange_alarm(const Event_type &evt){
 
 template<class Event_type>
 void Alarm_system_::ext_presence_flag_update(const Event_type &evt){
+    boost::ignore_unused(evt);
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }
 
 template<class Event_type>
 void Alarm_system_::int_presence_flag_update(const Event_type &evt){
+  boost::ignore_unused(evt);
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }
 
 template<class Event_type>
 void Alarm_system_::res_presence_flag_update(const Event_type &evt){
+  boost::ignore_unused(evt);
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }
 

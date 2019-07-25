@@ -42,7 +42,7 @@
 #include "Subscriber_callback_listener.hh"
 #include "Publisher.hh"
 #include "Notification_logic_controller.hh"
-#include "Sensor.hh"
+//#include "Sensor.hh"
 
 //
 // Testing utilities.
@@ -110,17 +110,15 @@ int main(int argc, char* argv[]){
   std::map<std::string, std::string> cam_path = { {"cam02", "/home/pi/gstreamer/multifiles_saving"} };
   /////////////////////////////////////////////////////////////////////////
 
-  std::map< std::string, Sensor<Ext_door_open_sensor_sig> > sensors_map;
+  // std::map< std::string, Sensor<Ext_door_open_sensor_sig> > ext_sensors_map;
 
-  Ext_door_open_sensor_sig ext_door_open_sensor_sig;
-  ext_door_open_sensor_sig.cam = "cam02";
+  // Ext_door_open_sensor_sig ext_door_open_sensor_sig;
+  // ext_door_open_sensor_sig.cam = "cam02";
   
-  //Sensor<Ext_door_open_sensor_sig> sensor1 = {"01cc99b3", ext_door_open_sensor_sig, "ext", "garden"};
-  sensors_map["01cc99b3"] = {"01cc99b3", ext_door_open_sensor_sig, "ext", "garden"};
+  // //Sensor<Ext_door_open_sensor_sig> sensor1 = {"01cc99b3", ext_door_open_sensor_sig, "ext", "garden"};
+  // ext_sensors_map["01cc99b3"] = {"01cc99b3", Sensor_type::CONTACT, ext_door_open_sensor_sig, Ring_class::EXTERNAL, "garden"};
   
   
-
-
 
   
   mqtt::connect_options zigbee_conn_opts{"hub_raspberry", "hub_raspberry"};
@@ -210,10 +208,14 @@ int main(int argc, char* argv[]){
   // std::thread t( std::bind(&Publisher::run, &publisher) );
   // t.detach();
   Area_protection area_protection;
+
+  std::string configuration_file = "some_configuration_file";
   
   Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
   notification_logic_controller.start();
 
+  notification_logic_controller.load_configuration(configuration_file);
+  
   D(  
     std::cout << std::endl;
     std::cout << std::endl;

@@ -1,21 +1,26 @@
 #ifndef _RISK_FACTOR_EVENTS_
 #define _RISK_FACTOR_EVENTS_
 
+#include <string>
+
 struct Perimetral_sensor_sig{};
 
 //Someone opened the external door
 struct Ext_door_open_sensor_sig{
-  std::string cam;
+  Ext_door_open_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
 };
 
 //Someone opened the internal door
 struct Int_door_open_sensor_sig{
-  std::string cam;
+  Int_door_open_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
 };
 
 //Someone opened the door associated to the reserved zone
 struct Res_door_open_sensor_sig{
-  std::string cam;
+  Res_door_open_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
 };
 
 //Someone opened the internal window

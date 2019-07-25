@@ -114,6 +114,7 @@ class Test_subscriber_action_listener : public virtual mqtt::callback,
 
   // Callback for when a message arrives.
   void message_arrived(mqtt::const_message_ptr msg) override {
+    boost::ignore_unused(msg);
     std::cout << "\n[Test_subscriber_action_listener::" << __func__ << " Message arrived" << std::endl;
   }
 

@@ -7,12 +7,21 @@
 #include <memory> //for std::unique_ptr
 #include <map>
 #include "Alarm_system_state_machine.hh"
+#include <functional>
+//#include "Sensor.hh"
 
 class Notification_logic_controller : public Alarm_system{
   enum File_type{
     JPEG,
     MP4
   };
+  struct Contact_sensor_state{
+    bool is_a_duplicate;
+    bool actual_contact;
+  };
+  typedef std::function<void()> Proc_events_ptr;
+  typedef std::map<std::string, Proc_events_ptr> Sensor_proc_events_map;
+  Sensor_proc_events_map _sensor_proc_events_map;
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
@@ -25,7 +34,9 @@ class Notification_logic_controller : public Alarm_system{
   void classify_message(const mqtt::const_message_ptr &zigbee_message_ptr);
   ///the door sensor sent two messages associate to the same event
   ///this metod is used to recognize this case
-  bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr);
+  //bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr);
+  Contact_sensor_state check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
+  
   // ///handler called by classify_message when the message present in the queue is
   // ///associated to a sensor that requests a rich notification
   // mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr,
@@ -70,5 +81,6 @@ public:
   virtual void send_video_chunk(const Int_door_open_sensor_sig &evt);
   virtual void send_video_chunk(const Res_door_open_sensor_sig &evt);  
 
+  void load_configuration(const std::string &configuration_file);
 };
 #endif

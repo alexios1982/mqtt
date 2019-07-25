@@ -14,7 +14,7 @@
 Notification_logic_controller::Notification_logic_controller(Area_protection &area_protection,
 							     Synchronized_queue<mqtt::const_message_ptr> &queue,
 							     Publisher &publisher,
-							     std::map<std::string, std::string> &sensor_cam,
+							     std::map<std::string, std::string> &sensor_cam,  
 							     std::map<std::string, std::string> &cam_path,
 							     const int JPEG_QUALITY):
   _area_protection{area_protection},
@@ -36,6 +36,47 @@ void Notification_logic_controller::consume_message(){
   }
 }
 
+// void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &zigbee_message_ptr){
+//   //topic is in the form of zigbee2mqtt/0x00158d0001cc99b3
+//   std::string topic = zigbee_message_ptr->get_topic();
+//   //and we want to extract only the last 8 digits
+//   std::string topic_info = topic.substr(topic.size() - 8);
+//   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
+//     << "topic_info is: " << topic_info << '\n');
+//   //let's do a search in the _sensor_cam map to decide if we have
+//   //to prepare a rich notification or a classified notification
+//   mqtt::const_message_ptr message_to_send;
+//   auto it = _sensor_cam.find(topic_info);
+//   if( it != _sensor_cam.end() ){
+//     if( !is_a_door_sensor_notification_duplicate(zigbee_message_ptr) ){
+//       D( Time_spent<> to_send_notifications );
+//       // int iter = 0, n_of_sending = 3;
+//       // while( iter < n_of_sending){
+//       // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
+//       // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
+//       // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
+//       // 	if(message_to_send->get_topic() != "")
+//       // 	  send_notification(message_to_send);
+//       // 	++iter;
+//       // }
+//       send_rich_notifications(topic_info, 1, 2);
+//     }
+//     //nothing to do: the associate message has already been sent
+//     else
+//       return;
+//   }
+//   //if it's not in the sensor_cam map, it could be a rich message or
+//   //an answer from the ai serder (in this case the topic is Response
+//   else if (topic_info == "Response"){
+//     analyze_ai_response(zigbee_message_ptr);
+//   }
+//   //it is a sensor associate to a classified notification
+//   else{
+//     message_to_send = prepare_classified_notification(zigbee_message_ptr);
+//     //send_notification(message_to_send);
+//   }
+// }
+
 void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &zigbee_message_ptr){
   //topic is in the form of zigbee2mqtt/0x00158d0001cc99b3
   std::string topic = zigbee_message_ptr->get_topic();
@@ -46,9 +87,18 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   //let's do a search in the _sensor_cam map to decide if we have
   //to prepare a rich notification or a classified notification
   mqtt::const_message_ptr message_to_send;
-  auto it = _sensor_cam.find(topic_info);
-  if( it != _sensor_cam.end() ){
-    if( !is_a_door_sensor_notification_duplicate(zigbee_message_ptr) ){
+
+  
+  //auto it = _sensor_cam.find(topic_info);
+  auto it = _sensor_proc_events_map.find(topic_info);
+  if( it != _sensor_proc_events_map.end() ){
+    Contact_sensor_state contact_state = check_contact_sensor_state(zigbee_message_ptr);
+    //the door is opened when the contact is false.
+    //we have to check if it is not a duplicate    
+    if( !(contact_state.actual_contact )
+	&&
+	!( contact_state.is_a_duplicate )
+	){
       D( Time_spent<> to_send_notifications );
       // int iter = 0, n_of_sending = 3;
       // while( iter < n_of_sending){
@@ -59,7 +109,8 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
       // 	  send_notification(message_to_send);
       // 	++iter;
       // }
-      send_rich_notifications(topic_info, 1, 2);
+      //send_rich_notifications(topic_info, 1, 2);
+      (it->second)();
     }
     //nothing to do: the associate message has already been sent
     else
@@ -230,7 +281,8 @@ void Notification_logic_controller::send_notification(const mqtt::const_message_
   _publisher.publish(message_ptr);
 }
 
-bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr){
+Notification_logic_controller::Contact_sensor_state
+Notification_logic_controller::check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr){
   //solution to double notification problems
   //we discard the second message with the same value of contact tag
   //because sensor port always
@@ -244,18 +296,32 @@ bool Notification_logic_controller::is_a_door_sensor_notification_duplicate(cons
    
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
+  Contact_sensor_state contact_state{false, false};
+  contact_state.actual_contact = pt.get<bool>("contact");
   //contact value is true or false, but we want to convert to an int value
-  int actual_contact = pt.get<bool>("contact");
-  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
-#if 0
-  D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
-    "actual contact: " << actual_contact << '\n';)
-#endif
-    if(actual_contact != previous_contact){
-      previous_contact = actual_contact;
-      return false;
-    }
-  return true;
+  int actual_contact = contact_state.actual_contact;
+
+  //  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
+  // #if 0
+  //   D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
+  //     "actual contact: " << actual_contact << '\n';)
+  // #endif
+    
+  //if actual_contact is true the door has been closed and we don't have to check
+  //if it a dublicate because in this case no event will be triggered
+  if(contact_state.actual_contact)
+    return contact_state;
+  
+  //if actual_contact is false the door has been open and we have to check
+  //if it a dublicate because in this case no event will be trigger
+  if(actual_contact != previous_contact){
+    previous_contact = actual_contact;
+    contact_state.is_a_duplicate = false;
+  }
+  else
+    contact_state.is_a_duplicate = true;
+
+  return contact_state;
 }
 
 void Notification_logic_controller::update_area_protection(){
@@ -361,13 +427,30 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
 // }
 
 void Notification_logic_controller::send_video_chunk(const Ext_door_open_sensor_sig &evt){
+  boost::ignore_unused(evt);
+  send_rich_notifications(evt._sensor_mini_id, 1, 2);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 void Notification_logic_controller::send_video_chunk(const Int_door_open_sensor_sig &evt){
+  boost::ignore_unused(evt);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
 void Notification_logic_controller::send_video_chunk(const Res_door_open_sensor_sig &evt){
+  boost::ignore_unused(evt);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
+void Notification_logic_controller::load_configuration(const std::string &configuration_file){
+  //I dont't konw this doesn't work
+  //part in which we'll parse the file to retrieve information for loading the map
+  // _sensor_proc_events_map["01cc99b3"] = std::bind(
+  // 						    &Alarm_system::process_event,
+  // 						    this,
+  // 						    Ext_door_open_sensor_sig{"cam02"}
+  // 						    );
+  _sensor_proc_events_map["01cc99b3"] = [this](){ return process_event(Ext_door_open_sensor_sig{"01cc99b3"}); };
+    
+
+  process_event(Initialization_completed{});
+}
