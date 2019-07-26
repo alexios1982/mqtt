@@ -95,13 +95,7 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
     switch(_sensor_type_map[topic_info]){
     case Sensor_type::CONTACT :
       {  
-	Contact_sensor_state contact_sensor_state = check_contact_sensor_state(zigbee_message_ptr);
-	//the door is opened when the contact is false.
-	//we have to check if it is not a duplicate    
-	if( !(contact_sensor_state.actual_contact )
-	    &&
-	    !( contact_sensor_state.is_a_duplicate )
-	    ){
+	if( is_gate_opened(zigbee_message_ptr) ){
 	  D( Time_spent<> to_send_notifications );
 	  // int iter = 0, n_of_sending = 3;
 	  // while( iter < n_of_sending){
@@ -122,9 +116,7 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
       }
     case Sensor_type::MOTION :
       {
-	//we have to check if it is not a duplicate    
-	Motion_sensor_state motion_sensor_state = check_motion_sensor_state(zigbee_message_ptr);
-	if(  !( motion_sensor_state.is_a_duplicate ) ){
+	if( is_room_occupied(zigbee_message_ptr) ){
 	  D( Time_spent<> to_send_notifications );
 	  // int iter = 0, n_of_sending = 3;
 	  // while( iter < n_of_sending){
@@ -303,59 +295,51 @@ void Notification_logic_controller::send_notification(const mqtt::const_message_
   _publisher.publish(message_ptr);
 }
 
-Notification_logic_controller::Contact_sensor_state
-Notification_logic_controller::check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr){
-  //solution to double notification problems
-  //we discard the second message with the same value of contact tag
-  //because sensor port always
-  //sends two messages for each event: closed door and opened door
-  static int previous_contact = -1;
-  std::string payload( zigbee_message_ptr->to_string() );
-  std::stringstream ss;
+// Notification_logic_controller::Contact_sensor_state
+// Notification_logic_controller::check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr){
+//   //solution to double notification problems
+//   //we discard the second message with the same value of contact tag
+//   //because sensor port always
+//   //sends two messages for each event: closed door and opened door
+//   static int previous_contact = -1;
+//   std::string payload( zigbee_message_ptr->to_string() );
+//   std::stringstream ss;
    
-  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
-    ss << payload;
+//   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
+//     ss << payload;
    
-  boost::property_tree::ptree pt;
-  boost::property_tree::read_json(ss, pt);
-  Contact_sensor_state contact_sensor_state{false, false};
-  contact_sensor_state.actual_contact = pt.get<bool>("contact");
-  //contact value is true or false, but we want to convert to an int value
-  int actual_contact = contact_sensor_state.actual_contact;
+//   boost::property_tree::ptree pt;
+//   boost::property_tree::read_json(ss, pt);
+//   Contact_sensor_state contact_sensor_state{false, false};
+//   contact_sensor_state.actual_contact = pt.get<bool>("contact");
+//   //contact value is true or false, but we want to convert to an int value
+//   int actual_contact = contact_sensor_state.actual_contact;
 
-  //  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
-  // #if 0
-  //   D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
-  //     "actual contact: " << actual_contact << '\n';)
-  // #endif
+//   //  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
+//   // #if 0
+//   //   D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
+//   //     "actual contact: " << actual_contact << '\n';)
+//   // #endif
     
-  //if actual_contact is true the door has been closed and we don't have to check
-  //if it a dublicate because in this case no event will be triggered
-  if(contact_sensor_state.actual_contact)
-    return contact_sensor_state;
+//   //if actual_contact is true the door has been closed and we don't have to check
+//   //if it a dublicate because in this case no event will be triggered
+//   if(contact_sensor_state.actual_contact)
+//     return contact_sensor_state;
   
-  //if actual_contact is false the door has been open and we have to check
-  //if it a dublicate because in this case no event will be trigger
-  if(actual_contact != previous_contact){
-    previous_contact = actual_contact;
-    contact_sensor_state.is_a_duplicate = false;
-  }
-  else
-    contact_sensor_state.is_a_duplicate = true;
+//   //if actual_contact is false the door has been open and we have to check
+//   //if it a dublicate because in this case no event will be trigger
+//   if(actual_contact != previous_contact){
+//     previous_contact = actual_contact;
+//     contact_sensor_state.is_a_duplicate = false;
+//   }
+//   else
+//     contact_sensor_state.is_a_duplicate = true;
 
-  return contact_sensor_state;
-}
+//   return contact_sensor_state;
+// }
 
-
-
-
-Notification_logic_controller::Motion_sensor_state
-Notification_logic_controller::check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr){
-  //solution to double notification problems
-  //we discard the second message with the same value of occupancy tag
-  //because sensor port always
-  //sends two messages for each event: closed door and opened door
-  static int previous_occupancy = -1;
+Notification_logic_controller::Is_gate_opened
+Notification_logic_controller::is_gate_opened(const mqtt::const_message_ptr &zigbee_message_ptr){
   std::string payload( zigbee_message_ptr->to_string() );
   std::stringstream ss;
    
@@ -364,41 +348,62 @@ Notification_logic_controller::check_motion_sensor_state(const mqtt::const_messa
    
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
-  Motion_sensor_state motion_sensor_state{false, false};
-  motion_sensor_state.actual_occupancy = pt.get<bool>("occupancy");
-  //occupancy value is true or false, but we want to convert to an int value
-  int actual_occupancy = motion_sensor_state.actual_occupancy;
-
-  //  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
-  // #if 0
-  //   D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
-  //     "actual contact: " << actual_contact << '\n';)
-  // #endif
-
-  
-  //if actual_contact is false the door has been open and we have to check
-  //if it a dublicate because in this case no event will be trigger
-  if(actual_occupancy != previous_occupancy){
-    previous_occupancy = actual_occupancy;
-    motion_sensor_state.is_a_duplicate = false;
-  }
-  else
-    motion_sensor_state.is_a_duplicate = true;
-
-  return motion_sensor_state;
+  //if the contact value is true, the door has been closed
+  return !( pt.get<bool>("contact") );
 }
 
+// Notification_logic_controller::Motion_sensor_state
+// Notification_logic_controller::check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr){
+//   //solution to double notification problems
+//   //we discard the second message with the same value of occupancy tag
+//   //because sensor port always
+//   //sends two messages for each event: closed door and opened door
+//   static int previous_occupancy = -1;
+//   std::string payload( zigbee_message_ptr->to_string() );
+//   std::stringstream ss;
+   
+//   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
+//     ss << payload;
+   
+//   boost::property_tree::ptree pt;
+//   boost::property_tree::read_json(ss, pt);
+//   Motion_sensor_state motion_sensor_state{false, false};
+//   motion_sensor_state.actual_occupancy = pt.get<bool>("occupancy");
+//   //occupancy value is true or false, but we want to convert to an int value
+//   int actual_occupancy = motion_sensor_state.actual_occupancy;
+
+//   //  //I tried to put #undef DEBUG here to avoid printing but it doesn't work
+//   // #if 0
+//   //   D(std::cout << info << "Notification_logic_controller::" << "] " << reset <<
+//   //     "actual contact: " << actual_contact << '\n';)
+//   // #endif
+
+  
+//   //if actual_contact is false the door has been open and we have to check
+//   //if it a dublicate because in this case no event will be trigger
+//   if(actual_occupancy != previous_occupancy){
+//     previous_occupancy = actual_occupancy;
+//     motion_sensor_state.is_a_duplicate = false;
+//   }
+//   else
+//     motion_sensor_state.is_a_duplicate = true;
+
+//   return motion_sensor_state;
+// }
 
 
-
-
-
-
-
-
-
-
-
+Notification_logic_controller::Is_room_occupied
+Notification_logic_controller::is_room_occupied(const mqtt::const_message_ptr &zigbee_message_ptr){
+  std::string payload( zigbee_message_ptr->to_string() );
+  std::stringstream ss;
+   
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
+    ss << payload;
+   
+  boost::property_tree::ptree pt;
+  boost::property_tree::read_json(ss, pt);
+  return pt.get<bool>("occupancy");
+}
 
 void Notification_logic_controller::update_area_protection(){
   _area_protection.update();

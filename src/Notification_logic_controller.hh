@@ -20,14 +20,15 @@ class Notification_logic_controller : public Alarm_system{
     JPEG,
     MP4
   };
-  struct Contact_sensor_state{
-    bool is_a_duplicate;
-    bool actual_contact;
-  };
-  struct Motion_sensor_state{
-    bool is_a_duplicate;
-    bool actual_occupancy;
-  };
+  // struct Contact_sensor_state{
+  //   bool is_a_duplicate;
+  //   bool actual_contact;
+  // };
+  // struct Motion_sensor_state{
+  //   bool is_a_duplicate;
+  //   bool actual_occupancy;
+  // };
+  
   typedef std::function<void()> Proc_events_ptr;
   typedef std::map<std::string, Proc_events_ptr> Sensor_proc_events_map;
   typedef std::map<std::string, Sensor_type> Sensor_type_map;
@@ -43,11 +44,17 @@ class Notification_logic_controller : public Alarm_system{
   ///this method is called by consume_message when a message is present in the queue
   ///check the message type and call the appropriate handlers
   void classify_message(const mqtt::const_message_ptr &zigbee_message_ptr);
-  ///the door sensor sent two messages associate to the same event
-  ///this metod is used to recognize this case
-  //bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr);
-  Contact_sensor_state check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
-  Motion_sensor_state check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
+
+  // ///the door sensor sent two messages associate to the same event
+  // ///this metod is used to recognize this case
+  // //bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr);
+  // Contact_sensor_state check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
+  // Motion_sensor_state check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
+
+  typedef bool Is_gate_opened;
+  Is_gate_opened is_gate_opened(const mqtt::const_message_ptr &zigbee_message_ptr);
+  typedef bool Is_room_occupied;
+  Is_room_occupied is_room_occupied(const mqtt::const_message_ptr &zigbee_message_ptr);
   
   // ///handler called by classify_message when the message present in the queue is
   // ///associated to a sensor that requests a rich notification
