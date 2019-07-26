@@ -326,12 +326,4 @@ void Alarm_system_::res_presence_flag_reset(const Event_type &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }
 
-template<class Event_type>
-void Alarm_system_::increase_ai_response_counter(const Event_type &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
 
-template<class Event_type>
-void Alarm_system_::decrease_ai_response_counter(const Event_type &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}

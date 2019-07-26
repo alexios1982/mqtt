@@ -13,6 +13,54 @@ void Alarm_system_::send_video_chunk(const Res_door_open_sensor_sig &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }
 
+void Alarm_system_::increase_ai_response_counter(const Ext_door_open_sensor_sig &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::increase_ai_response_counter(const Int_door_open_sensor_sig &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::increase_ai_response_counter(const Res_door_open_sensor_sig &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_owner_in_ext &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_owner_in_int &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_owner_in_res &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_monit_in_ext &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_monit_in_int &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_monit_in_res &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_unk_in_ext &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_unk_in_int &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Alarm_system_::decrease_ai_response_counter(const Rec_unk_in_res &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
 void Alarm_system_::reset_presence_flags(const Reset_risk &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }

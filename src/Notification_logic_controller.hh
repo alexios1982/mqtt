@@ -15,10 +15,15 @@ class Notification_logic_controller : public Alarm_system{
     CONTACT,
     MOTION
   };
-
   enum File_type{
     JPEG,
     MP4
+  };
+  enum class Ai_result{
+    NO_DETECTION,
+    UNKNOWN,
+    OWNER,
+    MONITORED  
   };
   // struct Contact_sensor_state{
   //   bool is_a_duplicate;
@@ -28,19 +33,27 @@ class Notification_logic_controller : public Alarm_system{
   //   bool is_a_duplicate;
   //   bool actual_occupancy;
   // };
-  
   typedef std::function<void()> Proc_events_ptr;
-  typedef std::map<std::string, Proc_events_ptr> Sensor_proc_events_map;
-  typedef std::map<std::string, Sensor_type> Sensor_type_map;
+  typedef std::string Sensor_mini_id;
+  typedef std::map<Sensor_mini_id, Proc_events_ptr> Sensor_proc_events_map;
+  typedef std::map<Sensor_mini_id, Sensor_type> Sensor_type_map;
   Sensor_type_map _sensor_type_map;
   Sensor_proc_events_map _sensor_proc_events_map;
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
-  std::map<std::string, std::string> &_sensor_cam;
+  std::map<Sensor_mini_id, std::string> &_sensor_cam;
   std::map<std::string, std::string> &_cam_path;
+  typedef std::string Cam_position;
+  std::map<Sensor_mini_id, Cam_position> _sensor_position_map;
+  typedef std::string Position;
+  typedef std::pair<Ai_result, Position> Ai_result_position_pair;
+  std::map<Ai_result_position_pair, Proc_events_ptr> _ai_result_position_proc_events_map;
   std::vector<int> _jpeg_params;
-
+  int _number_of_sent_frames;
+  int _number_of_received_responses;
+  const int _NUMBER_OF_FRAMES_TO_SEND;
+  
   ///this method is called by consume_message when a message is present in the queue
   ///check the message type and call the appropriate handlers
   void classify_message(const mqtt::const_message_ptr &zigbee_message_ptr);
@@ -62,7 +75,8 @@ class Notification_logic_controller : public Alarm_system{
   // 						    const std::string &sensor_mini_id);
 
   mqtt::const_message_ptr prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr,
-						    File_type file_type);
+						    File_type file_type,
+						    const std::string &sensor_mini_id);
   
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a classified notification  
@@ -89,7 +103,8 @@ public:
 				std::map<std::string, std::string> &cam_path,
 				//with input bitrate=2000000 and resolution=1920x1080
 				//JPEG_QUALITY = 60 gives decode message of about 112KB
-				const int JPEG_QUALITY = 60);
+				const int JPEG_QUALITY = 60,
+				const int NUMBER_OF_FRAMES_TO_SEND = 3);
   ///this method check the presence of a message in the queue and start
   ///classify_message in a thread to take the required actions
   void consume_message();
@@ -99,6 +114,20 @@ public:
   virtual void send_video_chunk(const Ext_door_open_sensor_sig &evt);
   virtual void send_video_chunk(const Int_door_open_sensor_sig &evt);
   virtual void send_video_chunk(const Res_door_open_sensor_sig &evt);  
+
+  virtual void increase_ai_response_counter(const Ext_door_open_sensor_sig &evt);
+  virtual void increase_ai_response_counter(const Int_door_open_sensor_sig &evt);
+  virtual void increase_ai_response_counter(const Res_door_open_sensor_sig &evt);  
+
+  virtual void decrease_ai_response_counter(const Rec_owner_in_ext &evt);
+  virtual void decrease_ai_response_counter(const Rec_owner_in_int &evt);
+  virtual void decrease_ai_response_counter(const Rec_owner_in_res &evt);
+  virtual void decrease_ai_response_counter(const Rec_monit_in_ext &evt);
+  virtual void decrease_ai_response_counter(const Rec_monit_in_int &evt);
+  virtual void decrease_ai_response_counter(const Rec_monit_in_res &evt);
+  virtual void decrease_ai_response_counter(const Rec_unk_in_ext &evt);
+  virtual void decrease_ai_response_counter(const Rec_unk_in_int &evt);
+  virtual void decrease_ai_response_counter(const Rec_unk_in_res &evt);
 
   void load_configuration(const std::string &configuration_file);
 };

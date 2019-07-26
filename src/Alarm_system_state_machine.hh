@@ -64,9 +64,25 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   //maybe this action could be collapsed into one using an superclass event from which each derives
   // template<class Event_type>
   // virtual void send_video_chunk(const Event_type &evt);
+  //impossibile to have template virtual methods
   virtual  void send_video_chunk(const Ext_door_open_sensor_sig &evt);
   virtual  void send_video_chunk(const Int_door_open_sensor_sig &evt);
   virtual  void send_video_chunk(const Res_door_open_sensor_sig &evt);
+
+  virtual void increase_ai_response_counter(const Ext_door_open_sensor_sig &evt);
+  virtual void increase_ai_response_counter(const Int_door_open_sensor_sig &evt);
+  virtual void increase_ai_response_counter(const Res_door_open_sensor_sig &evt);  
+
+  virtual void decrease_ai_response_counter(const Rec_owner_in_ext &evt);
+  virtual void decrease_ai_response_counter(const Rec_owner_in_int &evt);
+  virtual void decrease_ai_response_counter(const Rec_owner_in_res &evt);
+  virtual void decrease_ai_response_counter(const Rec_monit_in_ext &evt);
+  virtual void decrease_ai_response_counter(const Rec_monit_in_int &evt);
+  virtual void decrease_ai_response_counter(const Rec_monit_in_res &evt);
+  virtual void decrease_ai_response_counter(const Rec_unk_in_ext &evt);
+  virtual void decrease_ai_response_counter(const Rec_unk_in_int &evt);
+  virtual void decrease_ai_response_counter(const Rec_unk_in_res &evt);
+  
 
   template<class Event_type>
   void ext_presence_flag_update(const Event_type &evt);  
@@ -140,12 +156,6 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   template<class Event_type>
   void send_video_chunk_and_trigger_red_alarm(const Event_type &evt);  
 
-  template<class Event_type>
-  void increase_ai_response_counter(const Event_type &evt);  
-
-  template<class Event_type>
-  void decrease_ai_response_counter(const Event_type &evt);
-  
   struct transition_table : mpl::vector<
     //    Start                       Event                     Target                     Action                      Guard
     //+-----------------------------+-------------------------+--------------------------+---------------------------+-----------
@@ -288,19 +298,19 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_row<Reserved,                 Clear_res,                 Intern,                          &Alarm_system_::res_presence_flag_reset<Clear_res>                         >,
     //Intenal_activity state machine transitions
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
-    a_row<Idle,                     Ext_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter<Ext_door_open_sensor_sig>       >,
-    a_row<Idle,                     Int_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter<Int_door_open_sensor_sig>       >,
-    a_row<Idle,                     Res_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter<Res_door_open_sensor_sig>       >,
+    a_row<Idle,                     Ext_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter       >,
+    a_row<Idle,                     Int_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter       >,
+    a_row<Idle,                     Res_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter       >,
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
-    a_irow<Waiting_for_ai_response, Rec_owner_in_ext,                                           &Alarm_system_::decrease_ai_response_counter<Rec_owner_in_ext>               >,
-    a_irow<Waiting_for_ai_response, Rec_monit_in_ext,                                           &Alarm_system_::decrease_ai_response_counter<Rec_monit_in_ext>               >,
-    a_irow<Waiting_for_ai_response, Rec_unk_in_ext,                                             &Alarm_system_::decrease_ai_response_counter<Rec_unk_in_ext>                 >,
-    a_irow<Waiting_for_ai_response, Rec_owner_in_int,                                           &Alarm_system_::decrease_ai_response_counter<Rec_owner_in_int>               >,
-    a_irow<Waiting_for_ai_response, Rec_monit_in_int,                                           &Alarm_system_::decrease_ai_response_counter<Rec_monit_in_int>               >,
-    a_irow<Waiting_for_ai_response, Rec_unk_in_int,                                             &Alarm_system_::decrease_ai_response_counter<Rec_unk_in_int>                 >,
-    a_irow<Waiting_for_ai_response, Rec_owner_in_res,                                           &Alarm_system_::decrease_ai_response_counter<Rec_owner_in_res>               >,
-    a_irow<Waiting_for_ai_response, Rec_monit_in_res,                                           &Alarm_system_::decrease_ai_response_counter<Rec_monit_in_res>               >,
-    a_irow<Waiting_for_ai_response, Rec_unk_in_res,                                             &Alarm_system_::decrease_ai_response_counter<Rec_unk_in_res>                 >,
+    a_irow<Waiting_for_ai_response, Rec_owner_in_ext,                                           &Alarm_system_::decrease_ai_response_counter               >,
+    a_irow<Waiting_for_ai_response, Rec_monit_in_ext,                                           &Alarm_system_::decrease_ai_response_counter               >,
+    a_irow<Waiting_for_ai_response, Rec_unk_in_ext,                                             &Alarm_system_::decrease_ai_response_counter                 >,
+    a_irow<Waiting_for_ai_response, Rec_owner_in_int,                                           &Alarm_system_::decrease_ai_response_counter               >,
+    a_irow<Waiting_for_ai_response, Rec_monit_in_int,                                           &Alarm_system_::decrease_ai_response_counter               >,
+    a_irow<Waiting_for_ai_response, Rec_unk_in_int,                                             &Alarm_system_::decrease_ai_response_counter               >,
+    a_irow<Waiting_for_ai_response, Rec_owner_in_res,                                           &Alarm_system_::decrease_ai_response_counter              >,
+    a_irow<Waiting_for_ai_response, Rec_monit_in_res,                                           &Alarm_system_::decrease_ai_response_counter               >,
+    a_irow<Waiting_for_ai_response, Rec_unk_in_res,                                             &Alarm_system_::decrease_ai_response_counter                >,
     _row<Waiting_for_ai_response,   Ai_response_off,            Idle                                                                                                          >
     > {};
 

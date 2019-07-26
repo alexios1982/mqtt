@@ -16,12 +16,16 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
 							     Publisher &publisher,
 							     std::map<std::string, std::string> &sensor_cam,  
 							     std::map<std::string, std::string> &cam_path,
-							     const int JPEG_QUALITY):
+							     const int JPEG_QUALITY,
+							     const int NUMBER_OF_FRAMES_TO_SEND):
   _area_protection{area_protection},
   _queue{queue},
   _publisher{publisher},
   _sensor_cam{sensor_cam},
-  _cam_path{cam_path}{
+  _cam_path{cam_path},
+  _number_of_sent_frames{0},
+  _number_of_received_responses{0},
+  _NUMBER_OF_FRAMES_TO_SEND{NUMBER_OF_FRAMES_TO_SEND}{
     _jpeg_params.push_back(CV_IMWRITE_JPEG_QUALITY);
     _jpeg_params.push_back(JPEG_QUALITY);
   }
@@ -88,7 +92,6 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   //to prepare a rich notification or a classified notification
   mqtt::const_message_ptr message_to_send;
 
-  
   //auto it = _sensor_cam.find(topic_info);
   auto it = _sensor_proc_events_map.find(topic_info);
   if( it != _sensor_proc_events_map.end() ){
@@ -134,7 +137,7 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
        << "curr: " << curr_short_filename << " last: " << last_sent_short_filename << std::endl);
     if(curr_short_filename != last_sent_short_filename){
       last_sent_short_filename = curr_short_filename;
-      mqtt::const_message_ptr message_to_send = prepare_rich_notification(to_send_ptr, file_type);
+      mqtt::const_message_ptr message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id);
       if(message_to_send->get_topic() != ""){
 	      	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
       	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
@@ -171,13 +174,14 @@ void Notification_logic_controller::send_rich_notifications(const std::string &s
     send_rich_notification(sensor_mini_id, 0, file_type);
 }
 
-mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type){
+mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id){
   boost::property_tree::ptree pt;
   std::string to_send_filename = ( (to_send_ptr->second).filename() ).string(); 
   if(file_type == MP4){
     pt.put("filename", to_send_filename );
     pt.put( "data", base64_file_converter( (to_send_ptr->second).string() ) );
-  }
+    pt.put("position", _sensor_position_map[sensor_mini_id]);
+   }
   else if(file_type == JPEG){
     static std::string last_jpeg_file{};
     //let's remove last jpeg file
@@ -204,6 +208,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
     imwrite(jpeg_complete_filename, frame, _jpeg_params);
     
     pt.put( "data", base64_file_converter(jpeg_complete_filename) );
+    pt.put("position", _sensor_position_map[sensor_mini_id]);
     last_jpeg_file = jpeg_complete_filename;
   }
   else{
@@ -389,7 +394,15 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   std::time (&now);
   D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
      << " time: " << std::ctime(&now) << std::endl);
-  
+
+  std::stringstream ss;
+  boost::property_tree::ptree pt;
+  boost::property_tree::read_json(ss, pt);
+  std::string position =  pt.get<Position>("position");
+  Ai_result ai_result = static_cast<Ai_result>( pt.get<int>("response") );
+  //triggering the event
+  _ai_result_position_proc_events_map[ std::make_pair(ai_result, position) ]();
+
 }
 
 // mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr, const std::string &sensor_mini_id){
@@ -495,6 +508,78 @@ void Notification_logic_controller::send_video_chunk(const Res_door_open_sensor_
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
+
+void Notification_logic_controller::increase_ai_response_counter(const Ext_door_open_sensor_sig &evt){
+  boost::ignore_unused(evt);
+  _number_of_sent_frames += _NUMBER_OF_FRAMES_TO_SEND;
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+void Notification_logic_controller::increase_ai_response_counter(const Int_door_open_sensor_sig &evt){
+  boost::ignore_unused(evt);
+  _number_of_sent_frames += _NUMBER_OF_FRAMES_TO_SEND;
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Notification_logic_controller::increase_ai_response_counter(const Res_door_open_sensor_sig &evt){
+  boost::ignore_unused(evt);
+  _number_of_sent_frames += _NUMBER_OF_FRAMES_TO_SEND;
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_ext &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+    process_event(Ai_response_off{});
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_int &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+    process_event(Ai_response_off{});  
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_res &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+      process_event(Ai_response_off{});
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_ext &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+    process_event(Ai_response_off{});
+}
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_int &evt){
+  _number_of_received_responses += 1;
+    if(_number_of_sent_frames == _number_of_received_responses)
+      process_event(Ai_response_off{});
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_res &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+    process_event(Ai_response_off{});
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_ext &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+    process_event(Ai_response_off{});
+  
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_int &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+    process_event(Ai_response_off{});  
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_res &evt){
+  _number_of_received_responses += 1;
+  if(_number_of_sent_frames == _number_of_received_responses)
+    process_event(Ai_response_off{});  
+}
+
 void Notification_logic_controller::load_configuration(const std::string &configuration_file){
   //I dont't know why boost::bind doesn't work
   //part in which we'll parse the file to retrieve information for loading the map
@@ -503,6 +588,11 @@ void Notification_logic_controller::load_configuration(const std::string &config
   // 						    this,
   // 						    Ext_door_open_sensor_sig{"cam02"}
   // 						    );
+
+  //TODO
+  //This maps can collpse into one in which the value is a struct with all infos
+  _sensor_position_map["01cc99b3"] = "ext";
+  _sensor_position_map["0202c411"] = "ext";
   _sensor_type_map["01cc99b3"] = Sensor_type::CONTACT;
   _sensor_type_map["0202c411"] = Sensor_type::MOTION;
   _sensor_proc_events_map["01cc99b3"] = [this](){ return process_event(Ext_door_open_sensor_sig{"01cc99b3"}); };
@@ -511,6 +601,23 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["0202c411"] = [this](){ return process_event(Ext_motion_sensor_sig{}); };
   _sensor_proc_events_map["motfke_I"] = [this](){ return process_event(Int_motion_sensor_sig{}); };
   _sensor_proc_events_map["motfke_R"] = [this](){ return process_event(Res_motion_sensor_sig{}); };
+
   
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "ext")] = [this](){ return process_event(Rec_unk_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "int")] = [this](){ return process_event(Rec_unk_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "res")] = [this](){ return process_event(Rec_unk_in_res{}); }; 					      
+
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "ext")] = [this](){ return process_event(Rec_owner_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "int")] = [this](){ return process_event(Rec_owner_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "res")] = [this](){ return process_event(Rec_owner_in_res{}); }; 					      
+
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "ext")] = [this](){ return process_event(Rec_monit_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "int")] = [this](){ return process_event(Rec_monit_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "res")] = [this](){ return process_event(Rec_monit_in_res{}); }; 					      
+
+
   process_event(Initialization_completed{});
 }
+
+
+
