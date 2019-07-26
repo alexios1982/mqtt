@@ -94,45 +94,18 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   if( it != _sensor_proc_events_map.end() ){
     switch(_sensor_type_map[topic_info]){
     case Sensor_type::CONTACT :
-      {  
-	if( is_gate_opened(zigbee_message_ptr) ){
-	  D( Time_spent<> to_send_notifications );
-	  // int iter = 0, n_of_sending = 3;
-	  // while( iter < n_of_sending){
-	  // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
-	  // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
-	  // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
-	  // 	if(message_to_send->get_topic() != "")
-	  // 	  send_notification(message_to_send);
-	  // 	++iter;
-	  // }
-	  //send_rich_notifications(topic_info, 1, 2);
-	  (it->second)();
-	}
-	//nothing to do: the associate message has already been sent
-	else
-	  return;
-	break;
+      if( is_gate_opened(zigbee_message_ptr) ){
+	D( Time_spent<> to_send_notifications );
+	(it->second)();
       }
+      //nothing to do: the associate message has already been sent
+      else
+	return;
+      break;
     case Sensor_type::MOTION :
-      {
-	if( is_room_occupied(zigbee_message_ptr) ){
-	  D( Time_spent<> to_send_notifications );
-	  // int iter = 0, n_of_sending = 3;
-	  // while( iter < n_of_sending){
-	  // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
-	  // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
-	  // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
-	  // 	if(message_to_send->get_topic() != "")
-	  // 	  send_notification(message_to_send);
-	  // 	++iter;
-	  // }
-	  //send_rich_notifications(topic_info, 1, 2);
-	  (it->second)();
-	}
-	else return;
+	D( Time_spent<> to_send_notifications );
+	(it->second)();
 	break;
-      }
     }
   }
   //if it's not in the sensor_proc_events_map, it could be a rich message or
