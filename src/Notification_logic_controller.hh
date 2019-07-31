@@ -56,6 +56,9 @@ class Notification_logic_controller : public Alarm_system{
   int _number_of_sent_frames;
   int _number_of_received_responses;
   const int _NUMBER_OF_FRAMES_TO_SEND;
+  bool _is_ext_occupied;
+  bool _is_int_occupied;
+  bool _is_res_occupied;
   
   ///this method is called by consume_message when a message is present in the queue
   ///check the message type and call the appropriate handlers
@@ -131,6 +134,21 @@ public:
   virtual void decrease_ai_response_counter(const Rec_unk_in_ext &evt);
   virtual void decrease_ai_response_counter(const Rec_unk_in_int &evt);
   virtual void decrease_ai_response_counter(const Rec_unk_in_res &evt);
+
+
+  virtual void ext_presence_flag_update(const Rec_owner_in_ext &evt);
+  virtual void ext_presence_flag_update(const Rec_monit_in_ext &evt);
+  virtual void ext_presence_flag_update(const Rec_unk_in_ext &evt);
+  virtual void int_presence_flag_update(const Rec_owner_in_int &evt);
+  virtual void int_presence_flag_update(const Rec_monit_in_int &evt);
+  virtual void int_presence_flag_update(const Rec_unk_in_int &evt);
+  virtual void res_presence_flag_update(const Rec_owner_in_res &evt);
+  virtual void res_presence_flag_update(const Rec_monit_in_res &evt);
+  virtual void res_presence_flag_update(const Rec_unk_in_res &evt);
+
+  virtual void ext_presence_flag_reset(const Clear_ext &evt);
+  virtual void int_presence_flag_reset(const Clear_int &evt);
+  virtual void res_presence_flag_reset(const Clear_res &evt);
 
   void load_configuration(const std::string &configuration_file);
 

@@ -18,58 +18,6 @@ void Alarm_system_::trigger_red_alarm(const Event_type &evt){
   fsm.process_event(Red_alarm{});
 }
 
-// void Alarm_system_::trigger_red_alarm(const Perimetral_sensor_sig &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-// }
-
-// void Alarm_system_::trigger_red_alarm(const Int_wind_open_sensor_sig &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-// }
-
-// void Alarm_system_::trigger_red_alarm(const Res_wind_open_sensor_sig &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-// }
-
-// void Alarm_system_::trigger_red_alarm(const Int_motion_sensor_sig &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-// }
-
-// void Alarm_system_::trigger_red_alarm(const Res_motion_sensor_sig &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-  
-// }
-
-// void Alarm_system_::trigger_red_alarm(const Rec_unk_in_ext &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-  
-// }
-
-// void Alarm_system_::trigger_red_alarm(const Rec_unk_in_int &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-  
-// }
-
-// void Alarm_system_::trigger_red_alarm(const Rec_unk_in_res &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-  
-// }
-
 template <class Event_type>
 void Alarm_system_::trigger_orange_alarm(const Event_type &evt){
   boost::ignore_unused(evt);
@@ -77,76 +25,39 @@ void Alarm_system_::trigger_orange_alarm(const Event_type &evt){
   fsm.process_event(Orange_alarm{});
 }
 
-// void Alarm_system_::trigger_orange_alarm(const Ext_motion_sensor_sig &evt){
+// template<class Event_type>
+// void Alarm_system_::ext_presence_flag_update(const Event_type &evt){
+//     boost::ignore_unused(evt);
 //   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Orange_alarm{});
-// }
-
-// void Alarm_system_::trigger_automatic_cancellation(const Rec_owner_in_ext &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Automatic_cancellation{});
 // }
 
 // template<class Event_type>
-// void Alarm_system_::send_video_chunk(const Event_type &evt){
+// void Alarm_system_::int_presence_flag_update(const Event_type &evt){
+//   boost::ignore_unused(evt);
 //   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 // }
 
-template<class Event_type>
-void Alarm_system_::ext_presence_flag_update(const Event_type &evt){
-    boost::ignore_unused(evt);
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
-
-template<class Event_type>
-void Alarm_system_::int_presence_flag_update(const Event_type &evt){
-  boost::ignore_unused(evt);
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
-
-template<class Event_type>
-void Alarm_system_::res_presence_flag_update(const Event_type &evt){
-  boost::ignore_unused(evt);
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
-
-// void Alarm_system_::presence_flag_update(const Rec_owner_in_ext &evt){
+// template<class Event_type>
+// void Alarm_system_::res_presence_flag_update(const Event_type &evt){
+//   boost::ignore_unused(evt);
 //   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 // }
 
-// void Alarm_system_::presence_flag_update(const Rec_owner_in_int &evt){
+// template<class Event_type>
+// void Alarm_system_::ext_presence_flag_reset(const Event_type &evt){
 //   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 // }
 
-// void Alarm_system_::presence_flag_update(const Rec_owner_in_res &evt){
+// template<class Event_type>
+// void Alarm_system_::int_presence_flag_reset(const Event_type &evt){
 //   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 // }
 
-// void Alarm_system_::presence_flag_update(const Rec_monit_in_ext &evt){
+// template<class Event_type>
+// void Alarm_system_::res_presence_flag_reset(const Event_type &evt){
 //   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 // }
 
-// void Alarm_system_::presence_flag_update(const Rec_monit_in_int &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-// }
-
-// void Alarm_system_::presence_flag_update(const Rec_monit_in_res &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-// }
-
-// void Alarm_system_::presence_flag_update(const Rec_unk_in_ext &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-// }
-
-// void Alarm_system_::presence_flag_update(const Rec_unk_in_res &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-// }
-
-// void Alarm_system_::presence_flag_update(const Rec_unk_in_int &evt){
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-// }
 
 template<class Event_type>
 void Alarm_system_::ext_presence_flag_update_and_trigger_automatic_cancellation(const Event_type &evt){
@@ -172,29 +83,6 @@ void Alarm_system_::res_presence_flag_update_and_trigger_automatic_cancellation(
   fsm.process_event(Automatic_cancellation{});
 }
 
-// void Alarm_system_::presence_flag_update_and_trigger_automatic_cancellation(const Rec_owner_in_ext &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Automatic_cancellation{});
-
-// }
-
-// void Alarm_system_::presence_flag_update_and_trigger_automatic_cancellation(const Rec_owner_in_int &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Automatic_cancellation{});
-
-// }
-
-// void Alarm_system_::presence_flag_update_and_trigger_automatic_cancellation(const Rec_owner_in_res &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Automatic_cancellation{});
-// }
-
 template<class Event_type>
 void Alarm_system_::ext_presence_flag_update_and_trigger_orange_alarm(const Event_type &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);  
@@ -219,19 +107,6 @@ void Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm(const Even
   fsm.process_event(Orange_alarm{});
 }
 
-// void Alarm_system_::presence_flag_update_and_trigger_orange_alarm(const Rec_monit_in_ext &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Orange_alarm{});
-// }
-
-// void Alarm_system_::presence_flag_update_and_trigger_orange_alarm(const Rec_monit_in_res &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Orange_alarm{});
-// }
 template<class Event_type>
 void Alarm_system_::ext_presence_flag_update_and_trigger_red_alarm(const Event_type &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
@@ -255,28 +130,6 @@ void Alarm_system_::res_presence_flag_update_and_trigger_red_alarm(const Event_t
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Red_alarm{});  
 }
-
-// void Alarm_system_::presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_ext &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-// }
-
-// void Alarm_system_::presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_int &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-// }
-
-// void Alarm_system_::presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_res &evt){
-//   presence_flag_update(evt);
-//   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-//   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-//   fsm.process_event(Red_alarm{});
-// }
-
 
 template <class Event_type>
 void Alarm_system_::trigger_red_alarm_if_ext_empty(const Event_type &evt){
@@ -311,19 +164,5 @@ void Alarm_system_::send_video_chunk_and_trigger_red_alarm(const Event_type &evt
   fsm.process_event(Red_alarm{});  
 }
 
-template<class Event_type>
-void Alarm_system_::ext_presence_flag_reset(const Event_type &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
-
-template<class Event_type>
-void Alarm_system_::int_presence_flag_reset(const Event_type &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
-
-template<class Event_type>
-void Alarm_system_::res_presence_flag_reset(const Event_type &evt){
-  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
-}
 
 

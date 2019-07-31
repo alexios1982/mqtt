@@ -84,31 +84,34 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   virtual void decrease_ai_response_counter(const Rec_unk_in_res &evt);
   
 
-  template<class Event_type>
-  void ext_presence_flag_update(const Event_type &evt);  
-  template<class Event_type>
-  void int_presence_flag_update(const Event_type &evt);  
-  template<class Event_type>
-  void res_presence_flag_update(const Event_type &evt);  
+  // template<class Event_type>
+  // void ext_presence_flag_update(const Event_type &evt);  
+  // template<class Event_type>
+  // void int_presence_flag_update(const Event_type &evt);  
+  // template<class Event_type>
+  // void res_presence_flag_update(const Event_type &evt);
 
-  template<class Event_type>
-  void ext_presence_flag_reset(const Event_type &evt);  
-  template<class Event_type>
-  void int_presence_flag_reset(const Event_type &evt);  
-  template<class Event_type>
-  void res_presence_flag_reset(const Event_type &evt);  
+  // template<class Event_type>
+  // void ext_presence_flag_reset(const Event_type &evt);  
+  // template<class Event_type>
+  // void int_presence_flag_reset(const Event_type &evt);  
+  // template<class Event_type>
+  // void res_presence_flag_reset(const Event_type &evt);
 
+  virtual void ext_presence_flag_update(const Rec_owner_in_ext &evt);
+  virtual void ext_presence_flag_update(const Rec_monit_in_ext &evt);
+  virtual void ext_presence_flag_update(const Rec_unk_in_ext &evt);
+  virtual void int_presence_flag_update(const Rec_owner_in_int &evt);
+  virtual void int_presence_flag_update(const Rec_monit_in_int &evt);
+  virtual void int_presence_flag_update(const Rec_unk_in_int &evt);
+  virtual void res_presence_flag_update(const Rec_owner_in_res &evt);
+  virtual void res_presence_flag_update(const Rec_monit_in_res &evt);
+  virtual void res_presence_flag_update(const Rec_unk_in_res &evt);
 
-  // void presence_flag_update(const Rec_owner_in_ext &evt);
-  // void presence_flag_update(const Rec_owner_in_int &evt);
-  // void presence_flag_update(const Rec_owner_in_res &evt);
-  // void presence_flag_update(const Rec_monit_in_ext &evt);
-  // void presence_flag_update(const Rec_monit_in_int &evt);
-  // void presence_flag_update(const Rec_monit_in_res &evt);
-  // void presence_flag_update(const Rec_unk_in_ext &evt);
-  // void presence_flag_update(const Rec_unk_in_int &evt);
-  // void presence_flag_update(const Rec_unk_in_res &evt);
-  
+  virtual void ext_presence_flag_reset(const Clear_ext &evt);
+  virtual void int_presence_flag_reset(const Clear_int &evt);
+  virtual void res_presence_flag_reset(const Clear_res &evt);
+
 
   template<class Event_type>
   void ext_presence_flag_update_and_trigger_automatic_cancellation(const Event_type &evt);
@@ -202,11 +205,11 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_irow<Evaluating_risk,         Ext_motion_sensor_sig,                                 &Alarm_system_::trigger_orange_alarm<Ext_motion_sensor_sig> >,
     a_irow<Evaluating_risk,         Int_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Int_motion_sensor_sig>    >,
     a_irow<Evaluating_risk,         Res_motion_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>    >,
-    a_row<Evaluating_risk,          Rec_owner_in_ext,         Low_risk,                    &Alarm_system_::ext_presence_flag_update<Rec_owner_in_ext> >,
-    a_row<Evaluating_risk,          Rec_owner_in_int,         Low_risk,                    &Alarm_system_::int_presence_flag_update<Rec_owner_in_int> >,
-    a_row<Evaluating_risk,          Rec_owner_in_res,         Low_risk,                    &Alarm_system_::res_presence_flag_update<Rec_owner_in_res> >,        
+    a_row<Evaluating_risk,          Rec_owner_in_ext,         Low_risk,                    &Alarm_system_::ext_presence_flag_update >,
+    a_row<Evaluating_risk,          Rec_owner_in_int,         Low_risk,                    &Alarm_system_::int_presence_flag_update >,
+    a_row<Evaluating_risk,          Rec_owner_in_res,         Low_risk,                    &Alarm_system_::res_presence_flag_update >,        
     a_row<Evaluating_risk,          Rec_monit_in_ext,         Medium_risk,                 &Alarm_system_::ext_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_ext> >,
-    a_row<Evaluating_risk,          Rec_monit_in_int,         Medium_risk,                 &Alarm_system_::int_presence_flag_update<Rec_monit_in_int>                          >,
+    a_row<Evaluating_risk,          Rec_monit_in_int,         Medium_risk,                 &Alarm_system_::int_presence_flag_update                         >,
     a_row<Evaluating_risk,          Rec_monit_in_res,         Medium_risk,                 &Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_res> >,
     a_row<Evaluating_risk,          Rec_unk_in_ext,           High_risk,                   &Alarm_system_::ext_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_ext> >,
     a_row<Evaluating_risk,          Rec_unk_in_int,           High_risk,                   &Alarm_system_::int_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_int> >,
@@ -216,13 +219,13 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_irow<Low_risk,                Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                            >,
     a_irow<Low_risk,                Int_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                          >,
     a_irow<Low_risk,                Res_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk                          >,
-    a_irow<Low_risk,                Rec_owner_in_ext,                                      &Alarm_system_::ext_presence_flag_update<Rec_owner_in_ext> >,    
-    a_irow<Low_risk,                Rec_owner_in_int,                                      &Alarm_system_::int_presence_flag_update<Rec_owner_in_int> >,
-    a_irow<Low_risk,                Rec_owner_in_res,                                      &Alarm_system_::res_presence_flag_update<Rec_owner_in_res> >,
-    a_irow<Low_risk,                Rec_monit_in_ext,                                      &Alarm_system_::ext_presence_flag_update<Rec_monit_in_ext> >,    
-    a_irow<Low_risk,                Rec_monit_in_int,                                      &Alarm_system_::int_presence_flag_update<Rec_monit_in_int> >,
-    a_irow<Low_risk,                Rec_monit_in_res,                                      &Alarm_system_::res_presence_flag_update<Rec_monit_in_res> >,
-    a_irow<Low_risk,                Rec_unk_in_ext,                                        &Alarm_system_::ext_presence_flag_update<Rec_unk_in_ext> >,   
+    a_irow<Low_risk,                Rec_owner_in_ext,                                      &Alarm_system_::ext_presence_flag_update >,    
+    a_irow<Low_risk,                Rec_owner_in_int,                                      &Alarm_system_::int_presence_flag_update  >,
+    a_irow<Low_risk,                Rec_owner_in_res,                                      &Alarm_system_::res_presence_flag_update >,
+    a_irow<Low_risk,                Rec_monit_in_ext,                                      &Alarm_system_::ext_presence_flag_update >,    
+    a_irow<Low_risk,                Rec_monit_in_int,                                      &Alarm_system_::int_presence_flag_update >,
+    a_irow<Low_risk,                Rec_monit_in_res,                                      &Alarm_system_::res_presence_flag_update >,
+    a_irow<Low_risk,                Rec_unk_in_ext,                                        &Alarm_system_::ext_presence_flag_update >,   
     a_row<Low_risk,                 Reset_risk,               Waiting_for_risk,            &Alarm_system_::reset_presence_flags                     >,
     // +----------------------------+-------------------------+----------------------------+---------------------------+-----------
     a_irow<Medium_risk,             Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm_if_ext_empty<Perimetral_sensor_sig> >,
@@ -235,8 +238,8 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_row<Medium_risk,              Rec_owner_in_ext,          Low_risk,                   &Alarm_system_::ext_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_ext> >,
     a_row<Medium_risk,              Rec_owner_in_int,          Low_risk,                   &Alarm_system_::int_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_int> >,
     a_row<Medium_risk,              Rec_owner_in_res,          Low_risk,                   &Alarm_system_::res_presence_flag_update_and_trigger_automatic_cancellation<Rec_owner_in_res> >,
-    a_irow<Medium_risk,             Rec_monit_in_ext,                                      &Alarm_system_::ext_presence_flag_update<Rec_monit_in_ext> >,
-    a_irow<Medium_risk,             Rec_monit_in_int,                                      &Alarm_system_::int_presence_flag_update<Rec_monit_in_int> >,
+    a_irow<Medium_risk,             Rec_monit_in_ext,                                      &Alarm_system_::ext_presence_flag_update >,
+    a_irow<Medium_risk,             Rec_monit_in_int,                                      &Alarm_system_::int_presence_flag_update >,
     a_irow<Medium_risk,             Rec_monit_in_res,                                      &Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm<Rec_monit_in_res> >,
     a_row<Medium_risk,              Rec_unk_in_ext,            High_risk,                  &Alarm_system_::ext_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_ext> >,
     a_row<Medium_risk,              Rec_unk_in_int,            High_risk,                  &Alarm_system_::int_presence_flag_update_and_trigger_red_alarm<Rec_unk_in_int> >,
@@ -285,17 +288,17 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     _row<Extern,                    Rec_owner_in_res,          Reserved                                                                                                    >,
     _row<Extern,                    Rec_monit_in_res,          Reserved                                                                                                    >,
     a_row<Extern,                   Rec_unk_in_res,            Reserved,                       &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                         >,
-    a_row<Extern,                   Clear_ext,                 None,                           &Alarm_system_::ext_presence_flag_reset<Clear_ext>                         >,
+    a_row<Extern,                   Clear_ext,                 None,                           &Alarm_system_::ext_presence_flag_reset                         >,
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
     _row<Intern,                    Res_door_open_sensor_sig,  Reserved                                                                                                    >,
     _row<Intern,                    Res_wind_open_sensor_sig,  Reserved                                                                                                    >,
     _row<Intern,                    Res_motion_sensor_sig,     Reserved                                                                                                    >,
     _row<Intern,                    Rec_owner_in_res,          Reserved                                                                                                    >,
     a_row<Intern,                   Rec_monit_in_res,          Reserved,                        &Alarm_system_::trigger_orange_alarm<Rec_monit_in_res>                      >,
-    a_row<Intern,                   Clear_int,                 Extern,                          &Alarm_system_::int_presence_flag_reset<Clear_int>                      >,
+    a_row<Intern,                   Clear_int,                 Extern,                          &Alarm_system_::int_presence_flag_reset                      >,
     a_irow<Reserved,                Rec_monit_in_res,                                           &Alarm_system_::trigger_orange_alarm<Rec_monit_in_res>                      >,
     a_irow<Reserved,                Rec_unk_in_res,                                             &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                      >,
-    a_row<Reserved,                 Clear_res,                 Intern,                          &Alarm_system_::res_presence_flag_reset<Clear_res>                         >,
+    a_row<Reserved,                 Clear_res,                 Intern,                          &Alarm_system_::res_presence_flag_reset                        >,
     //Intenal_activity state machine transitions
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
     a_row<Idle,                     Ext_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter       >,
