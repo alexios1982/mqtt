@@ -8,7 +8,10 @@
 #include <map>
 #include "Alarm_system_state_machine.hh"
 #include <functional>
+#include "All_states.hh"
+
 //#include "Sensor.hh"
+
 
 class Notification_logic_controller : public Alarm_system{
     enum class Sensor_type{
@@ -130,5 +133,10 @@ public:
   virtual void decrease_ai_response_counter(const Rec_unk_in_res &evt);
 
   void load_configuration(const std::string &configuration_file);
+
+  template <class Event>
+  void process_event_verbose(const Event &evt);
 };
+
+#include "Notification_logic_controller.cxx"
 #endif

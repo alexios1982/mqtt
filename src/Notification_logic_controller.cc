@@ -531,62 +531,62 @@ void Notification_logic_controller::increase_ai_response_counter(const Res_door_
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_ext &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-    process_event(Ai_response_off{});
+    process_event_verbose(Ai_response_off{});
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_int &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-    process_event(Ai_response_off{});  
+    process_event_verbose(Ai_response_off{});  
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_res &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-      process_event(Ai_response_off{});
+      process_event_verbose(Ai_response_off{});
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_ext &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-    process_event(Ai_response_off{});
+    process_event_verbose(Ai_response_off{});
 }
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_int &evt){
   _number_of_received_responses += 1;
     if(_number_of_sent_frames == _number_of_received_responses)
-      process_event(Ai_response_off{});
+      process_event_verbose(Ai_response_off{});
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_res &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-    process_event(Ai_response_off{});
+    process_event_verbose(Ai_response_off{});
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_ext &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-    process_event(Ai_response_off{});
+    process_event_verbose(Ai_response_off{});
   
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_int &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-    process_event(Ai_response_off{});  
+    process_event_verbose(Ai_response_off{});  
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_res &evt){
   _number_of_received_responses += 1;
   if(_number_of_sent_frames == _number_of_received_responses)
-    process_event(Ai_response_off{});  
+    process_event_verbose(Ai_response_off{});  
 }
 
 void Notification_logic_controller::load_configuration(const std::string &configuration_file){
   //I dont't know why boost::bind doesn't work
   //part in which we'll parse the file to retrieve information for loading the map
   // _sensor_proc_events_map["01cc99b3"] = std::bind(
-  // 						    &Alarm_system::process_event,
+  // 						    &Alarm_system::process_event_verbose,
   // 						    this,
   // 						    Ext_door_open_sensor_sig{"cam02"}
   // 						    );
@@ -597,28 +597,28 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_position_map["0202c411"] = "ext";
   _sensor_type_map["01cc99b3"] = Sensor_type::CONTACT;
   _sensor_type_map["0202c411"] = Sensor_type::MOTION;
-  _sensor_proc_events_map["01cc99b3"] = [this](){ return process_event(Ext_door_open_sensor_sig{"01cc99b3"}); };
-  _sensor_proc_events_map["doorfkeI"] = [this](){ return process_event(Int_door_open_sensor_sig{"12345678"}); };
-  _sensor_proc_events_map["doorfkeR"] = [this](){ return process_event(Res_door_open_sensor_sig{"90123456"}); };
-  _sensor_proc_events_map["0202c411"] = [this](){ return process_event(Ext_motion_sensor_sig{}); };
-  _sensor_proc_events_map["motfke_I"] = [this](){ return process_event(Int_motion_sensor_sig{}); };
-  _sensor_proc_events_map["motfke_R"] = [this](){ return process_event(Res_motion_sensor_sig{}); };
+  _sensor_proc_events_map["01cc99b3"] = [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); };
+  _sensor_proc_events_map["doorfkeI"] = [this](){ return process_event_verbose(Int_door_open_sensor_sig{"12345678"}); };
+  _sensor_proc_events_map["doorfkeR"] = [this](){ return process_event_verbose(Res_door_open_sensor_sig{"90123456"}); };
+  _sensor_proc_events_map["0202c411"] = [this](){ return process_event_verbose(Ext_motion_sensor_sig{}); };
+  _sensor_proc_events_map["motfke_I"] = [this](){ return process_event_verbose(Int_motion_sensor_sig{}); };
+  _sensor_proc_events_map["motfke_R"] = [this](){ return process_event_verbose(Res_motion_sensor_sig{}); };
 
   
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "ext")] = [this](){ return process_event(Rec_unk_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "int")] = [this](){ return process_event(Rec_unk_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "res")] = [this](){ return process_event(Rec_unk_in_res{}); }; 					      
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "ext")] = [this](){ return process_event_verbose(Rec_unk_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "int")] = [this](){ return process_event_verbose(Rec_unk_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "res")] = [this](){ return process_event_verbose(Rec_unk_in_res{}); }; 					      
 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "ext")] = [this](){ return process_event(Rec_owner_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "int")] = [this](){ return process_event(Rec_owner_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "res")] = [this](){ return process_event(Rec_owner_in_res{}); }; 					      
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "ext")] = [this](){ return process_event_verbose(Rec_owner_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "int")] = [this](){ return process_event_verbose(Rec_owner_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "res")] = [this](){ return process_event_verbose(Rec_owner_in_res{}); }; 					      
 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "ext")] = [this](){ return process_event(Rec_monit_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "int")] = [this](){ return process_event(Rec_monit_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "res")] = [this](){ return process_event(Rec_monit_in_res{}); }; 					      
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "ext")] = [this](){ return process_event_verbose(Rec_monit_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "int")] = [this](){ return process_event_verbose(Rec_monit_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "res")] = [this](){ return process_event_verbose(Rec_monit_in_res{}); }; 					      
 
 
-  process_event(Initialization_completed{});
+  process_event_verbose(Initialization_completed{});
 }
 
 
