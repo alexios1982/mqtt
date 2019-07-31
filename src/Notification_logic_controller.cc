@@ -321,8 +321,8 @@ Notification_logic_controller::is_gate_opened(const mqtt::const_message_ptr &zig
   std::string payload( zigbee_message_ptr->to_string() );
   std::stringstream ss;
    
-  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
-    ss << payload;
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n');
+  ss << payload;
    
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
@@ -375,8 +375,8 @@ Notification_logic_controller::is_room_occupied(const mqtt::const_message_ptr &z
   std::string payload( zigbee_message_ptr->to_string() );
   std::stringstream ss;
    
-  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n';)
-    ss << payload;
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << "payload: '" << payload << '\n');
+  ss << payload;
    
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
@@ -389,13 +389,15 @@ void Notification_logic_controller::update_area_protection(){
 
 void Notification_logic_controller::analyze_ai_response(const mqtt::const_message_ptr &message_ptr){
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n');
-  D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << message_ptr->get_payload() << std::endl);
+  std::string payload{message_ptr->get_payload()};
+  D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << payload << std::endl);
   std::time_t now;
   std::time (&now);
   D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
      << " time: " << std::ctime(&now) << std::endl);
 
   std::stringstream ss;
+  ss << payload;
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
   std::string position =  pt.get<Position>("position");
