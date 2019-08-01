@@ -99,16 +99,16 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   auto it = _sensor_proc_events_map.find(topic_info);
   if( it != _sensor_proc_events_map.end() ){
     switch(_sensor_type_map[topic_info]){
-    case Sensor_type::CONTACT :
+    case Sensor_type::DOOR :
+    case Sensor_type::WINDOW :  
       if( is_gate_opened(zigbee_message_ptr) ){
 	D( Time_spent<> to_send_notifications );
 	( (it->second).first )();
       }
-      //nothing to do: the associate message has already been sent
       else
 	return;
       break;
-    case Sensor_type::MOTION :
+    case Sensor_type::MOTION : {
       D( Time_spent<> to_send_notifications );
       if( is_room_occupied(zigbee_message_ptr) )
 	//triggering Ext_motion_sensor_sig/Int_motion_sensor_sig/Res_motion_sensor_sig
@@ -118,9 +118,13 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
 	( (it->second).second )();
       break;
     }
+    default:
+      std::cerr << error << " [Notification_logic_controller::" << __func__ << "] " << reset
+    		<< "unrecognized sensor id" << std::endl;
+    }//END OF SWITCH
   }
-  //if it's not in the sensor_proc_events_map, it could be a rich message or
-  //an answer from the ai serder (in this case the topic is Response
+  //if it's not in the sensor_proc_events_map, it must be 
+  //an answer from the ai server (in this case the topic is Response
   else if (topic_info == "Response"){
     analyze_ai_response(zigbee_message_ptr);
   }
@@ -637,19 +641,44 @@ void Notification_logic_controller::load_configuration(const std::string &config
   // 						    Ext_door_open_sensor_sig{"cam02"}
   // 						    );
 
+  //01cc99b3 is the Sensor_mini_id of the EXTERNAL DOOR SENSOR
+  //0202c411 is the Sensor_mini_id of the EXTERNAL MOTION SENSOR
+  //doorfkeI must be replaced with the Sensor_mini_id of the INTERNAL DOOR SENSOR
+  //doorfkeR must be replaced with the Sensor_mini_id of the RESERVED DOOR SENSOR
+  //motfke_I must be replaced with the Sensor_mini_id of the INTERNAL MOTION SENSOR
+  //motfke_R must be replaced with the Sensor_mini_id of the RESERVED MOTION SENSOR
+  //winfke_I must be replaced with the Sensor_mini_id of the INTERNAL WINDOW SENSOR
+  //winfke_R must be replaced with the Sensor_mini_id of the RESERVED MOTION SENSOR
+  
+  //
   //TODO
   //This maps can collpse into one in which the value is a struct with all infos
   _sensor_position_map["01cc99b3"] = "ext";
   _sensor_position_map["0202c411"] = "ext";
-  _sensor_type_map["01cc99b3"] = Sensor_type::CONTACT;
+  _sensor_position_map["doorfkeI"] = "int";
+  _sensor_position_map["doorfkeR"] = "res";
+  _sensor_position_map["motfke_I"] = "int";
+  _sensor_position_map["motfke_R"] = "res";
+  _sensor_position_map["winfke_I"] = "int";
+  _sensor_position_map["winfke_R"] = "res";
+  
+  _sensor_type_map["01cc99b3"] = Sensor_type::DOOR;
   _sensor_type_map["0202c411"] = Sensor_type::MOTION;
-  _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return;});
-  _sensor_proc_events_map["doorfkeI"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"12345678"}); }, [this](){ return;} );
-  _sensor_proc_events_map["doorfkeR"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"90123456"}); }, [this](){ return;} );
+  _sensor_type_map["doorfkeI"] = Sensor_type::DOOR;
+  _sensor_type_map["doorfkeR"] = Sensor_type::DOOR;
+  _sensor_type_map["motfke_I"] = Sensor_type::MOTION;
+  _sensor_type_map["motfke_R"] = Sensor_type::MOTION;
+  _sensor_type_map["winfke_I"] = Sensor_type::WINDOW;
+  _sensor_type_map["winfke_R"] = Sensor_type::WINDOW;
+
+  _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
+  _sensor_proc_events_map["doorfkeI"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"doorfkeI"}); }, [this](){ return; } );
+  _sensor_proc_events_map["doorfkeR"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"doorfkeR"}); }, [this](){ return; } );
   _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
   _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_int{}); } );
   _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_res{}); } );
-
+  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{}); }, [this](){ return; } );
+  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{}); }, [this](){ return; } );
   
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "ext")] = [this](){ return process_event_verbose(Rec_unk_in_ext{}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "int")] = [this](){ return process_event_verbose(Rec_unk_in_int{}); }; 

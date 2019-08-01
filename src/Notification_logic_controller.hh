@@ -14,9 +14,10 @@
 
  
 class Notification_logic_controller : public Alarm_system{
-    enum class Sensor_type{
-    CONTACT,
-    MOTION
+  enum class Sensor_type{
+    DOOR,
+    MOTION,
+    WINDOW
   };
   enum File_type{
     JPEG,
