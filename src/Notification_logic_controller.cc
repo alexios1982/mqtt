@@ -102,7 +102,7 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
     case Sensor_type::CONTACT :
       if( is_gate_opened(zigbee_message_ptr) ){
 	D( Time_spent<> to_send_notifications );
-	(it->second)();
+	( (it->second).first )();
       }
       //nothing to do: the associate message has already been sent
       else
@@ -110,7 +110,12 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
       break;
     case Sensor_type::MOTION :
       D( Time_spent<> to_send_notifications );
-      (it->second)();
+      if( is_room_occupied(zigbee_message_ptr) )
+	//triggering Ext_motion_sensor_sig/Int_motion_sensor_sig/Res_motion_sensor_sig
+	( (it->second).first )();
+      else
+	//triggering Clear_ext/Clear_int/Clear_res signals
+	( (it->second).second )();
       break;
     }
   }
@@ -638,12 +643,12 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_position_map["0202c411"] = "ext";
   _sensor_type_map["01cc99b3"] = Sensor_type::CONTACT;
   _sensor_type_map["0202c411"] = Sensor_type::MOTION;
-  _sensor_proc_events_map["01cc99b3"] = [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); };
-  _sensor_proc_events_map["doorfkeI"] = [this](){ return process_event_verbose(Int_door_open_sensor_sig{"12345678"}); };
-  _sensor_proc_events_map["doorfkeR"] = [this](){ return process_event_verbose(Res_door_open_sensor_sig{"90123456"}); };
-  _sensor_proc_events_map["0202c411"] = [this](){ return process_event_verbose(Ext_motion_sensor_sig{}); };
-  _sensor_proc_events_map["motfke_I"] = [this](){ return process_event_verbose(Int_motion_sensor_sig{}); };
-  _sensor_proc_events_map["motfke_R"] = [this](){ return process_event_verbose(Res_motion_sensor_sig{}); };
+  _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return;});
+  _sensor_proc_events_map["doorfkeI"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"12345678"}); }, [this](){ return;} );
+  _sensor_proc_events_map["doorfkeR"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"90123456"}); }, [this](){ return;} );
+  _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
+  _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_int{}); } );
+  _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_res{}); } );
 
   
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "ext")] = [this](){ return process_event_verbose(Rec_unk_in_ext{}); };

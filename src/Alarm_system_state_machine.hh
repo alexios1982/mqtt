@@ -112,6 +112,8 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   virtual void int_presence_flag_reset(const Clear_int &evt);
   virtual void res_presence_flag_reset(const Clear_res &evt);
 
+  void ext_presence_flag_reset_and_trigger_reset_risk(const Clear_ext &evt);
+
 
   template<class Event_type>
   void ext_presence_flag_update_and_trigger_automatic_cancellation(const Event_type &evt);
@@ -268,7 +270,7 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     _row<None,                      Perimetral_sensor_sig,     Extern                                                                                                     >,
     _row<None,                      Ext_door_open_sensor_sig,  Extern                                                                                                     >,
     //Interal state name gives me error
-    a_row<None,                     Int_door_open_sensor_sig,  Intern,                   &Alarm_system_::trigger_orange_alarm<Int_door_open_sensor_sig> >,
+    a_row<None,                     Int_door_open_sensor_sig,  Intern,                     &Alarm_system_::trigger_red_alarm<Int_door_open_sensor_sig> >,
     a_row<None,                     Res_door_open_sensor_sig,  Reserved,                   &Alarm_system_::trigger_red_alarm<Res_door_open_sensor_sig> >,
     _row<None,                      Int_wind_open_sensor_sig,  Intern                                                                                                     >,
     _row<None,                      Res_wind_open_sensor_sig,  Reserved                                                                                                     >,
@@ -288,17 +290,23 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     _row<Extern,                    Rec_owner_in_res,          Reserved                                                                                                    >,
     _row<Extern,                    Rec_monit_in_res,          Reserved                                                                                                    >,
     a_row<Extern,                   Rec_unk_in_res,            Reserved,                       &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                         >,
-    a_row<Extern,                   Clear_ext,                 None,                           &Alarm_system_::ext_presence_flag_reset                         >,
+    a_row<Extern,                   Clear_ext,                 None,                           &Alarm_system_::ext_presence_flag_reset_and_trigger_reset_risk                         >,
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
     _row<Intern,                    Res_door_open_sensor_sig,  Reserved                                                                                                    >,
     _row<Intern,                    Res_wind_open_sensor_sig,  Reserved                                                                                                    >,
     _row<Intern,                    Res_motion_sensor_sig,     Reserved                                                                                                    >,
     _row<Intern,                    Rec_owner_in_res,          Reserved                                                                                                    >,
     a_row<Intern,                   Rec_monit_in_res,          Reserved,                        &Alarm_system_::trigger_orange_alarm<Rec_monit_in_res>                      >,
+    a_row<Intern,                   Rec_unk_in_res,            Reserved,                        &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                      >,
+    a_irow<Intern,                  Clear_ext,                                                  &Alarm_system_::ext_presence_flag_reset                        >,    
     a_row<Intern,                   Clear_int,                 Extern,                          &Alarm_system_::int_presence_flag_reset                      >,
     a_irow<Reserved,                Rec_monit_in_res,                                           &Alarm_system_::trigger_orange_alarm<Rec_monit_in_res>                      >,
     a_irow<Reserved,                Rec_unk_in_res,                                             &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                      >,
+
+    a_irow<Reserved,                Clear_ext,                                                  &Alarm_system_::ext_presence_flag_reset                        >,
+    a_irow<Reserved,                Clear_int,                                                  &Alarm_system_::int_presence_flag_reset                        >,    
     a_row<Reserved,                 Clear_res,                 Intern,                          &Alarm_system_::res_presence_flag_reset                        >,
+    
     //Intenal_activity state machine transitions
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
     a_row<Idle,                     Ext_door_open_sensor_sig,  Waiting_for_ai_response,         &Alarm_system_::increase_ai_response_counter       >,

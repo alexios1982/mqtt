@@ -12,7 +12,7 @@
 
 //#include "Sensor.hh"
 
-
+ 
 class Notification_logic_controller : public Alarm_system{
     enum class Sensor_type{
     CONTACT,
@@ -37,11 +37,12 @@ class Notification_logic_controller : public Alarm_system{
   //   bool actual_occupancy;
   // };
   typedef std::function<void()> Proc_events_ptr;
+  typedef std::pair<Proc_events_ptr, Proc_events_ptr> Proc_events_ptr_pair;
   typedef std::string Sensor_mini_id;
-  typedef std::map<Sensor_mini_id, Proc_events_ptr> Sensor_proc_events_map;
+  typedef std::map<Sensor_mini_id, Proc_events_ptr_pair> Sensor_proc_events_pair_map;
   typedef std::map<Sensor_mini_id, Sensor_type> Sensor_type_map;
   Sensor_type_map _sensor_type_map;
-  Sensor_proc_events_map _sensor_proc_events_map;
+  Sensor_proc_events_pair_map _sensor_proc_events_map;
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;

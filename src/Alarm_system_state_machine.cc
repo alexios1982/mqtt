@@ -112,6 +112,13 @@ void Alarm_system_::res_presence_flag_reset(const Clear_res &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);  
 }
 
+void Alarm_system_::ext_presence_flag_reset_and_trigger_reset_risk(const Clear_ext &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+  ext_presence_flag_reset(evt);
+  msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
+  fsm.process_event(Reset_risk{});
+}
+
 bool Alarm_system_::is_ext_empty(){
   return true;
 }
