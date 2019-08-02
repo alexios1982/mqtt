@@ -432,12 +432,12 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   int number_of_owners = pt.get<int>("owner");
   int number_of_monitored = pt.get<int>("monitored");
   int number_of_unknown = pt.get<int>("unknown");
-  
+  std::string mmuid = pt.get<std::string>("muuid");
   //triggering the event
   _ai_result_position_proc_events_map[ std::make_pair(
 						      decode_ai_result(number_of_owners, number_of_monitored, number_of_unknown),
 						      position)
-				       ]();
+				       ](mmuid);
 
 }
 
@@ -549,12 +549,30 @@ void Notification_logic_controller::send_video_chunk(const Ext_door_open_sensor_
 }
 void Notification_logic_controller::send_video_chunk(const Int_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
+  send_rich_notifications(evt._sensor_mini_id, 1, 2);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
 void Notification_logic_controller::send_video_chunk(const Res_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
+  send_rich_notifications(evt._sensor_mini_id, 1, 2);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+
+void Notification_logic_controller::send_classified_notification_av(char alarm_level, const std::string &mmuid){
+  using namespace std::chrono;
+  boost::property_tree::ptree pt;
+  pt.put("ts", duration_cast<milliseconds>(
+			      system_clock::now().time_since_epoch()
+			      ).count()
+	 );
+  pt.put("type",  "av");
+  pt.put("hub", _hub_id);
+  pt.put("level", alarm_level);
+  pt.put("srcid", mmuid);
+  std::stringstream ss;
+  boost::property_tree::json_parser::write_json(ss, pt);
+  _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
 
@@ -715,15 +733,15 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{}); }, [this](){ return; } );
   _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{}); }, [this](){ return; } );
   
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](){ return process_event_verbose(Rec_unk_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](){ return process_event_verbose(Rec_unk_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'r')] = [this](){ return process_event_verbose(Rec_unk_in_res{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'e')] = [this](){ return process_event_verbose(Rec_owner_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'i')] = [this](){ return process_event_verbose(Rec_owner_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'r')] = [this](){ return process_event_verbose(Rec_owner_in_res{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'e')] = [this](){ return process_event_verbose(Rec_monit_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'i')] = [this](){ return process_event_verbose(Rec_monit_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'r')] = [this](){ return process_event_verbose(Rec_monit_in_res{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'r')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_res{mmuid}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_owner_in_ext{mmuid}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_owner_in_int{mmuid}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'r')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_owner_in_res{mmuid}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_monit_in_ext{mmuid}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_monit_in_int{mmuid}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'r')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_monit_in_res{mmuid}); };
 
   _hub_id = "hub_di_tizio_caio_sempronio";
   

@@ -36,25 +36,57 @@ struct Int_motion_sensor_sig{};
 struct Res_motion_sensor_sig{};
 
 //Recognized owner in external zone
-struct Rec_owner_in_ext{};
+struct Rec_owner_in_ext{
+  Rec_owner_in_ext(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
+
 //Recognized owner in internal zone
-struct Rec_owner_in_int{};
+struct Rec_owner_in_int{
+  Rec_owner_in_int(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
+
 //Recognized owner in reserved zone
-struct Rec_owner_in_res{};
+struct Rec_owner_in_res{
+  Rec_owner_in_res(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
 
 //Recognized monit in external zone
-struct Rec_monit_in_ext{};
+struct Rec_monit_in_ext{
+  Rec_monit_in_ext(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
+
 //Recognized monit in internal zone
-struct Rec_monit_in_int{};
+struct Rec_monit_in_int{
+  Rec_monit_in_int(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
 //Recognized monit in reserved zone
-struct Rec_monit_in_res{};
+struct Rec_monit_in_res{
+  Rec_monit_in_res(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
 
 //"Recognized an unknown" in external zone
-struct Rec_unk_in_ext{};
+struct Rec_unk_in_ext{
+  Rec_unk_in_ext(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
+
 //"Recognized an unknown" in internal zone
-struct Rec_unk_in_int{};
+struct Rec_unk_in_int{
+  Rec_unk_in_int(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
+
 //"Recognized an unknown" in reserved zone
-struct Rec_unk_in_res{};
+struct Rec_unk_in_res{
+  Rec_unk_in_res(const std::string &mmuid = ""): _mmuid(mmuid){}
+  std::string _mmuid;
+};
 
 //Reset from any state to Waiting_for_risk
 struct Reset_risk{};

@@ -89,6 +89,7 @@ void Alarm_system_::ext_presence_flag_update_and_trigger_orange_alarm(const Even
   ext_presence_flag_update(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Orange_alarm{});
+  send_classified_notification_av('o', evt._mmuid);
 }
 
 template<class Event_type>
@@ -97,6 +98,7 @@ void Alarm_system_::int_presence_flag_update_and_trigger_orange_alarm(const Even
   int_presence_flag_update(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Orange_alarm{});
+  send_classified_notification_av('o', evt._mmuid);
 }
 
 template<class Event_type>
@@ -105,6 +107,7 @@ void Alarm_system_::res_presence_flag_update_and_trigger_orange_alarm(const Even
   res_presence_flag_update(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Orange_alarm{});
+  send_classified_notification_av('o', evt._mmuid);
 }
 
 template<class Event_type>
@@ -112,7 +115,8 @@ void Alarm_system_::ext_presence_flag_update_and_trigger_red_alarm(const Event_t
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   ext_presence_flag_update(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-  fsm.process_event(Red_alarm{});  
+  fsm.process_event(Red_alarm{});
+  send_classified_notification_av('r', evt._mmuid);
 }
 
 template<class Event_type>
@@ -120,7 +124,8 @@ void Alarm_system_::int_presence_flag_update_and_trigger_red_alarm(const Event_t
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   int_presence_flag_update(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-  fsm.process_event(Red_alarm{});  
+  fsm.process_event(Red_alarm{});
+  send_classified_notification_av('r', evt._mmuid);
 }
 
 template<class Event_type>
@@ -128,7 +133,8 @@ void Alarm_system_::res_presence_flag_update_and_trigger_red_alarm(const Event_t
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   res_presence_flag_update(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-  fsm.process_event(Red_alarm{});  
+  fsm.process_event(Red_alarm{});
+  send_classified_notification_av('r', evt._mmuid);
 }
 
 template <class Event_type>

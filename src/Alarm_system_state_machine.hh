@@ -65,9 +65,14 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   // template<class Event_type>
   // virtual void send_video_chunk(const Event_type &evt);
   //impossibile to have template virtual methods
+  //TODO this can be collpsed to one in which the only parametrer is the string
+  //representing the sendor mini_id
   virtual  void send_video_chunk(const Ext_door_open_sensor_sig &evt);
   virtual  void send_video_chunk(const Int_door_open_sensor_sig &evt);
   virtual  void send_video_chunk(const Res_door_open_sensor_sig &evt);
+
+  virtual void send_classified_notification_av(char alarm_level, const std::string &mmuid); 
+  
 
   virtual void increase_ai_response_counter(const Ext_door_open_sensor_sig &evt);
   virtual void increase_ai_response_counter(const Int_door_open_sensor_sig &evt);

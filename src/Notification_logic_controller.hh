@@ -53,7 +53,8 @@ class Notification_logic_controller : public Alarm_system{
   typedef char Cam_position;
   std::map<Sensor_mini_id, Cam_position> _sensor_position_map;
   typedef std::pair<Ai_result, Cam_position> Ai_result_position_pair;
-  std::map<Ai_result_position_pair, Proc_events_ptr> _ai_result_position_proc_events_map;
+  typedef std::function<void(std::string)> Proc_events_ptr_2;
+  std::map<Ai_result_position_pair, Proc_events_ptr_2> _ai_result_position_proc_events_map;
   std::vector<int> _jpeg_params;
   int _number_of_sent_frames;
   int _number_of_received_responses;
@@ -126,6 +127,8 @@ public:
   virtual void send_video_chunk(const Int_door_open_sensor_sig &evt);
   virtual void send_video_chunk(const Res_door_open_sensor_sig &evt);  
 
+  virtual void send_classified_notification_av(char alarm_level, const std::string &mmuid);
+  
   virtual void increase_ai_response_counter(const Ext_door_open_sensor_sig &evt);
   virtual void increase_ai_response_counter(const Int_door_open_sensor_sig &evt);
   virtual void increase_ai_response_counter(const Res_door_open_sensor_sig &evt);  
