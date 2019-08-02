@@ -3,7 +3,10 @@
 
 #include <string>
 
-struct Perimetral_sensor_sig{};
+struct Perimetral_sensor_sig{
+  Perimetral_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
+};
 
 //Someone opened the external door
 struct Ext_door_open_sensor_sig{
@@ -24,16 +27,34 @@ struct Res_door_open_sensor_sig{
 };
 
 //Someone opened the internal window
-struct Int_wind_open_sensor_sig{};
+struct Int_wind_open_sensor_sig{
+  Int_wind_open_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
+};
+
 //Someone opened the window associated to the reserved zone
-struct Res_wind_open_sensor_sig{};
+struct Res_wind_open_sensor_sig{
+  Res_wind_open_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
+};
 
 //Someone moved in the external zone
-struct Ext_motion_sensor_sig{};
+struct Ext_motion_sensor_sig{
+  Ext_motion_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
+};
+
 //Someone moved in the internal zone
-struct Int_motion_sensor_sig{};
+struct Int_motion_sensor_sig{
+  Int_motion_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
+};
+
 //Someone moved in the reserved zone
-struct Res_motion_sensor_sig{};
+struct Res_motion_sensor_sig{
+  Res_motion_sensor_sig(const std::string &sensor_mini_id=""): _sensor_mini_id(sensor_mini_id){} 
+  std::string _sensor_mini_id;
+};
 
 //Recognized owner in external zone
 struct Rec_owner_in_ext{

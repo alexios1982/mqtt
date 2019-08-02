@@ -214,7 +214,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
     std::remove( last_jpeg_file.c_str() );
     //pt.put("filename", to_send_filename.replace(to_send_filename.find_last_of('.'), std::string::npos, ".jpeg") );
     //TODO: understand if the follwing line is necessary
-    to_send_filename.replace(to_send_filename.find_last_of('.'), std::string::npos, ".jpeg");
+    //to_send_filename.replace(to_send_filename.find_last_of('.'), std::string::npos, ".jpeg");
     cv::VideoCapture cap( (to_send_ptr->second).string() );
     if ( !cap.isOpened() ){
       std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
@@ -235,7 +235,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
       
     imwrite(jpeg_complete_filename, frame, _jpeg_params);
     
-    pt.put( "data", base64_file_converter(jpeg_complete_filename) );
+    pt.put( "media", base64_file_converter(jpeg_complete_filename) );
     last_jpeg_file = jpeg_complete_filename;
   }
   else{
@@ -575,6 +575,21 @@ void Notification_logic_controller::send_classified_notification_av(char alarm_l
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
+void Notification_logic_controller::send_classified_notification_as(char alarm_level, const std::string &sensor_mini_id){
+  using namespace std::chrono;
+  boost::property_tree::ptree pt;
+  pt.put("ts", duration_cast<milliseconds>(
+			      system_clock::now().time_since_epoch()
+			      ).count()
+	 );
+  pt.put("type",  "as");
+  pt.put("hub", _hub_id);
+  pt.put("level", alarm_level);
+  pt.put("srcid", sensor_mini_id);
+  std::stringstream ss;
+  boost::property_tree::json_parser::write_json(ss, pt);
+  _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
+}
 
 void Notification_logic_controller::increase_ai_response_counter(const Ext_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
@@ -727,11 +742,11 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
   _sensor_proc_events_map["doorfkeI"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"doorfkeI"}); }, [this](){ return; } );
   _sensor_proc_events_map["doorfkeR"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"doorfkeR"}); }, [this](){ return; } );
-  _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
-  _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_int{}); } );
-  _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{}); }, [this](){ return process_event_verbose(Clear_res{}); } );
-  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{}); }, [this](){ return; } );
-  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{}); }, [this](){ return; } );
+  _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
+  _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"motfke_I"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
+  _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motfke_R"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
+  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"winfke_I"}); }, [this](){ return; } );
+  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"winfke_R"}); }, [this](){ return; } );
   
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 

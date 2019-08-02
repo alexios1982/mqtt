@@ -16,6 +16,7 @@ void Alarm_system_::trigger_red_alarm(const Event_type &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Red_alarm{});
+  send_classified_notification_as('r', evt._sensor_mini_id);
 }
 
 template <class Event_type>
@@ -23,6 +24,7 @@ void Alarm_system_::trigger_orange_alarm(const Event_type &evt){
   boost::ignore_unused(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
   fsm.process_event(Orange_alarm{});
+  send_classified_notification_as('o', evt._sensor_mini_id);
 }
 
 // template<class Event_type>
@@ -142,7 +144,8 @@ void Alarm_system_::trigger_red_alarm_if_ext_empty(const Event_type &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   if( is_ext_empty() ){
     msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-   fsm.process_event(Red_alarm{});  
+   fsm.process_event(Red_alarm{});
+   send_classified_notification_as('r', evt._sensor_mini_id);
   }
 }
 template <class Event_type>
@@ -150,7 +153,8 @@ void Alarm_system_::trigger_red_alarm_if_int_empty(const Event_type &evt){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   if( is_ext_empty() ){
     msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-   fsm.process_event(Red_alarm{});  
+   fsm.process_event(Red_alarm{});
+   send_classified_notification_as('r', evt._sensor_mini_id);
   }
 }
 
@@ -159,7 +163,8 @@ void Alarm_system_::send_video_chunk_and_trigger_orange_alarm(const Event_type &
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   send_video_chunk(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-  fsm.process_event(Orange_alarm{});  
+  fsm.process_event(Orange_alarm{});
+  send_classified_notification_as('o', evt._sensor_mini_id);
 }
 
 template<class Event_type>
@@ -167,7 +172,8 @@ void Alarm_system_::send_video_chunk_and_trigger_red_alarm(const Event_type &evt
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
   send_video_chunk(evt);
   msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
-  fsm.process_event(Red_alarm{});  
+  fsm.process_event(Red_alarm{});
+  send_classified_notification_as('r', evt._sensor_mini_id);
 }
 
 

@@ -72,7 +72,7 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   virtual  void send_video_chunk(const Res_door_open_sensor_sig &evt);
 
   virtual void send_classified_notification_av(char alarm_level, const std::string &mmuid); 
-  
+  virtual void send_classified_notification_as(char alarm_level, const std::string &sensor_mini_id);
 
   virtual void increase_ai_response_counter(const Ext_door_open_sensor_sig &evt);
   virtual void increase_ai_response_counter(const Int_door_open_sensor_sig &evt);
@@ -291,22 +291,22 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_row<Extern,                   Res_motion_sensor_sig,     Reserved,                      &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>                  >,
     _row<Extern,                    Rec_owner_in_int,          Intern                                                                                                    >,
     _row<Extern,                    Rec_monit_in_int,          Intern                                                                                                    >,
-    a_row<Extern,                   Rec_unk_in_int,            Intern,                         &Alarm_system_::trigger_red_alarm<Rec_unk_in_int>                         >,
+    _row<Extern,                    Rec_unk_in_int,            Intern                                                                                                     >,
     _row<Extern,                    Rec_owner_in_res,          Reserved                                                                                                    >,
     _row<Extern,                    Rec_monit_in_res,          Reserved                                                                                                    >,
-    a_row<Extern,                   Rec_unk_in_res,            Reserved,                       &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                         >,
+    _row<Extern,                    Rec_unk_in_res,            Reserved                                                                                                  >,
     a_row<Extern,                   Clear_ext,                 None,                           &Alarm_system_::ext_presence_flag_reset_and_trigger_reset_risk                         >,
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
     _row<Intern,                    Res_door_open_sensor_sig,  Reserved                                                                                                    >,
     _row<Intern,                    Res_wind_open_sensor_sig,  Reserved                                                                                                    >,
     _row<Intern,                    Res_motion_sensor_sig,     Reserved                                                                                                    >,
     _row<Intern,                    Rec_owner_in_res,          Reserved                                                                                                    >,
-    a_row<Intern,                   Rec_monit_in_res,          Reserved,                        &Alarm_system_::trigger_orange_alarm<Rec_monit_in_res>                      >,
-    a_row<Intern,                   Rec_unk_in_res,            Reserved,                        &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                      >,
+    _row<Intern,                    Rec_monit_in_res,          Reserved                                                                                                    >,
+    _row<Intern,                    Rec_unk_in_res,            Reserved                                                                                                    >,
     a_irow<Intern,                  Clear_ext,                                                  &Alarm_system_::ext_presence_flag_reset                        >,    
     a_row<Intern,                   Clear_int,                 Extern,                          &Alarm_system_::int_presence_flag_reset                      >,
-    a_irow<Reserved,                Rec_monit_in_res,                                           &Alarm_system_::trigger_orange_alarm<Rec_monit_in_res>                      >,
-    a_irow<Reserved,                Rec_unk_in_res,                                             &Alarm_system_::trigger_red_alarm<Rec_unk_in_res>                      >,
+    _irow<Reserved,                 Rec_monit_in_res                                                                                                          >,
+    _irow<Reserved,                Rec_unk_in_res                                                                                                             >,
 
     a_irow<Reserved,                Clear_ext,                                                  &Alarm_system_::ext_presence_flag_reset                        >,
     a_irow<Reserved,                Clear_int,                                                  &Alarm_system_::int_presence_flag_reset                        >,    

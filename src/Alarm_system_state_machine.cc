@@ -17,6 +17,10 @@ void Alarm_system_::send_classified_notification_av(char , const std::string &){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }
 
+void Alarm_system_::send_classified_notification_as(char , const std::string &){ 
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+}
+
 void Alarm_system_::increase_ai_response_counter(const Ext_door_open_sensor_sig &){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
 }
