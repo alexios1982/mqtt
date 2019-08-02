@@ -9,7 +9,11 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-
+#include <chrono>
+#include <boost/uuid/uuid.hpp>            // uuid class
+#include <boost/uuid/uuid_generators.hpp> // generators
+#include <boost/uuid/uuid_io.hpp>       
+#include <boost/lexical_cast.hpp>
 
 Notification_logic_controller::Notification_logic_controller(Area_protection &area_protection,
 							     Synchronized_queue<mqtt::const_message_ptr> &queue,
@@ -187,18 +191,30 @@ void Notification_logic_controller::send_rich_notifications(const std::string &s
 }
 
 mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id){
+  using namespace std::chrono;
   boost::property_tree::ptree pt;
-  std::string to_send_filename = ( (to_send_ptr->second).filename() ).string(); 
+  pt.put("ts", duration_cast<milliseconds>(
+			      system_clock::now().time_since_epoch()
+			      ).count()
+	 );
+  pt.put("type",  "iq");
+  pt.put("hub", _hub_id);
+  pt.put("ring", _sensor_position_map[sensor_mini_id]);
+  pt.put("service", "fv");
+  pt.put("muuid", boost::lexical_cast<std::string>( boost::uuids::random_generator()() ) );
+  //TODO: understand if the to_send_filename is necessary anymore
+  std::string to_send_filename = ( (to_send_ptr->second).filename() ).string();  
   if(file_type == MP4){
-    pt.put("filename", to_send_filename );
-    pt.put( "data", base64_file_converter( (to_send_ptr->second).string() ) );
-    pt.put("position", _sensor_position_map[sensor_mini_id]);
+    //pt.put("filename", to_send_filename );
+    pt.put( "media", base64_file_converter( (to_send_ptr->second).string() ) );
   }
   else if(file_type == JPEG){
     static std::string last_jpeg_file{};
     //let's remove last jpeg file
     std::remove( last_jpeg_file.c_str() );
-    pt.put("filename", to_send_filename.replace(to_send_filename.find_last_of('.'), std::string::npos, ".jpeg") );
+    //pt.put("filename", to_send_filename.replace(to_send_filename.find_last_of('.'), std::string::npos, ".jpeg") );
+    //TODO: understand if the follwing line is necessary
+    to_send_filename.replace(to_send_filename.find_last_of('.'), std::string::npos, ".jpeg");
     cv::VideoCapture cap( (to_send_ptr->second).string() );
     if ( !cap.isOpened() ){
       std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
@@ -220,7 +236,6 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
     imwrite(jpeg_complete_filename, frame, _jpeg_params);
     
     pt.put( "data", base64_file_converter(jpeg_complete_filename) );
-    pt.put("position", _sensor_position_map[sensor_mini_id]);
     last_jpeg_file = jpeg_complete_filename;
   }
   else{
@@ -412,11 +427,31 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   ss << payload;
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
-  std::string position =  pt.get<Position>("position");
-  Ai_result ai_result = static_cast<Ai_result>( pt.get<int>("response") );
+  char position =  pt.get<Cam_position>("ring");
+  //Ai_result ai_result = static_cast<Ai_result>( pt.get<int>("response") );
+  int number_of_owners = pt.get<int>("owner");
+  int number_of_monitored = pt.get<int>("monitored");
+  int number_of_unknown = pt.get<int>("unknown");
+  
   //triggering the event
-  _ai_result_position_proc_events_map[ std::make_pair(ai_result, position) ]();
+  _ai_result_position_proc_events_map[ std::make_pair(
+						      decode_ai_result(number_of_owners, number_of_monitored, number_of_unknown),
+						      position)
+				       ]();
 
+}
+
+Notification_logic_controller::Ai_result Notification_logic_controller::decode_ai_result(int number_of_owners,
+											 int number_of_monitored,
+											 int number_of_unknown){
+  if( !number_of_owners && !number_of_monitored && !number_of_unknown)
+    return Ai_result::NO_DETECTION;
+  else if(number_of_owners)
+    return Ai_result::OWNER;
+  else if(number_of_monitored)
+    return Ai_result::MONITORED;
+  else if(number_of_unknown)
+    return Ai_result::UNKNOWN;
 }
 
 // mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr, const std::string &sensor_mini_id){
@@ -653,14 +688,14 @@ void Notification_logic_controller::load_configuration(const std::string &config
   //
   //TODO
   //This maps can collpse into one in which the value is a struct with all infos
-  _sensor_position_map["01cc99b3"] = "ext";
-  _sensor_position_map["0202c411"] = "ext";
-  _sensor_position_map["doorfkeI"] = "int";
-  _sensor_position_map["doorfkeR"] = "res";
-  _sensor_position_map["motfke_I"] = "int";
-  _sensor_position_map["motfke_R"] = "res";
-  _sensor_position_map["winfke_I"] = "int";
-  _sensor_position_map["winfke_R"] = "res";
+  _sensor_position_map["01cc99b3"] = 'e';
+  _sensor_position_map["0202c411"] = 'e';
+  _sensor_position_map["doorfkeI"] = 'i';
+  _sensor_position_map["doorfkeR"] = 'r';
+  _sensor_position_map["motfke_I"] = 'i';
+  _sensor_position_map["motfke_R"] = 'r';
+  _sensor_position_map["winfke_I"] = 'i';
+  _sensor_position_map["winfke_R"] = 'r';
   
   _sensor_type_map["01cc99b3"] = Sensor_type::DOOR;
   _sensor_type_map["0202c411"] = Sensor_type::MOTION;
@@ -680,20 +715,20 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{}); }, [this](){ return; } );
   _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{}); }, [this](){ return; } );
   
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "ext")] = [this](){ return process_event_verbose(Rec_unk_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "int")] = [this](){ return process_event_verbose(Rec_unk_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, "res")] = [this](){ return process_event_verbose(Rec_unk_in_res{}); }; 					      
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](){ return process_event_verbose(Rec_unk_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](){ return process_event_verbose(Rec_unk_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'r')] = [this](){ return process_event_verbose(Rec_unk_in_res{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'e')] = [this](){ return process_event_verbose(Rec_owner_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'i')] = [this](){ return process_event_verbose(Rec_owner_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, 'r')] = [this](){ return process_event_verbose(Rec_owner_in_res{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'e')] = [this](){ return process_event_verbose(Rec_monit_in_ext{}); };
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'i')] = [this](){ return process_event_verbose(Rec_monit_in_int{}); }; 
+  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'r')] = [this](){ return process_event_verbose(Rec_monit_in_res{}); };
 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "ext")] = [this](){ return process_event_verbose(Rec_owner_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "int")] = [this](){ return process_event_verbose(Rec_owner_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::OWNER, "res")] = [this](){ return process_event_verbose(Rec_owner_in_res{}); }; 					      
-
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "ext")] = [this](){ return process_event_verbose(Rec_monit_in_ext{}); };
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "int")] = [this](){ return process_event_verbose(Rec_monit_in_int{}); }; 
-  _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, "res")] = [this](){ return process_event_verbose(Rec_monit_in_res{}); }; 					      
-
-
+  _hub_id = "hub_di_tizio_caio_sempronio";
+  
   process_event_verbose(Initialization_completed{});
+
 }
 
 

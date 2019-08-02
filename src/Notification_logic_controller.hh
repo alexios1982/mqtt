@@ -49,10 +49,10 @@ class Notification_logic_controller : public Alarm_system{
   Publisher &_publisher;
   std::map<Sensor_mini_id, std::string> &_sensor_cam;
   std::map<std::string, std::string> &_cam_path;
-  typedef std::string Cam_position;
+  std::string _hub_id;
+  typedef char Cam_position;
   std::map<Sensor_mini_id, Cam_position> _sensor_position_map;
-  typedef std::string Position;
-  typedef std::pair<Ai_result, Position> Ai_result_position_pair;
+  typedef std::pair<Ai_result, Cam_position> Ai_result_position_pair;
   std::map<Ai_result_position_pair, Proc_events_ptr> _ai_result_position_proc_events_map;
   std::vector<int> _jpeg_params;
   int _number_of_sent_frames;
@@ -118,6 +118,9 @@ public:
   void consume_message();
   void update_area_protection();
 
+  Ai_result decode_ai_result(int number_of_owners,
+			     int number_of_monitored,
+			     int number_of_unknown);
 
   virtual void send_video_chunk(const Ext_door_open_sensor_sig &evt);
   virtual void send_video_chunk(const Int_door_open_sensor_sig &evt);
