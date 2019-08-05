@@ -27,8 +27,7 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
   _publisher{publisher},
   _sensor_cam{sensor_cam},
   _cam_path{cam_path},
-  _number_of_sent_frames{0},
-  _number_of_received_responses{0},
+  _ai_response_counter{0},
   _NUMBER_OF_FRAMES_TO_SEND{NUMBER_OF_FRAMES_TO_SEND},
   _is_ext_occupied{false},
   _is_int_occupied{false},
@@ -194,8 +193,8 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   using namespace std::chrono;
   boost::property_tree::ptree pt;
   pt.put("ts", duration_cast<milliseconds>(
-			      system_clock::now().time_since_epoch()
-			      ).count()
+					   system_clock::now().time_since_epoch()
+					   ).count()
 	 );
   pt.put("type",  "iq");
   pt.put("hub", _hub_id);
@@ -563,8 +562,8 @@ void Notification_logic_controller::send_classified_notification_av(char alarm_l
   using namespace std::chrono;
   boost::property_tree::ptree pt;
   pt.put("ts", duration_cast<milliseconds>(
-			      system_clock::now().time_since_epoch()
-			      ).count()
+					   system_clock::now().time_since_epoch()
+					   ).count()
 	 );
   pt.put("type",  "av");
   pt.put("hub", _hub_id);
@@ -579,8 +578,8 @@ void Notification_logic_controller::send_classified_notification_as(char alarm_l
   using namespace std::chrono;
   boost::property_tree::ptree pt;
   pt.put("ts", duration_cast<milliseconds>(
-			      system_clock::now().time_since_epoch()
-			      ).count()
+					   system_clock::now().time_since_epoch()
+					   ).count()
 	 );
   pt.put("type",  "as");
   pt.put("hub", _hub_id);
@@ -591,75 +590,69 @@ void Notification_logic_controller::send_classified_notification_as(char alarm_l
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
+void Notification_logic_controller::increase_ai_response_counter(){
+  _ai_response_counter += _NUMBER_OF_FRAMES_TO_SEND;
+  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+}
+
 void Notification_logic_controller::increase_ai_response_counter(const Ext_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  _number_of_sent_frames += _NUMBER_OF_FRAMES_TO_SEND;
-  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+  increase_ai_response_counter();
 }
 void Notification_logic_controller::increase_ai_response_counter(const Int_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  _number_of_sent_frames += _NUMBER_OF_FRAMES_TO_SEND;
-  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+  increase_ai_response_counter();
 }
 
 void Notification_logic_controller::increase_ai_response_counter(const Res_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  _number_of_sent_frames += _NUMBER_OF_FRAMES_TO_SEND;
-  D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
+  increase_ai_response_counter();
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(){
+  //to avoid problems of multiple sending of the same response from ai_server (due to qos = 1)
+  //let's decrease _ai_response_counter only when this number is greater than 0
+  if(_ai_response_counter > 0){
+    _ai_response_counter -= 1;
+    //if after decrement _ai_response_counters is 0 we received all the expected replies
+    if(!_ai_response_counter)
+      process_event_verbose(Ai_response_off{});
+  }
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_ext &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});
+  decrease_ai_response_counter();
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_int &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});  
+  decrease_ai_response_counter();
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_res &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});
+  decrease_ai_response_counter();
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_ext &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});
+  decrease_ai_response_counter();
 }
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_int &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});
+  decrease_ai_response_counter();
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_res &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});
+  decrease_ai_response_counter();
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_ext &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});
-  
+  decrease_ai_response_counter();  
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_int &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});  
+  decrease_ai_response_counter();
 }
 
 void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_res &evt){
-  _number_of_received_responses += 1;
-  if(_number_of_sent_frames == _number_of_received_responses)
-    process_event_verbose(Ai_response_off{});  
+  decrease_ai_response_counter();
 }
 
 void Notification_logic_controller::ext_presence_flag_update(const Rec_owner_in_ext &evt){
@@ -746,7 +739,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"motfke_I"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
   _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motfke_R"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
   _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } );
-  _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"winfke_R"}); }, [this](){ return; } );
+  _sensor_proc_events_map["winfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"winfke_R"}); }, [this](){ return; } );
   
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 

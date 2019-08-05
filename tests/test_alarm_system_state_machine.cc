@@ -38,7 +38,9 @@ void current_state(Alarm_system const &alarm_system){
 }
 
 int main(int argc, char **argv){
-
+  boost::ignore_unused(argc);
+  boost::ignore_unused(argv);
+  
   Alarm_system alarm_system;
   alarm_system.start();
   //At start, the machine is in Init and Waiting_for_risk
@@ -144,10 +146,12 @@ int main(int argc, char **argv){
   current_state(alarm_system);
 
   //Internal transition in "Evaluating_risk" state triggered by "Ext_door_open_sensor_sig" event
+  //Because we are also in Idle, this event triggers a transition to Waiting_for_ai_response calling increase_ai_response_counter 
   alarm_system.process_event(Ext_door_open_sensor_sig{});
   current_state(alarm_system);
 
   //Internal transition in "Evaluating_risk" state triggered by "Int_door_open_sensor_sig" event
+  //Because we are already in Waiting_for_ai_response  no event is triggered in the Internaò_activity transition state 
   alarm_system.process_event(Int_door_open_sensor_sig{});
   current_state(alarm_system);
 
@@ -402,10 +406,57 @@ int main(int argc, char **argv){
   //This transition triggers Red_alarm
   alarm_system.process_event(Res_motion_sensor_sig{});
   current_state(alarm_system);
+
+  //Transition from High_risk to Low_risk triggered by "Rec_owner_in_ext/Rec_owner_in_int/Rec_owner_in_res".
+  //This transition triggers Green_alarm
+  //alarm_system.process_event(Rec_owner_in_ext{});
+  //alarm_system.process_event(Rec_owner_in_int{});
+  alarm_system.process_event(Rec_owner_in_res{});
+  current_state(alarm_system);
+
+  //Transition from Reserved to Int triggered by "Clear_res".
+  alarm_system.process_event(Clear_res{});
+  current_state(alarm_system);
+
+  //Transition from Low_risk to Waiting_for_risk triggered by Reset_risk
+  alarm_system.process_event(Reset_risk{});
+  current_state(alarm_system);
+
+  //Transition from Waiting_for_risk to Medium_risk triggered by Int_window_open_sensor_signal
+  alarm_system.process_event(Int_wind_open_sensor_sig{});
+  current_state(alarm_system);
+
+  //Transition from Medium_risk to High_risk triggered by Rec_unk_in_ext
+  alarm_system.process_event(Rec_unk_in_ext{});
+  current_state(alarm_system);
   
-  // // //Reset transition to Waiting_for_risk
-  // // alarm_system.process_event(Reset_risk{});
-  // // current_state(alarm_system);
+  //Internal transition in High_risk triggered by Rec_monit_in_ext
+  alarm_system.process_event(Rec_monit_in_ext{});
+  current_state(alarm_system);
+
+  //Internal transition in High_risk triggered by Rec_monit_in_int
+  alarm_system.process_event(Rec_monit_in_int{});
+  current_state(alarm_system);
+  
+  //Internal transition in High_risk triggered by Rec_monit_in_res
+  alarm_system.process_event(Rec_monit_in_res{});
+  current_state(alarm_system);
+
+  //Internal transition in High_risk triggered by Rec_unk_in_ext
+  alarm_system.process_event(Rec_unk_in_ext{});
+  current_state(alarm_system);
+
+  //Internal transition in High_risk triggered by Rec_unk_in_int
+  alarm_system.process_event(Rec_unk_in_int{});
+  current_state(alarm_system);
+  
+  //Internal transition in High_risk triggered by Rec_unk_in_res
+  alarm_system.process_event(Rec_unk_in_res{});
+  current_state(alarm_system);
+
+  //Reset transition to Waiting_for_risk
+  alarm_system.process_event(Reset_risk{});
+  current_state(alarm_system);
   
   return 0;
 }

@@ -56,8 +56,7 @@ class Notification_logic_controller : public Alarm_system{
   typedef std::function<void(std::string)> Proc_events_ptr_2;
   std::map<Ai_result_position_pair, Proc_events_ptr_2> _ai_result_position_proc_events_map;
   std::vector<int> _jpeg_params;
-  int _number_of_sent_frames;
-  int _number_of_received_responses;
+  int _ai_response_counter;
   const int _NUMBER_OF_FRAMES_TO_SEND;
   bool _is_ext_occupied;
   bool _is_int_occupied;
@@ -104,6 +103,8 @@ class Notification_logic_controller : public Alarm_system{
   void send_rich_notification(const std::string &sensor_mini_id,
 			      int which,
 			      File_type file_type);
+  void decrease_ai_response_counter();
+  void increase_ai_response_counter();
 public:
   Notification_logic_controller(Area_protection &area_protection,
 				Synchronized_queue<mqtt::const_message_ptr> &queue,
