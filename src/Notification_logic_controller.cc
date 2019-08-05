@@ -727,7 +727,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_position_map["doorfkeR"] = 'r';
   _sensor_position_map["motfke_I"] = 'i';
   _sensor_position_map["motfke_R"] = 'r';
-  _sensor_position_map["winfke_I"] = 'i';
+  _sensor_position_map["01cc9efa"] = 'i';
   _sensor_position_map["winfke_R"] = 'r';
   
   _sensor_type_map["01cc99b3"] = Sensor_type::DOOR;
@@ -736,7 +736,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_type_map["doorfkeR"] = Sensor_type::DOOR;
   _sensor_type_map["motfke_I"] = Sensor_type::MOTION;
   _sensor_type_map["motfke_R"] = Sensor_type::MOTION;
-  _sensor_type_map["winfke_I"] = Sensor_type::WINDOW;
+  _sensor_type_map["01cc9efa"] = Sensor_type::WINDOW;
   _sensor_type_map["winfke_R"] = Sensor_type::WINDOW;
 
   _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
@@ -745,8 +745,8 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
   _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"motfke_I"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
   _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motfke_R"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
-  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"winfke_I"}); }, [this](){ return; } );
-  _sensor_proc_events_map["winfke_I"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"winfke_R"}); }, [this](){ return; } );
+  _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } );
+  _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"winfke_R"}); }, [this](){ return; } );
   
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 
