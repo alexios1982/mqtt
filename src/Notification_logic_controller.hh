@@ -47,8 +47,10 @@ class Notification_logic_controller : public Alarm_system{
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
-  std::map<Sensor_mini_id, std::string> &_sensor_cam;
-  std::map<std::string, std::string> &_cam_path;
+  typedef std::string Cam_name;
+  typedef std::string Cam_directory;
+  std::map<Sensor_mini_id, Cam_name> _sensor_cam;
+  std::map<Cam_name, Cam_directory> _cam_path;
   std::string _hub_id;
   typedef char Cam_position;
   std::map<Sensor_mini_id, Cam_position> _sensor_position_map;
@@ -109,8 +111,8 @@ public:
   Notification_logic_controller(Area_protection &area_protection,
 				Synchronized_queue<mqtt::const_message_ptr> &queue,
 				Publisher &publisher,
-				std::map<std::string, std::string> &sensor_cam,
-				std::map<std::string, std::string> &cam_path,
+				//std::map<std::string, std::string> &sensor_cam,
+				//std::map<std::string, std::string> &cam_path,
 				//with input bitrate=2000000 and resolution=1920x1080
 				//JPEG_QUALITY = 60 gives decode message of about 112KB
 				const int JPEG_QUALITY = 60,

@@ -18,15 +18,15 @@
 Notification_logic_controller::Notification_logic_controller(Area_protection &area_protection,
 							     Synchronized_queue<mqtt::const_message_ptr> &queue,
 							     Publisher &publisher,
-							     std::map<std::string, std::string> &sensor_cam,  
-							     std::map<std::string, std::string> &cam_path,
+							     //							     std::map<std::string, std::string> &sensor_cam,  
+							     //							     std::map<std::string, std::string> &cam_path,
 							     const int JPEG_QUALITY,
 							     const int NUMBER_OF_FRAMES_TO_SEND):
   _area_protection{area_protection},
   _queue{queue},
   _publisher{publisher},
-  _sensor_cam{sensor_cam},
-  _cam_path{cam_path},
+  _sensor_cam{},
+  _cam_path{},
   _ai_response_counter{0},
   _NUMBER_OF_FRAMES_TO_SEND{NUMBER_OF_FRAMES_TO_SEND},
   _is_ext_occupied{false},
@@ -710,37 +710,49 @@ void Notification_logic_controller::load_configuration(const std::string &config
   //motfke_R must be replaced with the Sensor_mini_id of the RESERVED MOTION SENSOR
   //winfke_I must be replaced with the Sensor_mini_id of the INTERNAL WINDOW SENSOR
   //winfke_R must be replaced with the Sensor_mini_id of the RESERVED MOTION SENSOR
+
+  _sensor_cam["01cc9efa"] = "cam01";
+  _cam_path["cam01"] = "/home/pi/gstreamer/multifiles_saving/cam01";
+
+  _sensor_cam["01ccf6bb"] = "cam03";
+  _cam_path["cam03"] = "/home/pi/gstreamer/multifiles_saving/cam03";
   
+  _sensor_cam["01cc99b3"] = "cam02";
+  _cam_path["cam02"] = "/home/pi/gstreamer/multifiles_saving/cam02";
+  
+   
   //
   //TODO
   //This maps can collpse into one in which the value is a struct with all infos
-  _sensor_position_map["01cc99b3"] = 'e';
+  _sensor_position_map["01cc9efa"] = 'e';
   _sensor_position_map["0202c411"] = 'e';
-  _sensor_position_map["doorfkeI"] = 'i';
-  _sensor_position_map["doorfkeR"] = 'r';
-  _sensor_position_map["motfke_I"] = 'i';
-  _sensor_position_map["motfke_R"] = 'r';
-  _sensor_position_map["01cc9efa"] = 'i';
-  _sensor_position_map["winfke_R"] = 'r';
-  
-  _sensor_type_map["01cc99b3"] = Sensor_type::DOOR;
-  _sensor_type_map["0202c411"] = Sensor_type::MOTION;
-  _sensor_type_map["doorfkeI"] = Sensor_type::DOOR;
-  _sensor_type_map["doorfkeR"] = Sensor_type::DOOR;
-  _sensor_type_map["motfke_I"] = Sensor_type::MOTION;
-  _sensor_type_map["motfke_R"] = Sensor_type::MOTION;
-  _sensor_type_map["01cc9efa"] = Sensor_type::WINDOW;
-  _sensor_type_map["winfke_R"] = Sensor_type::WINDOW;
+  _sensor_position_map["01ccf6bb"] = 'i';
+  _sensor_position_map["0202c38b"] = 'i';
+  _sensor_position_map["01ccfa8f"] = 'i';
+  _sensor_position_map["01cc99b3"] = 'r';
+  _sensor_position_map["motion_r"] = 'r';
+  _sensor_position_map["window_r"] = 'r';
 
-  _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
-  _sensor_proc_events_map["doorfkeI"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"doorfkeI"}); }, [this](){ return; } );
-  _sensor_proc_events_map["doorfkeR"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"doorfkeR"}); }, [this](){ return; } );
+  _sensor_type_map["01cc9efa"] = Sensor_type::DOOR;
+  _sensor_type_map["0202c411"] = Sensor_type::MOTION;
+  _sensor_type_map["01ccf6bb"] = Sensor_type::DOOR;
+  _sensor_type_map["0202c38b"] = Sensor_type::MOTION;
+  _sensor_type_map["01ccfa8f"] = Sensor_type::WINDOW; 
+  _sensor_type_map["01cc99b3"] = Sensor_type::DOOR;
+  _sensor_type_map["motion_r"] = Sensor_type::MOTION;
+  _sensor_type_map["window_r"] = Sensor_type::WINDOW;
+  
+
+  
+  _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } );
+  _sensor_proc_events_map["01ccf6bb"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } );
+  _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
   //motion sensor will trigger different events according to there is someone or not in the room
   _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
-  _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"motfke_I"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
-  _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motfke_R"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
-  _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } );
-  _sensor_proc_events_map["winfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"winfke_R"}); }, [this](){ return; } );
+  _sensor_proc_events_map["0202c38b"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
+  _sensor_proc_events_map["motion_r"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
+  _sensor_proc_events_map["01ccfa8f"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } );
+  _sensor_proc_events_map["window_r"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } );
   
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 

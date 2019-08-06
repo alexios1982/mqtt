@@ -109,8 +109,8 @@ int main(int argc, char* argv[]){
   //notification, otherwise we will send a classify notification
   //TODO
   //queste dovremmo riempirle in fase di configurazione della macchina a stati
-  std::map<std::string, std::string> sensor_cam = { {"01cc99b3", "cam02"} };
-  std::map<std::string, std::string> cam_path = { {"cam02", "/home/pi/gstreamer/multifiles_saving"} };
+  //std::map<std::string, std::string> sensor_cam = { {"01cc99b3", "cam02"} };
+  //std::map<std::string, std::string> cam_path = { {"cam02", "/home/pi/gstreamer/multifiles_saving/cam02"} };
   /////////////////////////////////////////////////////////////////////////
 
   // std::map< std::string, Sensor<Ext_door_open_sensor_sig> > ext_sensors_map;
@@ -211,7 +211,8 @@ int main(int argc, char* argv[]){
 
   std::string configuration_file = "some_configuration_file";
   
-  Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
+  //Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
+  Notification_logic_controller notification_logic_controller{area_protection, queue, publisher};
   notification_logic_controller.start();
 
   notification_logic_controller.load_configuration(configuration_file);
