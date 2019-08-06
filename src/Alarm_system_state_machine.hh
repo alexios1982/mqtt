@@ -117,6 +117,8 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   virtual void int_presence_flag_reset(const Clear_int &evt);
   virtual void res_presence_flag_reset(const Clear_res &evt);
 
+  //TO DO: this method can be erased and substituted by a simple trigger_reset_risk
+  //because trigger_reset_risk will call by itself ext_presence_flag_reset
   void ext_presence_flag_reset_and_trigger_reset_risk(const Clear_ext &evt);
 
 
@@ -146,9 +148,6 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   template<class Event_type>
   void res_presence_flag_update_and_trigger_red_alarm(const Event_type &evt);  
 
-  // void presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_ext &evt);
-  // void presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_int &evt);
-  // void presence_flag_update_and_trigger_red_alarm(const Rec_unk_in_res &evt);
   void reset_presence_flags(const Reset_risk &evt);
 
   bool is_ext_empty();

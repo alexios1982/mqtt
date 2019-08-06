@@ -620,77 +620,77 @@ void Notification_logic_controller::decrease_ai_response_counter(){
   }
 }
 
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_ext &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_ext &){
   decrease_ai_response_counter();
 }
 
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_int &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_int &){
   decrease_ai_response_counter();
 }
 
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_res &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_owner_in_res &){
   decrease_ai_response_counter();
 }
 
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_ext &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_ext &){
   decrease_ai_response_counter();
 }
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_int &evt){
-  decrease_ai_response_counter();
-}
-
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_res &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_int &){
   decrease_ai_response_counter();
 }
 
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_ext &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_monit_in_res &){
+  decrease_ai_response_counter();
+}
+
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_ext &){
   decrease_ai_response_counter();  
 }
 
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_int &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_int &){
   decrease_ai_response_counter();
 }
 
-void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_res &evt){
+void Notification_logic_controller::decrease_ai_response_counter(const Rec_unk_in_res &){
   decrease_ai_response_counter();
 }
 
-void Notification_logic_controller::ext_presence_flag_update(const Rec_owner_in_ext &evt){
+void Notification_logic_controller::ext_presence_flag_update(const Rec_owner_in_ext &){
   _is_ext_occupied = true;
 }
-void Notification_logic_controller::ext_presence_flag_update(const Rec_monit_in_ext &evt){
+void Notification_logic_controller::ext_presence_flag_update(const Rec_monit_in_ext &){
   _is_ext_occupied = true;
 }
-void Notification_logic_controller::ext_presence_flag_update(const Rec_unk_in_ext &evt){
+void Notification_logic_controller::ext_presence_flag_update(const Rec_unk_in_ext &){
   _is_ext_occupied = true;
 }
-void Notification_logic_controller::int_presence_flag_update(const Rec_owner_in_int &evt){
+void Notification_logic_controller::int_presence_flag_update(const Rec_owner_in_int &){
   _is_int_occupied = true;
 }
-void Notification_logic_controller::int_presence_flag_update(const Rec_monit_in_int &evt){
+void Notification_logic_controller::int_presence_flag_update(const Rec_monit_in_int &){
   _is_int_occupied = true;
 }
-void Notification_logic_controller::int_presence_flag_update(const Rec_unk_in_int &evt){
+void Notification_logic_controller::int_presence_flag_update(const Rec_unk_in_int &){
   _is_int_occupied = true;
 }
-void Notification_logic_controller::res_presence_flag_update(const Rec_owner_in_res &evt){
+void Notification_logic_controller::res_presence_flag_update(const Rec_owner_in_res &){
   _is_res_occupied = true;
 }
-void Notification_logic_controller::res_presence_flag_update(const Rec_monit_in_res &evt){
+void Notification_logic_controller::res_presence_flag_update(const Rec_monit_in_res &){
   _is_res_occupied = true;
 }
-void Notification_logic_controller::res_presence_flag_update(const Rec_unk_in_res &evt){
+void Notification_logic_controller::res_presence_flag_update(const Rec_unk_in_res &){
   _is_res_occupied = true;
 }
 
-void Notification_logic_controller::ext_presence_flag_reset(const Clear_ext &evt){
+void Notification_logic_controller::ext_presence_flag_reset(const Clear_ext &){
   _is_ext_occupied = false;
 }
-void Notification_logic_controller::int_presence_flag_reset(const Clear_int &evt){
+void Notification_logic_controller::int_presence_flag_reset(const Clear_int &){
   _is_int_occupied = false;
 }
-void Notification_logic_controller::res_presence_flag_reset(const Clear_res &evt){
-  _is_res_occupied = true;
+void Notification_logic_controller::res_presence_flag_reset(const Clear_res &){
+  _is_res_occupied = false;
 }
 
 void Notification_logic_controller::load_configuration(const std::string &configuration_file){
