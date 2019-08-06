@@ -735,6 +735,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
   _sensor_proc_events_map["doorfkeI"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"doorfkeI"}); }, [this](){ return; } );
   _sensor_proc_events_map["doorfkeR"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"doorfkeR"}); }, [this](){ return; } );
+  //motion sensor will trigger different events according to there is someone or not in the room
   _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
   _sensor_proc_events_map["motfke_I"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"motfke_I"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
   _sensor_proc_events_map["motfke_R"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motfke_R"}); }, [this](){ return process_event_verbose(Clear_res{}); } );

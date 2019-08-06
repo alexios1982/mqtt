@@ -71,6 +71,11 @@ void Alarm_system_::decrease_ai_response_counter(const Rec_unk_in_res &){
 
 void Alarm_system_::reset_presence_flags(const Reset_risk &){
   D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+  //calling the reset methods in all the rings
+  //because these methods are virtual, most derived methods will be called
+  ext_presence_flag_reset();
+  int_presence_flag_reset();
+  res_presence_flag_reset();
 }
 
 void Alarm_system_::ext_presence_flag_update(const Rec_owner_in_ext &){
