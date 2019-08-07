@@ -91,8 +91,8 @@ const std::string ZIGBEE_SUBSCRIBER_ALL_TOPICS { "zigbee2mqtt/#" };
 const std::string REMOTE_SERVER_ADDRESS { "ssl://a2x7fkplgngdk8-ats.iot.us-east-1.amazonaws.com:8883" };
 const std::string REMOTE_PUBLISHER_ID { "remote_publisher_client" };
 const std::string REMOTE_SUBSCRIBER_ID { "remote_subscriber_client" };
-const std::string REMOTE_PUBLISHER_TOPIC { "User_Consitalia_1_aws/Notifications" };
-const std::string REMOTE_SUBSCRIBER_TOPIC {"User_Consitalia_1_aws/Response"};
+const std::string REMOTE_PUBLISHER_TOPIC { "ai_request" };
+const std::string REMOTE_SUBSCRIBER_TOPIC {"ai_reply"};
 
 
 const int QOS = 1;
