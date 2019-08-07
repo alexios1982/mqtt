@@ -128,7 +128,7 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   }
   //if it's not in the sensor_proc_events_map, it must be 
   //an answer from the ai server (in this case the topic is Response
-  else if (topic_info == "Response"){
+  else if (topic_info == "ai_reply"){
     analyze_ai_response(zigbee_message_ptr);
   }
 }
@@ -156,6 +156,9 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
       if(message_to_send->get_topic() != ""){
 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
       	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
+	  //print on standard error only for integration test of 08/08/2019
+	  std::cerr << "message" << std::endl;
+	  std::cerr << message_to_send->get_payload() << std::endl;
 	  send_notification(message_to_send);
       }
     }
@@ -416,6 +419,9 @@ void Notification_logic_controller::update_area_protection(){
 void Notification_logic_controller::analyze_ai_response(const mqtt::const_message_ptr &message_ptr){
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n');
   std::string payload{message_ptr->get_payload()};
+  //print in standard error only for integration test of 08/08/2019
+  std::cerr << "message" << std::endl;
+  std::cerr <<  payload << std::endl;
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << payload << std::endl);
   std::time_t now;
   std::time (&now);
@@ -543,18 +549,18 @@ Notification_logic_controller::Ai_result Notification_logic_controller::decode_a
 
 void Notification_logic_controller::send_video_chunk(const Ext_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  send_rich_notifications(evt._sensor_mini_id, 1, 2);
+  send_rich_notifications(evt._sensor_mini_id, 3, 2);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 void Notification_logic_controller::send_video_chunk(const Int_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  send_rich_notifications(evt._sensor_mini_id, 1, 2);
+  send_rich_notifications(evt._sensor_mini_id, 3, 2);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
 void Notification_logic_controller::send_video_chunk(const Res_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  send_rich_notifications(evt._sensor_mini_id, 1, 2);
+  send_rich_notifications(evt._sensor_mini_id, 3, 2);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
@@ -571,6 +577,9 @@ void Notification_logic_controller::send_classified_notification_av(char alarm_l
   pt.put("srcid", mmuid);
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
+  //print in standard error only for integration test of 08/08/2019
+  std::cerr << "message" << std::endl;
+  std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
@@ -587,6 +596,9 @@ void Notification_logic_controller::send_classified_notification_as(char alarm_l
   pt.put("srcid", sensor_mini_id);
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
+  //print in standard error only for integration test of 08/08/2019
+  std::cerr << "message" << std::endl;
+  std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
