@@ -428,6 +428,7 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
      << " time: " << std::ctime(&now) << std::endl);
 
+  std::cout << 0 << std::endl;
   std::stringstream ss;
   ss << payload;
   boost::property_tree::ptree pt;
@@ -439,10 +440,12 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   int number_of_unknown = pt.get<int>("unknown");
   std::string mmuid = pt.get<std::string>("muuid");
   //triggering the event
-  _ai_result_position_proc_events_map[ std::make_pair(
-						      decode_ai_result(number_of_owners, number_of_monitored, number_of_unknown),
-						      position)
-				       ](mmuid);
+  Ai_result ai_result = decode_ai_result(number_of_owners, number_of_monitored, number_of_unknown);
+  if(ai_result != Ai_result::NO_DETECTION)
+    _ai_result_position_proc_events_map[ std::make_pair(
+							ai_result,
+							position)
+					 ](mmuid);
 
 }
 
@@ -765,7 +768,8 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _sensor_proc_events_map["motion_r"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
   _sensor_proc_events_map["01ccfa8f"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } );
   _sensor_proc_events_map["window_r"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } );
-  
+
+
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'r')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_res{mmuid}); }; 
