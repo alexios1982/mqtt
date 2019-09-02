@@ -54,15 +54,25 @@ const Dir_handler::Files_list& Dir_handler::get_files_list(const std::string &ex
 
 void
 Dir_handler::fill_time_ord_mmap(const std::string &extension) {
-  //first of all we need to empty _time_ord_mmpa if not empty
+  //first of all we need to empty _time_ord_mmap if not empty
+  // std::cout << "[Dir_handler::]" << __func__ 
+  // 	    << ". Let's clear the previous map of mp4 files" << '\n';
   if( _time_ord_mmap.size() )
     _time_ord_mmap.clear();
 
+  //let's construct the iterator to the beginning of list of files with
+  //extension "extension" in the directory
+  // std::cout << "[Dir_handler::]" << __func__ 
+  // 	    << ". Let's construct the iterator to the beginning" << '\n';
   auto first = boost::make_filter_iterator(std::bind2nd(Match_file_extension(), extension),
 					   bf::directory_iterator{_path},
 					   bf::directory_iterator{}
 					   );
 
+  //let's construct the iterator to the end of list of files with
+  //extension "extension" in the directory
+  // std::cout << "[Dir_handler::]" << __func__ 
+  // 	    << ". Let' s construct the iterator to the end" << '\n';
   auto last = boost::make_filter_iterator(std::bind2nd(Match_file_extension(), extension),
 					  bf::directory_iterator{},
 					  bf::directory_iterator{}
@@ -72,16 +82,27 @@ Dir_handler::fill_time_ord_mmap(const std::string &extension) {
     std::cout << *first++ << '\n';
 #endif
 
-      while(first != last){
-	//std::cout << *first << '\n';
-	std::time_t t = bf::last_write_time( *first ) ;
-	//std::cout << "On " << std::ctime( &t ) << " the file " << *first 
-	//	  << " was modified the last time!\n" ;
-	_time_ord_mmap.insert( Time_ord_mmap::value_type(t, *first) );
+  // std::cout << "[Dir_handler::]" << __func__ 
+  // 	    << ". Let's order" << '\n';
+
+  while(first != last){
+    //std::cout << *first << '\n';
+    try{
+      std::time_t t = bf::last_write_time( *first ) ;
+      //std::cout << "On " << std::ctime( &t ) << " the file " << *first 
+      //	  << " was modified the last time!\n" ;
+      _time_ord_mmap.insert( Time_ord_mmap::value_type(t, *first) );
+      ++first;
+    }
+    catch (bf::filesystem_error &e){
+	std::cerr << "[Dir_handler::]" << __func__ 
+		  << e.what() << '\n';
+	//we need to increment first because otherwise we would have an infinite loop
 	++first;
-      }     
-      //std::cout << "[Dir_handler::" << __func<< "]" << "no files with specified pattern" << std::endl;
-      //return std::pair<const std::time_t, std::string> (std::time_t{}, "");
+      }
+  }
+  // std::cout << "[Dir_handler::]" << __func__ 
+  // 	    << ". Ordering ended" << std::endl;
 }
   
 Dir_handler::Time_path_pair
@@ -96,7 +117,8 @@ Dir_handler::get_last_modified_file(const std::string &extension){
     return Time_path_pair( iter->first, (iter->second) );
   }
   else
-    return Time_path_pair{};
+    //std::cout << "[Dir_handler::" << __func__ << "]. the map is empty!" << std::endl;
+  return Time_path_pair{};
 }
 
 void Dir_handler::time_ordered_list(const std::string &extension, Order order){

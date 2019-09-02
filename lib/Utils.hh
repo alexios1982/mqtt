@@ -82,6 +82,8 @@ public:
 namespace bf = boost::filesystem;
 
 class Dir_handler{
+  //returns true if the complete file name matches
+  //the exentension passed as second parameter
   struct Match_file_extension{
     bool operator() (const bf::path &path,
 		     const std::string &extension) const{

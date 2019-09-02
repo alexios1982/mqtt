@@ -74,7 +74,8 @@ void Publisher::publish(const mqtt::const_message_ptr &to_publish){
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   catch(const mqtt::exception& exc) {
-    std::cerr << exc.what() << std::endl;
+    std::cerr << "[Publisher::"  << __func__ << "]" 
+	      << exc.what() << std::endl;
     return ;
   }
 }
