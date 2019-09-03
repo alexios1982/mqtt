@@ -154,6 +154,8 @@ int main(int argc, char* argv[]){
   // remote_conn_opts.set_ssl(remote_sslopts);
 
   mqtt::connect_options remote_conn_opts{};
+  //trying to solve disconnection problems
+  remote_conn_opts.set_automatic_reconnect(true);
   mqtt::ssl_options remote_sslopts("AmazonRootCA1.pem", "33ac0ac8dc-certificate.pem.crt", "33ac0ac8dc-private.pem.key", "", "", true);
   remote_conn_opts.set_ssl(remote_sslopts);
   
