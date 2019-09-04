@@ -133,6 +133,13 @@ void Alarm_system_::ext_presence_flag_reset_and_trigger_reset_risk(const Clear_e
   fsm.process_event(Reset_risk{});
 }
 
+void Alarm_system_::int_presence_flag_reset_and_trigger_reset_risk(const Clear_int &evt){
+  D(std::cout << info << "[Alarm_sytem::" << __func__ << "]. "  << reset << std::endl);
+  int_presence_flag_reset(evt);
+  msm::back::state_machine<Alarm_system_> &fsm = static_cast<msm::back::state_machine<Alarm_system_> &>(*this);
+  fsm.process_event(Reset_risk{});
+}
+
 bool Alarm_system_::is_ext_empty(){
   return true;
 }
@@ -143,4 +150,10 @@ bool Alarm_system_::is_int_empty(){
 
 bool Alarm_system_::is_res_empty(){
   return true;
+}
+
+
+void Alarm_system_::conditional_trigger_red_alarm(const Int_door_open_sensor_sig &evt){
+  if(_number_of_levels == 3)
+    trigger_red_alarm(evt);
 }

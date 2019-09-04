@@ -46,6 +46,11 @@ int main(int argc, char **argv){
   //At start, the machine is in Init and Waiting_for_risk
   current_state(alarm_system);
 
+  int number_of_levels = alarm_system.get_number_of_levels();
+  std::cout << error;
+  std::cout << "Number of levels: " << reset;
+  std::cout << number_of_levels << '\n' << std::endl;
+  
   //Alarm system state machine test
   std::cout << error;
   std::cout << "****************************************************************" << std::endl;
@@ -489,15 +494,46 @@ int main(int argc, char **argv){
   current_state(alarm_system);
 
   std::cout << error << "Transition triggered by " << reset << "Clear_res" << std::endl;
-  //Transition from Reserved to Int triggered by "Clear_res".
+  //Transition from Reserved to Intern triggered by "Clear_res".
   alarm_system.process_event(Clear_res{});
   current_state(alarm_system);
 
-  std::cout << error << "Transition triggered by " << reset << "Reset_risk" << std::endl;
-  //Transition from Low_risk to Waiting_for_risk triggered by Reset_risk
-  alarm_system.process_event(Reset_risk{});
+ 
+  std::cout << error << "Transition triggered by " << reset << "Clear_int" << std::endl;
+  //Transition from Intern to Extern triggered by "Clear_int".
+  alarm_system.process_event(Clear_int{});
   current_state(alarm_system);
 
+   std::cout << error << "Transition triggered by " << reset << "Int_door_open_sensor_sig" << std::endl;
+  //Transition from Extern to Intern triggered by "Int_door_open_sensor_sig".
+  alarm_system.process_event(Int_door_open_sensor_sig{});
+  current_state(alarm_system);
+
+  alarm_system.set_number_of_levels(Alarm_system_::HOUSE_WITHOUT_GARDEN_N_OF_LEVELS);
+  //we set the numbers of levels to 2 to check the other transition from Intern triggered by Clear_int to the state None 
+   std::cout << error << "Transition triggered by " << reset << "Clear_int" << std::endl;
+  //Transition from Extern to Intern triggered by "Int_door_open_sensor_sig".
+  alarm_system.process_event(Clear_int{});
+  current_state(alarm_system);
+  
+   std::cout << error << "Transition triggered by " << reset << "Int_door_open_sensor_sig" << std::endl;
+  //Transition from Extern to Intern triggered by "Int_door_open_sensor_sig".
+  alarm_system.process_event(Int_door_open_sensor_sig{});
+  current_state(alarm_system);
+
+  alarm_system.set_number_of_levels(Alarm_system_::HOUSE_WITHOUT_GARDEN_N_OF_LEVELS);
+  //we set the numbers of levels to 2 to check the other transition from Intern triggered by Clear_int to the state None 
+   std::cout << error << "Transition triggered by " << reset << "Clear_int" << std::endl;
+  alarm_system.process_event(Clear_int{});
+  current_state(alarm_system);
+  
+ 
+  // std::cout << error << "Transition triggered by " << reset << "Int_door_open_sensor_sig" << std::endl;
+  // //Transition from None to Intern triggered by Int_door_open_sensor_signal
+  // alarm_system.process_event(Int_door_open_sensor_sig{});
+  // current_state(alarm_system);
+
+  
   std::cout << error << "Transition triggered by " << reset << "Int_wind_open_sensor_sig" << std::endl;
   //Transition from Waiting_for_risk to Medium_risk triggered by Int_window_open_sensor_signal
   alarm_system.process_event(Int_wind_open_sensor_sig{});

@@ -32,7 +32,15 @@ using namespace msm::front::euml;
 
 // front-end: define the FSM structure
 struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
+    constexpr static int HOUSE_WITH_GARDEN_N_OF_LEVELS = 3;
+    constexpr static int HOUSE_WITHOUT_GARDEN_N_OF_LEVELS = 2;
+  
+  int _number_of_levels;
 
+  Alarm_system_(int number_of_levels = 3){
+    set_number_of_levels(number_of_levels);
+  }
+  
   typedef mpl::vector<Waiting_for_configuration, Waiting_for_risk, None, Idle> initial_state;
   
   template <class Event, class FSM>
@@ -120,6 +128,7 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   //TO DO: this method can be erased and substituted by a simple trigger_reset_risk
   //because trigger_reset_risk will call by itself ext_presence_flag_reset
   void ext_presence_flag_reset_and_trigger_reset_risk(const Clear_ext &evt);
+  void int_presence_flag_reset_and_trigger_reset_risk(const Clear_int &evt);
 
 
   template<class Event_type>
@@ -163,7 +172,14 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
   void send_video_chunk_and_trigger_orange_alarm(const Event_type &evt);  
 
   template<class Event_type>
-  void send_video_chunk_and_trigger_red_alarm(const Event_type &evt);  
+  void send_video_chunk_and_trigger_red_alarm(const Event_type &evt);
+
+  //we'll trigger red_alarm only if it is a 3-levels state machine
+  void conditional_trigger_red_alarm(const Int_door_open_sensor_sig &evt);
+
+
+  bool is_with_garden(const Clear_int&){ return _number_of_levels == HOUSE_WITH_GARDEN_N_OF_LEVELS;}
+  bool is_without_garden(const Clear_int&){ return _number_of_levels == HOUSE_WITHOUT_GARDEN_N_OF_LEVELS;}
 
   struct transition_table : mpl::vector<
     //    Start                       Event                     Target                     Action                      Guard
@@ -203,6 +219,7 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_row <Waiting_for_risk,        Ext_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_orange_alarm<Ext_motion_sensor_sig> >,
     a_row <Waiting_for_risk,        Int_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Int_motion_sensor_sig>    >,
     a_row <Waiting_for_risk,        Res_motion_sensor_sig,    Evaluating_risk,             &Alarm_system_::trigger_red_alarm<Res_motion_sensor_sig>    >,
+    _irow <Waiting_for_risk,        Reset_risk                                                                                                         >,
     // +---------------------------+-------------------------+----------------------------+---------------------------+-----------
     a_irow<Evaluating_risk,         Perimetral_sensor_sig,                                 &Alarm_system_::trigger_red_alarm<Perimetral_sensor_sig>    >,
     a_irow<Evaluating_risk,         Ext_door_open_sensor_sig,                              &Alarm_system_::send_video_chunk     >,
@@ -273,8 +290,8 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     // +----------------------------+-------------------------+----------------------------+--------------------------------------------------------------------------------+-----------
     _row<None,                      Perimetral_sensor_sig,     Extern                                                                                                     >,
     _row<None,                      Ext_door_open_sensor_sig,  Extern                                                                                                     >,
-    //Interal state name gives me error
-    a_row<None,                     Int_door_open_sensor_sig,  Intern,                     &Alarm_system_::trigger_red_alarm<Int_door_open_sensor_sig> >,
+    //Internal state name gives me error
+    a_row<None,                     Int_door_open_sensor_sig,  Intern,                     &Alarm_system_::conditional_trigger_red_alarm>,
     a_row<None,                     Res_door_open_sensor_sig,  Reserved,                   &Alarm_system_::trigger_red_alarm<Res_door_open_sensor_sig> >,
     _row<None,                      Int_wind_open_sensor_sig,  Intern                                                                                                     >,
     _row<None,                      Res_wind_open_sensor_sig,  Reserved                                                                                                     >,
@@ -303,7 +320,8 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     _row<Intern,                    Rec_monit_in_res,          Reserved                                                                                                    >,
     _row<Intern,                    Rec_unk_in_res,            Reserved                                                                                                    >,
     a_irow<Intern,                  Clear_ext,                                                  &Alarm_system_::ext_presence_flag_reset                        >,    
-    a_row<Intern,                   Clear_int,                 Extern,                          &Alarm_system_::int_presence_flag_reset                      >,
+    row<Intern,                     Clear_int,                 Extern,                          &Alarm_system_::int_presence_flag_reset, &Alarm_system_::is_with_garden       >,
+    row<Intern,                     Clear_int,                 None,                            &Alarm_system_::int_presence_flag_reset_and_trigger_reset_risk, &Alarm_system_::is_without_garden>,
     _irow<Reserved,                 Rec_monit_in_res                                                                                                          >,
     _irow<Reserved,                Rec_unk_in_res                                                                                                             >,
 
@@ -326,15 +344,20 @@ struct Alarm_system_ : public msm::front::state_machine_def<Alarm_system_>{
     a_irow<Waiting_for_ai_response, Rec_owner_in_res,                                           &Alarm_system_::decrease_ai_response_counter              >,
     a_irow<Waiting_for_ai_response, Rec_monit_in_res,                                           &Alarm_system_::decrease_ai_response_counter               >,
     a_irow<Waiting_for_ai_response, Rec_unk_in_res,                                             &Alarm_system_::decrease_ai_response_counter                >,
-    _row<Waiting_for_ai_response,   Ai_response_off,            Idle                                                                                                          >
+    _row<Waiting_for_ai_response,   Ai_response_off,            Idle                                                                                         >
     > {};
 
   // Replaces the default no-transition response.
+  //this method is called if among all the active states
+  // there is not even one that is triggered by the incoming event
   template <class FSM,class Event>
   void no_transition(Event const& e, FSM&, int state){
     D(std::cout << "no transition from state " << state
       << " on event " << typeid(e).name() << std::endl);
   }
+
+  int get_number_of_levels() const { return _number_of_levels;}
+  void set_number_of_levels(int number_of_levels) {_number_of_levels = number_of_levels;}
 };
 
 // back-end
