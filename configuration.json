@@ -1,0 +1,63 @@
+ {
+    "address": "via ragazzi del 99",
+    "city": "Latina",
+    "control_unit": "id_secret_control_unit",
+    "name": "casa mare",
+    "ring": {
+      "external": [],
+      "internal": [
+        {
+          "description": "salone1",
+          "gate": [
+            {
+              "devices": [
+                {
+                  "id_secret_device": "id_secret_device",
+                  "name": "telecamera porta",
+                  "sensor_type": 2,
+                  "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam02/1562253513733"
+                },
+                {
+                  "id_secret_device": "id_secret_device",
+                  "name": "sensore porta",
+                  "sensor_type": 1,
+                  "url": null
+                }
+              ],
+              "name": "gate1"
+            }
+          ],
+          "devices": [
+            {
+              "id_secret_device": "id_secret_device",
+              "name": "sensore corridoio",
+              "sensor_type": 3,
+              "url": null
+            }
+          ],
+          "name": "salone",
+          "room_type": 1
+        },
+        {
+          "description": "cucina",
+          "gate": [
+            {
+              "devices": [
+                {
+                  "id_secret_device": "id_secret_device",
+                  "name": "cam finestra",
+                  "sensor_type": 1,
+                  "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam01/1562254142512"
+                }
+              ],
+              "name": "gate-cucina"
+            }
+          ],
+          "devices": [],
+          "name": "cucina",
+          "room_type": 11
+        }
+      ],
+      "reserved": []
+    }
+ }

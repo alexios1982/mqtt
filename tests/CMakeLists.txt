@@ -108,3 +108,5 @@ target_link_libraries(test_alarm_system_state_machine PUBLIC
   Utils
   ${BOOST_SYSTEM}
   )
+
+add_executable (test_configuration_file test_configuration_file.cc)
