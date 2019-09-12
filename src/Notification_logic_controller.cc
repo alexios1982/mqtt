@@ -25,8 +25,9 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
   _area_protection{area_protection},
   _queue{queue},
   _publisher{publisher},
-  _sensor_cam{},
-  _cam_path{},
+  // _sensor_cam{},
+  // _cam_path{},
+  _sensor_cam_path{},
   _ai_response_counter{0},
   _NUMBER_OF_FRAMES_TO_SEND{NUMBER_OF_FRAMES_TO_SEND},
   _is_ext_occupied{false},
@@ -46,47 +47,6 @@ void Notification_logic_controller::consume_message(){
   }
 }
 
-// void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &zigbee_message_ptr){
-//   //topic is in the form of zigbee2mqtt/0x00158d0001cc99b3
-//   std::string topic = zigbee_message_ptr->get_topic();
-//   //and we want to extract only the last 8 digits
-//   std::string topic_info = topic.substr(topic.size() - 8);
-//   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
-//     << "topic_info is: " << topic_info << '\n');
-//   //let's do a search in the _sensor_cam map to decide if we have
-//   //to prepare a rich notification or a classified notification
-//   mqtt::const_message_ptr message_to_send;
-//   auto it = _sensor_cam.find(topic_info);
-//   if( it != _sensor_cam.end() ){
-//     if( !is_a_door_sensor_notification_duplicate(zigbee_message_ptr) ){
-//       D( Time_spent<> to_send_notifications );
-//       // int iter = 0, n_of_sending = 3;
-//       // while( iter < n_of_sending){
-//       // 	message_to_send = prepare_rich_notification(zigbee_message_ptr, topic_info);
-//       // 	D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
-//       // 	  << "message_to_send size is: " << ( message_to_send->to_string() ).size() << '\n';)
-//       // 	if(message_to_send->get_topic() != "")
-//       // 	  send_notification(message_to_send);
-//       // 	++iter;
-//       // }
-//       send_rich_notifications(topic_info, 1, 2);
-//     }
-//     //nothing to do: the associate message has already been sent
-//     else
-//       return;
-//   }
-//   //if it's not in the sensor_cam map, it could be a rich message or
-//   //an answer from the ai serder (in this case the topic is Response
-//   else if (topic_info == "Response"){
-//     analyze_ai_response(zigbee_message_ptr);
-//   }
-//   //it is a sensor associate to a classified notification
-//   else{
-//     message_to_send = prepare_classified_notification(zigbee_message_ptr);
-//     //send_notification(message_to_send);
-//   }
-// }
-
 void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &zigbee_message_ptr){
   //topic is in the form of zigbee2mqtt/0x00158d0001cc99b3
   std::string topic = zigbee_message_ptr->get_topic();
@@ -98,15 +58,19 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
   //to prepare a rich notification or a classified notification
   mqtt::const_message_ptr message_to_send;
 
-  //auto it = _sensor_cam.find(topic_info);
-  auto it = _sensor_proc_events_map.find(topic_info);
-  if( it != _sensor_proc_events_map.end() ){
-    switch(_sensor_type_map[topic_info]){
+  //auto it = _sensor_proc_events_map.find(topic_info);
+  auto it = _sensor_infos_map.find(topic_info);
+  //if( it != _sensor_proc_events_map.end() ){
+  if( it != _sensor_infos_map.end() ){
+    //switch(_sensor_type_map[topic_info]){
+    //switch(_sensor_infos_map[topic_info]._sensor_type){
+    switch( (it->second)._sensor_type){
     case Sensor_type::DOOR :
     case Sensor_type::WINDOW :  
       if( is_gate_opened(zigbee_message_ptr) ){
 	D( Time_spent<> to_send_notifications );
-	( (it->second).first )();
+	//( (it->second).first )();
+	( ( (it->second)._proc_events_ptr_pair ).first )();
       }
       else
 	return;
@@ -115,10 +79,12 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
       D( Time_spent<> to_send_notifications );
       if( is_room_occupied(zigbee_message_ptr) )
 	//triggering Ext_motion_sensor_sig/Int_motion_sensor_sig/Res_motion_sensor_sig
-	( (it->second).first )();
+	// ( (it->second).first )();
+	( ( (it->second)._proc_events_ptr_pair ).first )();
       else
 	//triggering Clear_ext/Clear_int/Clear_res signals
-	( (it->second).second )();
+	//( (it->second).second )();
+	( ( (it->second)._proc_events_ptr_pair ).second )();
       break;
     }
     default:
@@ -126,7 +92,8 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
     		<< "unrecognized sensor id" << std::endl;
     }//END OF SWITCH
   }
-  //if it's not in the sensor_proc_events_map, it must be 
+  // //if it's not in the sensor_proc_events_map, it must be
+  //if it's not in the sensor_infos_map, it must be 
   //an answer from the ai server (in this case the topic is Response
   else if (topic_info == "ai_reply"){
     analyze_ai_response(zigbee_message_ptr);
@@ -201,7 +168,8 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
 	 );
   pt.put("type",  "iq");
   pt.put("hub", _hub_id);
-  pt.put("ring", _sensor_position_map[sensor_mini_id]);
+  //pt.put("ring", _sensor_position_map[sensor_mini_id]);
+  pt.put("ring", _sensor_infos_map[sensor_mini_id]._position );
   pt.put("service", "fv");
   pt.put("muuid", boost::lexical_cast<std::string>( boost::uuids::random_generator()() ) );
   //TODO: understand if the to_send_filename is necessary anymore
@@ -256,7 +224,8 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
 
 std::unique_ptr<Dir_handler::Time_path_pair>
 Notification_logic_controller::select_video_chunk(const std::string &sensor_mini_id, int which){
-  Dir_handler dir_handler{ _cam_path[ _sensor_cam[sensor_mini_id] ] };
+  //Dir_handler dir_handler{ _cam_path[ _sensor_cam[sensor_mini_id] ] };
+  Dir_handler dir_handler{ _sensor_cam_path[sensor_mini_id] };
   //this snippet must be executed just once to check that the dir exists
   //to avoid unnecessary execution, we use this trick that uses lambda function
   static bool once = [&dir_handler]{
@@ -433,7 +402,7 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   ss << payload;
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(ss, pt);
-  char position =  pt.get<Cam_position>("ring");
+  char position =  pt.get<Position>("ring");
   //Ai_result ai_result = static_cast<Ai_result>( pt.get<int>("response") );
   int number_of_owners = pt.get<int>("owner");
   int number_of_monitored = pt.get<int>("monitored");
@@ -708,7 +677,7 @@ void Notification_logic_controller::res_presence_flag_reset(const Clear_res &){
   _is_res_occupied = false;
 }
 
-void Notification_logic_controller::load_configuration(const std::string &configuration_file){
+void Notification_logic_controller::load_configuration(const std::string &){
   //I dont't know why boost::bind doesn't work
   //part in which we'll parse the file to retrieve information for loading the map
   // _sensor_proc_events_map["01cc99b3"] = std::bind(
@@ -725,49 +694,67 @@ void Notification_logic_controller::load_configuration(const std::string &config
   //motfke_R must be replaced with the Sensor_mini_id of the RESERVED MOTION SENSOR
   //winfke_I must be replaced with the Sensor_mini_id of the INTERNAL WINDOW SENSOR
   //winfke_R must be replaced with the Sensor_mini_id of the RESERVED MOTION SENSOR
+  // _sensor_cam["01cc9efa"] = "cam01";
+  // _cam_path["cam01"] = "/home/pi/gstreamer/multifiles_saving/cam01";
 
-  _sensor_cam["01cc9efa"] = "cam01";
-  _cam_path["cam01"] = "/home/pi/gstreamer/multifiles_saving/cam01";
+  // _sensor_cam["01ccf6bb"] = "cam03";
+  // _cam_path["cam03"] = "/home/pi/gstreamer/multifiles_saving/cam03";
+  
+  // _sensor_cam["01cc99b3"] = "cam02";
+  // _cam_path["cam02"] = "/home/pi/gstreamer/multifiles_saving/cam02";
 
-  _sensor_cam["01ccf6bb"] = "cam03";
-  _cam_path["cam03"] = "/home/pi/gstreamer/multifiles_saving/cam03";
+  //TODO
+  //cam01, cam02 and cam03 must be replaced by most explicit names:
+  //external for cam01: /home/pi/gstreamer/multifiles_saving/external
+  //internal for cam03: /home/pi/gstreamer/multifiles_saving/internal
+  //reserverd for cam02: /home/pi/gstreamer/multifiles_saving/reserved
+  _sensor_cam_path["01cc9efa"] = "/home/pi/gstreamer/multifiles_saving/cam01";
+  _sensor_cam_path["01ccf6bb"] = "/home/pi/gstreamer/multifiles_saving/cam03";
+  _sensor_cam_path["01cc99b3"] = "/home/pi/gstreamer/multifiles_saving/cam02";
   
-  _sensor_cam["01cc99b3"] = "cam02";
-  _cam_path["cam02"] = "/home/pi/gstreamer/multifiles_saving/cam02";
   
-   
   //
   //TODO
   //This maps can collpse into one in which the value is a struct with all infos
-  _sensor_position_map["01cc9efa"] = 'e';
-  _sensor_position_map["0202c411"] = 'e';
-  _sensor_position_map["01ccf6bb"] = 'i';
-  _sensor_position_map["0202c38b"] = 'i';
-  _sensor_position_map["01ccfa8f"] = 'i';
-  _sensor_position_map["01cc99b3"] = 'r';
-  _sensor_position_map["motion_r"] = 'r';
-  _sensor_position_map["window_r"] = 'r';
+  // _sensor_position_map["01cc9efa"] = 'e';
+  // _sensor_position_map["0202c411"] = 'e';
+  // _sensor_position_map["01ccf6bb"] = 'i';
+  // _sensor_position_map["0202c38b"] = 'i';
+  // _sensor_position_map["01ccfa8f"] = 'i';
+  // _sensor_position_map["01cc99b3"] = 'r';
+  // _sensor_position_map["motion_r"] = 'r';
+  // _sensor_position_map["window_r"] = 'r';
 
-  _sensor_type_map["01cc9efa"] = Sensor_type::DOOR;
-  _sensor_type_map["0202c411"] = Sensor_type::MOTION;
-  _sensor_type_map["01ccf6bb"] = Sensor_type::DOOR;
-  _sensor_type_map["0202c38b"] = Sensor_type::MOTION;
-  _sensor_type_map["01ccfa8f"] = Sensor_type::WINDOW; 
-  _sensor_type_map["01cc99b3"] = Sensor_type::DOOR;
-  _sensor_type_map["motion_r"] = Sensor_type::MOTION;
-  _sensor_type_map["window_r"] = Sensor_type::WINDOW;
+  // _sensor_type_map["01cc9efa"] = Sensor_type::DOOR;
+  // _sensor_type_map["0202c411"] = Sensor_type::MOTION;
+  // _sensor_type_map["01ccf6bb"] = Sensor_type::DOOR;
+  // _sensor_type_map["0202c38b"] = Sensor_type::MOTION;
+  // _sensor_type_map["01ccfa8f"] = Sensor_type::WINDOW; 
+  // _sensor_type_map["01cc99b3"] = Sensor_type::DOOR;
+  // _sensor_type_map["motion_r"] = Sensor_type::MOTION;
+  // _sensor_type_map["window_r"] = Sensor_type::WINDOW;
   
 
   
-  _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } );
-  _sensor_proc_events_map["01ccf6bb"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } );
-  _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
-  //motion sensor will trigger different events according to there is someone or not in the room
-  _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
-  _sensor_proc_events_map["0202c38b"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
-  _sensor_proc_events_map["motion_r"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
-  _sensor_proc_events_map["01ccfa8f"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } );
-  _sensor_proc_events_map["window_r"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } );
+  // _sensor_proc_events_map["01cc9efa"] = std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } );
+  // _sensor_proc_events_map["01ccf6bb"] = std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } );
+  // _sensor_proc_events_map["01cc99b3"] = std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } );
+  // //motion sensor will trigger different events according to there is someone or not in the room
+  // _sensor_proc_events_map["0202c411"] = std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } );
+  // _sensor_proc_events_map["0202c38b"] = std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } );
+  // _sensor_proc_events_map["motion_r"] = std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } );
+  // _sensor_proc_events_map["01ccfa8f"] = std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } );
+  // _sensor_proc_events_map["window_r"] = std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } );
+
+  _sensor_infos_map["01cc9efa"] = { Sensor_type::DOOR, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } ) };
+  _sensor_infos_map["0202c411"] = { Sensor_type::MOTION, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
+  _sensor_infos_map["01ccf6bb"] = { Sensor_type::DOOR, 'i',  std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } )} ;
+  _sensor_infos_map["0202c38b"] = { Sensor_type::MOTION, 'i', std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
+  _sensor_infos_map["01ccfa8f"] = { Sensor_type::WINDOW, 'i', std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } ) };
+  _sensor_infos_map["01cc99b3"] = { Sensor_type::DOOR, 'r', std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } ) };
+  _sensor_infos_map["motion_r"] = { Sensor_type::MOTION, 'r', std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
+  _sensor_infos_map["window_r"] = { Sensor_type::WINDOW, 'r', std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } ) };
+  
 
 
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };

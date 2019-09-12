@@ -40,21 +40,29 @@ class Notification_logic_controller : public Alarm_system{
   typedef std::function<void()> Proc_events_ptr;
   typedef std::pair<Proc_events_ptr, Proc_events_ptr> Proc_events_ptr_pair;
   typedef std::string Sensor_mini_id;
-  typedef std::map<Sensor_mini_id, Proc_events_ptr_pair> Sensor_proc_events_pair_map;
-  typedef std::map<Sensor_mini_id, Sensor_type> Sensor_type_map;
-  Sensor_type_map _sensor_type_map;
-  Sensor_proc_events_pair_map _sensor_proc_events_map;
+  typedef char Position;  
+  // typedef std::map<Sensor_mini_id, Proc_events_ptr_pair> Sensor_proc_events_pair_map;
+  // typedef std::map<Sensor_mini_id, Sensor_type> Sensor_type_map;
+  // Sensor_type_map _sensor_type_map;
+  // Sensor_proc_events_pair_map _sensor_proc_events_map;
+  struct Sensor_infos{
+    Sensor_type _sensor_type;
+    Position _position;
+    Proc_events_ptr_pair _proc_events_ptr_pair;
+  };
+  typedef std::map<Sensor_mini_id, Sensor_infos> Sensor_infos_map;
+  Sensor_infos_map _sensor_infos_map;
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
-  typedef std::string Cam_name;
   typedef std::string Cam_directory;
-  std::map<Sensor_mini_id, Cam_name> _sensor_cam;
-  std::map<Cam_name, Cam_directory> _cam_path;
+  // typedef std::string Cam_name;
+  // std::map<Sensor_mini_id, Cam_name> _sensor_cam;
+  // std::map<Cam_name, Cam_directory> _cam_path;
+  std::map<Sensor_mini_id, Cam_directory> _sensor_cam_path;
   std::string _hub_id;
-  typedef char Cam_position;
-  std::map<Sensor_mini_id, Cam_position> _sensor_position_map;
-  typedef std::pair<Ai_result, Cam_position> Ai_result_position_pair;
+  //std::map<Sensor_mini_id, Position> _sensor_position_map;
+  typedef std::pair<Ai_result, Position> Ai_result_position_pair;
   typedef std::function<void(std::string)> Proc_events_ptr_2;
   std::map<Ai_result_position_pair, Proc_events_ptr_2> _ai_result_position_proc_events_map;
   std::vector<int> _jpeg_params;
@@ -162,7 +170,7 @@ public:
   virtual void int_presence_flag_reset(const Clear_int &evt);
   virtual void res_presence_flag_reset(const Clear_res &evt);
 
-  void load_configuration(const std::string &configuration_file);
+  void load_configuration(const std::string &);
 
   template <class Event>
   void process_event_verbose(const Event &evt);
