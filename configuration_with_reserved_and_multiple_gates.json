@@ -1,0 +1,140 @@
+{
+  "address": "via ragazzi del 99",
+  "city": "Latina",
+  "control_unit": "id_secret_control_unit",
+  "name": "casa mare",
+  "ring": {
+    "external": [],
+    "internal": [
+      {
+        "description": "ingresso appartamento",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam01",
+                "name": "telecamera porta",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam01/1562253513733"
+              },
+              {
+                "id_secret_device": "id_door_cam01",
+                "name": "sensore porta",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "gate ingresso"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "id_secret_device",
+            "name": "sensore corridoio",
+            "sensor_type": 1,
+            "url": null
+          },
+          {
+            "id_secret_device": "id_secret_device",
+            "name": "sensore corridoio_2",
+            "sensor_type": 2,
+            "url": null
+          }
+        ],
+        "name": "ingresso appartamento",
+        "room_type": "12"
+      },
+      {
+        "description": "secondo ingresso appartamento",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam02",
+                "name": "telecamera porta",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-3:5347757331287:stream/cam02/1562253513733"
+              },
+              {
+                "id_secret_device": "id_door_cam02",
+                "name": "sensore porta",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "secondo gate ingresso"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "id_secret_device",
+            "name": "sensore corridoio",
+            "sensor_type": 1,
+            "url": null
+          },
+          {
+            "id_secret_device": "id_secret_device",
+            "name": "sensore corridoio_2",
+            "sensor_type": 2,
+            "url": null
+          }
+        ],
+        "name": "secondo ingresso appartamento",
+        "room_type": "12"
+      },
+      {
+        "description": "stanza senza gate",
+        "devices": [
+          {
+            "id_secret_device": "id_secret_device",
+            "name": "sensore corridoio",
+            "sensor_type": 1,
+            "url": null
+          },
+          {
+            "id_secret_device": "id_secret_device",
+            "name": "sensore corridoio_2",
+            "sensor_type": 2,
+            "url": null
+          }
+        ],
+        "name": "stanza interna senza gate",
+        "room_type": "12"
+      }
+    ],
+    "reserved": [
+      {
+        "description": "camera da letto",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam03",
+                "name": "cam reserved",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam03/1562254142512"
+              },
+              {
+                "id_secret_device": "id_door_cam03",
+                "name": "sensore porta",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "gate-camera da letto"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "id_secret_device",
+            "name": "sensore camera da letto",
+            "sensor_type": 1,
+            "url": null
+          }
+        ],
+        "name": "camera da letto",
+        "room_type": 1
+      }
+    ]
+  }
+}
