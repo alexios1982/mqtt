@@ -66,9 +66,9 @@ void fill_sensor_cam_path(Sensor_cam_path &to_fill){
 
 typedef std::vector<Sensor_mini_id> Sensor_mini_ids;
 
-void fill_devices_events_map(const std::string &ring_type,
-			     Sensor_type sensor_type,
-			     Sensor_mini_ids &sensor_mini_ids){
+void fill_devices_events_vector(const std::string &ring_type,
+				Sensor_type sensor_type,
+				Sensor_mini_ids &sensor_mini_ids){
   std::string complete_path{std::string{"ring."} + ring_type};
   boost::property_tree::ptree pt;
   boost::property_tree::read_json("configuration_with_reserved_and_multiple_gates.json", pt);
@@ -110,35 +110,35 @@ int main(){
   for(auto item : sensor_cam_path)
     std::cout << "sensor: " << item.first << "   cam: " << item.second << std::endl; 
 
-  std::cout << "\n\nCalling fill_devices_events_map" << '\n';
+  std::cout << "\n\nCalling fill_devices_events_vector" << '\n';
 
   std::cout << "filtering internal motion sensor" << '\n';
   Sensor_mini_ids sensor_mini_ids;
-  fill_devices_events_map("internal", Sensor_type::MOTION, sensor_mini_ids);
+  fill_devices_events_vector("internal", Sensor_type::MOTION, sensor_mini_ids);
   for(auto item : sensor_mini_ids)
     std::cout << item << std::endl; 
 
   sensor_mini_ids.clear();
   std::cout << "filtering internal window sensor" << '\n';
-  fill_devices_events_map("internal", Sensor_type::WINDOW, sensor_mini_ids);
+  fill_devices_events_vector("internal", Sensor_type::WINDOW, sensor_mini_ids);
   for(auto item : sensor_mini_ids)
     std::cout << item << std::endl; 
 
   sensor_mini_ids.clear();
   std::cout << "filtering reserved window sensor" << '\n';
-  fill_devices_events_map("reserved", Sensor_type::WINDOW, sensor_mini_ids);
+  fill_devices_events_vector("reserved", Sensor_type::WINDOW, sensor_mini_ids);
   for(auto item : sensor_mini_ids)
     std::cout << item << std::endl; 
 
   sensor_mini_ids.clear();
   std::cout << "filtering internal door sensor" << '\n';
-  fill_devices_events_map("internal", Sensor_type::DOOR, sensor_mini_ids);
+  fill_devices_events_vector("internal", Sensor_type::DOOR, sensor_mini_ids);
   for(auto item : sensor_mini_ids)
     std::cout << item << std::endl; 
 
   sensor_mini_ids.clear();
   std::cout << "filtering reserved door sensor" << '\n';
-  fill_devices_events_map("reserved", Sensor_type::DOOR, sensor_mini_ids);
+  fill_devices_events_vector("reserved", Sensor_type::DOOR, sensor_mini_ids);
   for(auto item : sensor_mini_ids)
     std::cout << item << std::endl; 
 
