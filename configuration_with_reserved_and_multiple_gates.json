@@ -12,13 +12,13 @@
           {
             "devices": [
               {
-                "id_secret_device": "cam01",
+                "id_secret_device": "0x1a_cam01",
                 "name": "telecamera porta",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam01/1562253513733"
               },
               {
-                "id_secret_device": "id_door_cam01",
+                "id_secret_device": "0x1b_door_cam01",
                 "name": "sensore porta",
                 "sensor_type": 0,
                 "url": null
@@ -29,14 +29,14 @@
         ],
         "devices": [
           {
-            "id_secret_device": "id_secret_device",
-            "name": "sensore corridoio",
+            "id_secret_device": "0x1c_motion",
+            "name": "sensore di movimento nel primo corridoio",
             "sensor_type": 1,
             "url": null
           },
           {
-            "id_secret_device": "id_secret_device",
-            "name": "sensore corridoio_2",
+            "id_secret_device": "0x1d_window",
+            "name": "sensore finestra nel primo corridoio",
             "sensor_type": 2,
             "url": null
           }
@@ -50,13 +50,13 @@
           {
             "devices": [
               {
-                "id_secret_device": "cam02",
+                "id_secret_device": "0x1e_cam02",
                 "name": "telecamera porta",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-3:5347757331287:stream/cam02/1562253513733"
               },
               {
-                "id_secret_device": "id_door_cam02",
+                "id_secret_device": "0x1f_door_cam02",
                 "name": "sensore porta",
                 "sensor_type": 0,
                 "url": null
@@ -67,14 +67,14 @@
         ],
         "devices": [
           {
-            "id_secret_device": "id_secret_device",
-            "name": "sensore corridoio",
+            "id_secret_device": "0x20_motion",
+            "name": "sensore movimento nel secondo ingresso",
             "sensor_type": 1,
             "url": null
           },
           {
-            "id_secret_device": "id_secret_device",
-            "name": "sensore corridoio_2",
+            "id_secret_device": "0x21_window",
+            "name": "sensore finestra nel secondo ingresso",
             "sensor_type": 2,
             "url": null
           }
@@ -86,14 +86,14 @@
         "description": "stanza senza gate",
         "devices": [
           {
-            "id_secret_device": "id_secret_device",
-            "name": "sensore corridoio",
+            "id_secret_device": "0x22_motion",
+            "name": "sensore movimento nella stanza senza gate",
             "sensor_type": 1,
             "url": null
           },
           {
-            "id_secret_device": "id_secret_device",
-            "name": "sensore corridoio_2",
+            "id_secret_device": "0x23_window",
+            "name": "sensore finestra nella stanza senza gate",
             "sensor_type": 2,
             "url": null
           }
@@ -109,13 +109,13 @@
           {
             "devices": [
               {
-                "id_secret_device": "cam03",
+                "id_secret_device": "0x24_cam03",
                 "name": "cam reserved",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam03/1562254142512"
               },
               {
-                "id_secret_device": "id_door_cam03",
+                "id_secret_device": "0x25_door_cam03",
                 "name": "sensore porta",
                 "sensor_type": 0,
                 "url": null
@@ -126,8 +126,8 @@
         ],
         "devices": [
           {
-            "id_secret_device": "id_secret_device",
-            "name": "sensore camera da letto",
+            "id_secret_device": "0x26_door",
+            "name": "sensore di movimento nella camera da letto",
             "sensor_type": 1,
             "url": null
           }
