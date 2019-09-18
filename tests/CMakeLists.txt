@@ -1,3 +1,5 @@
+set( CMAKE_CXX_FLAGS "-fno-access-control" )
+
 #find_package (Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
 include_directories (${PROJECT_SOURCE_DIR}/lib
   ${PROJECT_SOURCE_DIR}/tests
@@ -109,4 +111,29 @@ target_link_libraries(test_alarm_system_state_machine PUBLIC
   ${BOOST_SYSTEM}
   )
 
-add_executable (test_configuration_file test_configuration_file.cc)
+add_executable (test_configuration_file test_configuration_file.cc
+  ../src/Publisher.cc
+  ../src/Notification_logic_controller.cc
+  ../src/Area_protection.cc
+  ../src/Alarm_system_state_machine.cc
+)
+
+####################################################################
+#for threads, there is the FindThreads.cmake, so to include thead support
+#we can use the find_package command
+find_package(Threads REQUIRED)
+################################################################
+
+#######################################################################
+#to be able to compile opencv
+find_package(OpenCV REQUIRED)
+#######################################################################
+
+target_link_libraries(test_configuration_file PUBLIC
+  ${BOOST_FILESYSTEM}
+  ${BOOST_SYSTEM}
+  ${MQTT_LIB}
+  base64
+  Utils
+  Threads::Threads
+  ${OpenCV_LIBS})

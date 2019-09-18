@@ -159,7 +159,6 @@ int main(int argc, char* argv[]){
   mqtt::ssl_options remote_sslopts("AmazonRootCA1.pem", "33ac0ac8dc-certificate.pem.crt", "33ac0ac8dc-private.pem.key", "", "", true);
   remote_conn_opts.set_ssl(remote_sslopts);
   
-
   mqtt::async_client remote_publisher(REMOTE_SERVER_ADDRESS, REMOTE_PUBLISHER_ID);
   Publisher_callback publisher_callback;
   remote_publisher.set_callback(publisher_callback);
@@ -211,7 +210,7 @@ int main(int argc, char* argv[]){
   // t.detach();
   Area_protection area_protection;
 
-  std::string configuration_file = "some_configuration_file";
+  std::string configuration_file = "test_configuration_with_reserved_and_multiple_gates.json";
   
   //Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
   Notification_logic_controller notification_logic_controller{area_protection, queue, publisher};

@@ -9,6 +9,8 @@
 #include "Alarm_system_state_machine.hh"
 #include <functional>
 #include "All_states.hh"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 //#include "Sensor.hh"
 
@@ -53,6 +55,7 @@ class Notification_logic_controller : public Alarm_system{
   };
   typedef std::map<Sensor_mini_id, Sensor_infos> Sensor_infos_map;
   Sensor_infos_map _sensor_infos_map;
+  Sensor_infos_map _sensor_infos_map_2;
   Area_protection &_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
@@ -116,6 +119,12 @@ class Notification_logic_controller : public Alarm_system{
 			      File_type file_type);
   void decrease_ai_response_counter();
   void increase_ai_response_counter();
+  void init_sensor_cam_path(const boost::property_tree::ptree &pt);
+  typedef std::vector<Sensor_mini_id> Sensor_mini_ids;  
+  void associate_sensor_to_events(const boost::property_tree::ptree &pt,
+				  const std::string &ring_type,
+				  Sensor_type sensor_type,
+				  Sensor_mini_ids &sensor_mini_ids);
 public:
   Notification_logic_controller(Area_protection &area_protection,
 				Synchronized_queue<mqtt::const_message_ptr> &queue,

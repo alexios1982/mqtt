@@ -12,7 +12,7 @@
           {
             "devices": [
               {
-                "id_secret_device": "0x1a_cam01",
+                "id_secret_device": "cam01",
                 "name": "telecamera porta",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam01/1562253513733"
@@ -50,7 +50,7 @@
           {
             "devices": [
               {
-                "id_secret_device": "0x1e_cam02",
+                "id_secret_device": "cam02",
                 "name": "telecamera porta",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-3:5347757331287:stream/cam02/1562253513733"
@@ -109,7 +109,7 @@
           {
             "devices": [
               {
-                "id_secret_device": "0x24_cam03",
+                "id_secret_device": "cam03",
                 "name": "cam reserved",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/cam03/1562254142512"

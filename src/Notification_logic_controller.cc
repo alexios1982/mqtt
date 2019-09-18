@@ -677,7 +677,7 @@ void Notification_logic_controller::res_presence_flag_reset(const Clear_res &){
   _is_res_occupied = false;
 }
 
-void Notification_logic_controller::load_configuration(const std::string &){
+void Notification_logic_controller::load_configuration(const std::string &configuration_file_path){
   //I dont't know why boost::bind doesn't work
   //part in which we'll parse the file to retrieve information for loading the map
   // _sensor_proc_events_map["01cc99b3"] = std::bind(
@@ -692,21 +692,92 @@ void Notification_logic_controller::load_configuration(const std::string &){
   //internal for cam03: /home/pi/gstreamer/multifiles_saving/internal
   //reserverd for cam02: /home/pi/gstreamer/multifiles_saving/reserved
   //this is wrong, beacuse we can have multiple cams in the same gate
-  _sensor_cam_path["01cc9efa"] = "/home/pi/gstreamer/multifiles_saving/cam01";
-  _sensor_cam_path["01ccf6bb"] = "/home/pi/gstreamer/multifiles_saving/cam03";
-  _sensor_cam_path["01cc99b3"] = "/home/pi/gstreamer/multifiles_saving/cam02";
-  
+  // _sensor_cam_path["01cc9efa"] = "/home/pi/gstreamer/multifiles_saving/cam01";
+  // _sensor_cam_path["01ccf6bb"] = "/home/pi/gstreamer/multifiles_saving/cam03";
+  // _sensor_cam_path["01cc99b3"] = "/home/pi/gstreamer/multifiles_saving/cam02";
 
-  _sensor_infos_map["01cc9efa"] = { Sensor_type::DOOR, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } ) };
-  _sensor_infos_map["0202c411"] = { Sensor_type::MOTION, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
-  _sensor_infos_map["01ccf6bb"] = { Sensor_type::DOOR, 'i',  std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } )} ;
-  _sensor_infos_map["0202c38b"] = { Sensor_type::MOTION, 'i', std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
-  _sensor_infos_map["01ccfa8f"] = { Sensor_type::WINDOW, 'i', std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } ) };
-  _sensor_infos_map["01cc99b3"] = { Sensor_type::DOOR, 'r', std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } ) };
-  _sensor_infos_map["motion_r"] = { Sensor_type::MOTION, 'r', std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
-  _sensor_infos_map["window_r"] = { Sensor_type::WINDOW, 'r', std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } ) };
-  
+  boost::property_tree::ptree pt;
+  try{
+    boost::property_tree::read_json(configuration_file_path, pt);
+  }catch(std::exception &e){
+    std::cerr << error << "[Notification_logic_controller::" << __func__ << reset << "Error: " << e.what() << std::endl;
+  }
 
+  init_sensor_cam_path(pt);
+
+  Sensor_mini_ids sensor_mini_ids;
+  associate_sensor_to_events(pt,
+  			     "external",
+  			     Sensor_type::DOOR,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::DOOR, 'e', std::make_pair( [this, &item](){ return process_event_verbose(Ext_door_open_sensor_sig{item}); }, [this](){ return; } ) };
+
+  sensor_mini_ids.clear();
+  associate_sensor_to_events(pt,
+  			     "external",
+  			     Sensor_type::MOTION,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::MOTION, 'e', std::make_pair( [this, &item](){ return process_event_verbose(Ext_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
+
+  sensor_mini_ids.clear();
+  associate_sensor_to_events(pt,
+  			     "internal",
+  			     Sensor_type::DOOR,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::DOOR, 'i',  std::make_pair( [this, &item](){ return process_event_verbose(Int_door_open_sensor_sig{item}); }, [this](){ return; } )} ;
+
+  sensor_mini_ids.clear();
+  associate_sensor_to_events(pt,
+  			     "internal",
+  			     Sensor_type::MOTION,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::MOTION, 'i', std::make_pair( [this, &item](){ return process_event_verbose(Int_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
+
+  sensor_mini_ids.clear();
+  associate_sensor_to_events(pt,
+  			     "internal",
+  			     Sensor_type::WINDOW,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::WINDOW, 'i', std::make_pair( [this, &item](){ return process_event_verbose(Int_wind_open_sensor_sig{item}); }, [this](){ return; } ) };
+
+  sensor_mini_ids.clear();
+  associate_sensor_to_events(pt,
+  			     "reserved",
+  			     Sensor_type::DOOR,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::DOOR, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_door_open_sensor_sig{item}); }, [this](){ return; } ) };
+
+  sensor_mini_ids.clear();
+  associate_sensor_to_events(pt,
+  			     "reserved",
+  			     Sensor_type::MOTION,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::MOTION, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
+
+  sensor_mini_ids.clear();
+  associate_sensor_to_events(pt,
+  			     "reserved",
+  			     Sensor_type::WINDOW,
+  			     sensor_mini_ids);
+  for(auto item : sensor_mini_ids)
+    _sensor_infos_map[item] = { Sensor_type::WINDOW, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_wind_open_sensor_sig{item}); }, [this](){ return; } ) };
+ 
+  _sensor_infos_map_2["01cc9efa"] = { Sensor_type::DOOR, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } ) };
+  _sensor_infos_map_2["0202c411"] = { Sensor_type::MOTION, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
+  _sensor_infos_map_2["01ccf6bb"] = { Sensor_type::DOOR, 'i',  std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } )} ;
+  _sensor_infos_map_2["0202c38b"] = { Sensor_type::MOTION, 'i', std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
+  _sensor_infos_map_2["01ccfa8f"] = { Sensor_type::WINDOW, 'i', std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } ) };
+  _sensor_infos_map_2["01cc99b3"] = { Sensor_type::DOOR, 'r', std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } ) };
+  _sensor_infos_map_2["motion_r"] = { Sensor_type::MOTION, 'r', std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
+  _sensor_infos_map_2["window_r"] = { Sensor_type::WINDOW, 'r', std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } ) };
+   
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'r')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_res{mmuid}); }; 
@@ -724,4 +795,85 @@ void Notification_logic_controller::load_configuration(const std::string &){
 }
 
 
+void Notification_logic_controller::init_sensor_cam_path(const boost::property_tree::ptree &pt){
+  typedef std::pair<Sensor_mini_id, Cam_directory> Sensor_cam_pair;
+  Sensor_cam_pair sensor_cam_pair;
+  std::string base_path{"/home/pi/gstreamer/multifiles_saving/"};
+  try{
+    //int i = 0;
+    //let's retrieve the ptree under the ring path
+    //each ptree is an iterable object: iterating over it returns a pair (boost::property_tree::ptree::value_type)
+    //in wich the first member is the name of the child and the second is the child tree
+    //in this case the ptrees under ring are external, internal and reserved
+    for( const auto &ring_child : pt.get_child("ring") ){
+      //std::cout << "Ring child number " << ++i << ": " << ring_child.first << std::endl;
+      //ring_child.second are the trees under external, internal and reserved
+      //they represent rooms, even if they don't have names in the configuration
+      for(const auto &ext_int_res_child : ring_child.second) {
+	//std::cout << "\tRoom name: " << (ext_int_res_child.second).get<std::string>("name") << '\n' ;
+	//we are looking for gates in the room
+	//not all rooms may have gates: for this reason we must test its presence
+	boost::property_tree::ptree::const_assoc_iterator it = (ext_int_res_child.second).find("gate");
+	if( it != ext_int_res_child.second.not_found() ){
+	  for(const auto &gate_child : (ext_int_res_child.second).get_child("gate")) {
+	    //std::cout << "\t\tGate name: " << (gate_child.second).get<std::string>("name") << '\n' ;
+	    auto gate_devices_node = (gate_child.second).get_child("devices");
+	    for(const auto &gate_devices_child : gate_devices_node) {
+	      //std::cout << "\t\t\tGate devices id: " << (gate_devices_child.second).get<std::string>("id_secret_device") << '\n' ;
+	      //if sensor_type == 3 is a cam, otherwise is the sensor that triggers the cam
+	      if( static_cast<Sensor_type>( (gate_devices_child.second).get<int>("sensor_type") )
+		  ==
+		  Sensor_type::CAM
+		  )
+		sensor_cam_pair.second = base_path + (gate_devices_child.second).get<std::string>("id_secret_device");
+	      else
+		sensor_cam_pair.first = (gate_devices_child.second).get<std::string>("id_secret_device");		  
+	    }
+	  }
+	  _sensor_cam_path.insert(sensor_cam_pair);
+	}
+	else{
+	  std::cerr << error << "[Notification_logic_controller::" << __func__ << reset  << "\t\tGate is missing" << std::endl;
+	}
+      }
+    }//END_OF BOOST_FOR_EACH
+  }//END OF INNER TRY
+  catch(std::exception &e){
+    std::cerr << error << "[Notification_logic_controller::" << __func__ << reset << "Error: " << e.what() << std::endl;
+  }
+}
 
+void Notification_logic_controller::associate_sensor_to_events(const boost::property_tree::ptree &pt,
+							       const std::string &ring_type,
+							       Sensor_type sensor_type,
+							       Sensor_mini_ids &sensor_mini_ids){
+  std::string complete_path{std::string{"ring."} + ring_type};
+  for(const auto &ext_int_res_child : pt.get_child(complete_path)) {
+    //std::cout << "\tRoom name: " << (ext_int_res_child.second).get<std::string>("name") << '\n' ;
+    //we are looking for gates in the room
+    //not all rooms may have gates: for this reason we must test its presence
+    boost::property_tree::ptree::const_assoc_iterator it = (ext_int_res_child.second).find("gate");
+    if( it != ext_int_res_child.second.not_found() ){
+      //std::cout << "\t\tGate exists\n" ;
+      for( const auto &gate_child : (ext_int_res_child.second).get_child("gate") ) {
+	//std::cout << "\t\tGate name: " << (gate_child.second).get<std::string>("name") << '\n' ;
+	auto gate_devices_node = (gate_child.second).get_child("devices");
+	for(const auto &gate_devices_child : gate_devices_node) {
+	  if( static_cast<Sensor_type>( (gate_devices_child.second).get<int>("sensor_type") ) == sensor_type )
+	    sensor_mini_ids.push_back( (gate_devices_child.second).get<std::string>("id_secret_device") ); 	    
+	}
+      }
+    }
+    else{
+      std::cerr << error << "[Notification_logic_controller::" << __func__ << reset << "\t\tGate is missing" << std::endl;
+    }	
+    for(const auto &devices_child : (ext_int_res_child.second).get_child("devices") ){
+      // sensor_type_map.insert(std::make_pair((devices_child.second).get<std::string>("id_secret_device"),
+      // 					    static_cast<Sensor_type>( (devices_child.second).get<int>("sensor_type") )				    )
+      // 			     );
+      if(static_cast<Sensor_type>( (devices_child.second).get<int>("sensor_type") ) ==
+	 sensor_type)
+	sensor_mini_ids.push_back( (devices_child.second).get<std::string>("id_secret_device") ); 
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "address": "via luigi schiavonetti",
+  "city": "roma",
+  "control_unit": 0,
+  "name": "ufficio",
+  "ring": {
+    "external": [
+      {
+        "description": "ingresso ufficio",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam01",
+                "name": "telecamera ingresso",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-1:5347757331287:stream/cam01/1562253513733"
+              },
+              {
+                "id_secret_device": "01cc9efa",
+                "name": "sensore porta",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "secondo gate ingresso"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "0202c411",
+            "name": "sensore movimento",
+            "sensor_type": 1,
+            "url": null
+          }
+        ],
+        "name": "ingresso principale",
+        "room_type": "12"
+      }
+    ],
+    "internal": [
+      {
+        "description": "stanza interna",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam03",
+                "name": "telecamera porta",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-1:5347757331287:stream/cam03/1562253513733"
+              },
+              {
+                "id_secret_device": "01ccf6bb",
+                "name": "sensore porta",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "secondo gate ingresso"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "0202c38b",
+            "name": "sensore movimento stanza interna",
+            "sensor_type": 1,
+            "url": null
+          },
+          {
+            "id_secret_device": "01ccfa8f",
+            "name": "sensore finestra nel secondo ingresso",
+            "sensor_type": 2,
+            "url": null
+          }
+        ],
+        "name": "stanza interna di giovanni",
+        "room_type": "12"
+      }
+    ],
+    "reserved": [
+      {
+        "description": "ufficio alessandro",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam02",
+                "name": "cam reserved",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-2:207757331287:stream/cam03/1562254142512"
+              },
+              {
+                "id_secret_device": "01cc99b3",
+                "name": "sensore porta",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "gate-ufficio di alessandro"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "motion_r",
+            "name": "sensore di movimento ufficio alessandro",
+            "sensor_type": 1,
+            "url": null
+          },
+          {
+            "id_secret_device": "window_r",
+            "name": "sensore finesta ufficio alessandro",
+            "sensor_type": 1,
+            "url": null
+          }
+        ],
+        "name": "ufficio alessandro",
+        "room_type": 1
+      }
+    ]
+  }
+}

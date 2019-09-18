@@ -81,9 +81,11 @@ class Subscriber_callback_listener: public virtual mqtt::callback,
   void on_failure(const mqtt::token& tok) override {
     boost::ignore_unused(tok);
     std::cout << "[Subscriber_callback_listener::" << __func__ << "]. "  << "Connection attempt failed" << '\n';
-    if (++_n_retry > N_RETRY_ATTEMPTS)
-      exit(1);
-    reconnect();
+    if (++_n_retry > N_RETRY_ATTEMPTS){
+      std::cerr << "[Subscriber_callback_listener::" << __func__ << "]. "  << N_RETRY_ATTEMPTS << " reconnection attempt reached. Stop trying to reconnect" << std::endl;
+      //exit(1);
+    }else
+      reconnect();
   }
 
   // (Re)connection success
