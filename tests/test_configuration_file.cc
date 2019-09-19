@@ -13,6 +13,7 @@ int main(int argc, char **argv){
   boost::ignore_unused(argv);
 
   std::string configuration_file{"configuration_integration_test.json"};
+  //std::string configuration_file{"test_configuration_with_reserved_and_multiple_gates.json"};
   
   Area_protection fake_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> fake_queue;
@@ -39,10 +40,7 @@ int main(int argc, char **argv){
   for(auto item : notification_logic_controller._sensor_infos_map)
     std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " sensor id: " << item.first << " -> sensor type: " << static_cast<int>( (item.second)._sensor_type ) << " sensor position: " << (item.second)._position << '\n'; 
 
-
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " printing sensor_infos_map_2" << '\n'; 
-  for(auto item : notification_logic_controller._sensor_infos_map_2)
-    std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " sensor id: " << item.first << " -> sensor type: " << static_cast<int>( (item.second)._sensor_type ) << " sensor position: " << (item.second)._position << '\n'; 
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " number of levels: " << notification_logic_controller.get_number_of_levels() << '\n'; 
 
   return 0;
 }

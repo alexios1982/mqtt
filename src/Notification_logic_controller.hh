@@ -125,6 +125,7 @@ class Notification_logic_controller : public Alarm_system{
 				  const std::string &ring_type,
 				  Sensor_type sensor_type,
 				  Sensor_mini_ids &sensor_mini_ids);
+  int parse_number_of_levels(const boost::property_tree::ptree &pt) const;
 public:
   Notification_logic_controller(Area_protection &area_protection,
 				Synchronized_queue<mqtt::const_message_ptr> &queue,

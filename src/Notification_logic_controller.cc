@@ -678,14 +678,6 @@ void Notification_logic_controller::res_presence_flag_reset(const Clear_res &){
 }
 
 void Notification_logic_controller::load_configuration(const std::string &configuration_file_path){
-  //I dont't know why boost::bind doesn't work
-  //part in which we'll parse the file to retrieve information for loading the map
-  // _sensor_proc_events_map["01cc99b3"] = std::bind(
-  // 						    &Alarm_system::process_event_verbose,
-  // 						    this,
-  // 						    Ext_door_open_sensor_sig{"cam02"}
-  // 						    );
-
   //TODO
   //cam01, cam02 and cam03 must be replaced by most explicit names:
   //external for cam01: /home/pi/gstreamer/multifiles_saving/external
@@ -703,8 +695,12 @@ void Notification_logic_controller::load_configuration(const std::string &config
     std::cerr << error << "[Notification_logic_controller::" << __func__ << reset << "Error: " << e.what() << std::endl;
   }
 
+  //setting the number of state machine's levels
+  set_number_of_levels( parse_number_of_levels(pt) );
+  //setting the paths where cam we'll save videos 
   init_sensor_cam_path(pt);
 
+  //setting the map with the statemachine action trigger
   Sensor_mini_ids sensor_mini_ids;
   associate_sensor_to_events(pt,
   			     "external",
@@ -768,16 +764,18 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids)
     _sensor_infos_map[item] = { Sensor_type::WINDOW, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_wind_open_sensor_sig{item}); }, [this](){ return; } ) };
- 
-  _sensor_infos_map_2["01cc9efa"] = { Sensor_type::DOOR, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } ) };
-  _sensor_infos_map_2["0202c411"] = { Sensor_type::MOTION, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
-  _sensor_infos_map_2["01ccf6bb"] = { Sensor_type::DOOR, 'i',  std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } )} ;
-  _sensor_infos_map_2["0202c38b"] = { Sensor_type::MOTION, 'i', std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
-  _sensor_infos_map_2["01ccfa8f"] = { Sensor_type::WINDOW, 'i', std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } ) };
-  _sensor_infos_map_2["01cc99b3"] = { Sensor_type::DOOR, 'r', std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } ) };
-  _sensor_infos_map_2["motion_r"] = { Sensor_type::MOTION, 'r', std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
-  _sensor_infos_map_2["window_r"] = { Sensor_type::WINDOW, 'r', std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } ) };
-   
+  ////////////////////////////////////////////////////////////////////////////////////////
+  
+  // //just for testing in test_configuration_file.cc
+  // _sensor_infos_map_2["01cc9efa"] = { Sensor_type::DOOR, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_door_open_sensor_sig{"01cc9efa"}); }, [this](){ return; } ) };
+  // _sensor_infos_map_2["0202c411"] = { Sensor_type::MOTION, 'e', std::make_pair( [this](){ return process_event_verbose(Ext_motion_sensor_sig{"0202c411"}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
+  // _sensor_infos_map_2["01ccf6bb"] = { Sensor_type::DOOR, 'i',  std::make_pair( [this](){ return process_event_verbose(Int_door_open_sensor_sig{"01ccf6bb"}); }, [this](){ return; } )} ;
+  // _sensor_infos_map_2["0202c38b"] = { Sensor_type::MOTION, 'i', std::make_pair( [this](){ return process_event_verbose(Int_motion_sensor_sig{"0202c38b"}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
+  // _sensor_infos_map_2["01ccfa8f"] = { Sensor_type::WINDOW, 'i', std::make_pair( [this](){ return process_event_verbose(Int_wind_open_sensor_sig{"01ccfa8f"}); }, [this](){ return; } ) };
+  // _sensor_infos_map_2["01cc99b3"] = { Sensor_type::DOOR, 'r', std::make_pair( [this](){ return process_event_verbose(Res_door_open_sensor_sig{"01cc99b3"}); }, [this](){ return; } ) };
+  // _sensor_infos_map_2["motion_r"] = { Sensor_type::MOTION, 'r', std::make_pair( [this](){ return process_event_verbose(Res_motion_sensor_sig{"motion_r"}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
+  // _sensor_infos_map_2["window_r"] = { Sensor_type::WINDOW, 'r', std::make_pair( [this](){ return process_event_verbose(Res_wind_open_sensor_sig{"window_r"}); }, [this](){ return; } ) };
+
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'e')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_ext{mmuid}); };
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'i')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_int{mmuid}); }; 
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::UNKNOWN, 'r')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_unk_in_res{mmuid}); }; 
@@ -791,7 +789,6 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _hub_id = "hub_di_tizio_caio_sempronio";
   
   process_event_verbose(Initialization_completed{});
-
 }
 
 
@@ -876,4 +873,15 @@ void Notification_logic_controller::associate_sensor_to_events(const boost::prop
 	sensor_mini_ids.push_back( (devices_child.second).get<std::string>("id_secret_device") ); 
     }
   }
+}
+
+int Notification_logic_controller::parse_number_of_levels(const boost::property_tree::ptree &pt) const{
+  std::string path_to_external{ std::string{"ring.external"} };
+  auto external_child = pt.get_child(path_to_external);
+  //let's retrieve the iterator to the external node to see if there are subnodes
+  auto it = external_child.begin();
+  if( it != external_child.end() )
+    return HOUSE_WITH_GARDEN_N_OF_LEVELS;
+  else
+    return HOUSE_WITHOUT_GARDEN_N_OF_LEVELS;
 }
