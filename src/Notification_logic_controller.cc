@@ -30,6 +30,7 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
   _sensor_cam_path{},
   _ai_response_counter{0},
   _NUMBER_OF_FRAMES_TO_SEND{NUMBER_OF_FRAMES_TO_SEND},
+  _SIGNIFICANT_TOPIC_CHARS{8},
   _is_ext_occupied{false},
   _is_int_occupied{false},
   _is_res_occupied{false}{
@@ -50,8 +51,9 @@ void Notification_logic_controller::consume_message(){
 void Notification_logic_controller::classify_message(const mqtt::const_message_ptr &zigbee_message_ptr){
   //topic is in the form of zigbee2mqtt/0x00158d0001cc99b3
   std::string topic = zigbee_message_ptr->get_topic();
-  //and we want to extract only the last 8 digits
-  std::string topic_info = topic.substr(topic.size() - 8);
+  //and we want to extract only the last 8 digits guessing that are
+  //sufficient to uniquely distinguish a sensor
+  std::string topic_info = topic.substr(topic.size() - _SIGNIFICANT_TOPIC_CHARS);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
     << "topic_info is: " << topic_info << '\n');
   //let's do a search in the _sensor_cam map to decide if we have
@@ -77,14 +79,19 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
       break;
     case Sensor_type::MOTION : {
       D( Time_spent<> to_send_notifications );
-      if( is_room_occupied(zigbee_message_ptr) )
+      if( check_motion_sensor_state(zigbee_message_ptr) ){
 	//triggering Ext_motion_sensor_sig/Int_motion_sensor_sig/Res_motion_sensor_sig
 	// ( (it->second).first )();
+	update_motion_sensor_state(topic_info, true);
 	( ( (it->second)._proc_events_ptr_pair ).first )();
-      else
+      }
+      else{
+	update_motion_sensor_state(topic_info, false);
 	//triggering Clear_ext/Clear_int/Clear_res signals
 	//( (it->second).second )();
-	( ( (it->second)._proc_events_ptr_pair ).second )();
+	if( !is_ring_occupied(topic_info) )
+	  ( ( (it->second)._proc_events_ptr_pair ).second )();
+      }
       break;
     }
     default:
@@ -368,8 +375,8 @@ Notification_logic_controller::is_gate_opened(const mqtt::const_message_ptr &zig
 // }
 
 
-Notification_logic_controller::Is_room_occupied
-Notification_logic_controller::is_room_occupied(const mqtt::const_message_ptr &zigbee_message_ptr){
+Notification_logic_controller::Motion_sensor_state
+Notification_logic_controller::check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr){
   std::string payload( zigbee_message_ptr->to_string() );
   std::stringstream ss;
    
@@ -714,8 +721,11 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     "external",
   			     Sensor_type::MOTION,
   			     sensor_mini_ids);
-  for(auto item : sensor_mini_ids)
+  for(auto item : sensor_mini_ids){
     _sensor_infos_map[item] = { Sensor_type::MOTION, 'e', std::make_pair( [this, &item](){ return process_event_verbose(Ext_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
+    _extern_motion_sensors_state_map[item] = false;
+    _motion_sensors_maps[item] = &_extern_motion_sensors_state_map; 
+  }
 
   sensor_mini_ids.clear();
   associate_sensor_to_events(pt,
@@ -730,8 +740,11 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     "internal",
   			     Sensor_type::MOTION,
   			     sensor_mini_ids);
-  for(auto item : sensor_mini_ids)
+  for(auto item : sensor_mini_ids){
     _sensor_infos_map[item] = { Sensor_type::MOTION, 'i', std::make_pair( [this, &item](){ return process_event_verbose(Int_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
+    _intern_motion_sensors_state_map[item] = false;
+    _motion_sensors_maps[item] = &_intern_motion_sensors_state_map;
+  }
 
   sensor_mini_ids.clear();
   associate_sensor_to_events(pt,
@@ -754,8 +767,11 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     "reserved",
   			     Sensor_type::MOTION,
   			     sensor_mini_ids);
-  for(auto item : sensor_mini_ids)
+  for(auto item : sensor_mini_ids){
     _sensor_infos_map[item] = { Sensor_type::MOTION, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
+    _reserved_motion_sensors_state_map[item] = false;
+    _motion_sensors_maps[item] = &_reserved_motion_sensors_state_map;
+  }
 
   sensor_mini_ids.clear();
   associate_sensor_to_events(pt,
@@ -884,4 +900,37 @@ int Notification_logic_controller::parse_number_of_levels(const boost::property_
     return HOUSE_WITH_GARDEN_N_OF_LEVELS;
   else
     return HOUSE_WITHOUT_GARDEN_N_OF_LEVELS;
+}
+
+void Notification_logic_controller::update_motion_sensor_state(const Sensor_mini_id &topic_info,
+							       Motion_sensor_state motion_sensor_state){
+  Motion_sensors_maps::iterator motion_sensors_maps_it = _motion_sensors_maps.find(topic_info);
+  if( motion_sensors_maps_it != _motion_sensors_maps.end() ){
+    Motion_sensors_state_map *ptr = motion_sensors_maps_it->second;
+    Motion_sensors_state_map::iterator motion_sensors_state_map_it = ptr->find(topic_info);
+    if( motion_sensors_state_map_it != ptr->end() )
+      motion_sensors_state_map_it->second = motion_sensor_state;
+    else
+      std::cerr << error << " [Notification_logic_controller::" << __func__ << "] " << reset
+		<< "no occurrence in  Motion_sensors_state_map associated to the id: " << topic_info << std::endl;
+  }else
+    std::cerr << error << " [Notification_logic_controller::" << __func__ << "] " << reset
+	      << "no occurrence in motions_sensors_map associated to the id: " << topic_info << std::endl;
+}
+
+Notification_logic_controller::Is_ring_occupied Notification_logic_controller::is_ring_occupied(const Sensor_mini_id &topic_info){
+  Motion_sensors_maps::iterator motion_sensors_maps_it = _motion_sensors_maps.find(topic_info);
+  Is_ring_occupied is_ring_occupied{false};
+  if( motion_sensors_maps_it != _motion_sensors_maps.end() ){
+    Motion_sensors_state_map *ptr = motion_sensors_maps_it->second;
+    for(const Motion_sensors_state_map::value_type &map_value : *ptr){
+      is_ring_occupied = (is_ring_occupied || map_value.second);
+      if(is_ring_occupied)
+	return is_ring_occupied;
+    }
+  }
+  else
+    std::cerr << error << " [Notification_logic_controller::" << __func__ << "] " << reset
+	      << "no occurrence in motions_sensors_map associated to the id: " << topic_info << std::endl;
+  return is_ring_occupied;
 }

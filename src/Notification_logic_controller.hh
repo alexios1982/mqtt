@@ -72,9 +72,18 @@ class Notification_logic_controller : public Alarm_system{
   std::vector<int> _jpeg_params;
   int _ai_response_counter;
   const int _NUMBER_OF_FRAMES_TO_SEND;
+  const int _SIGNIFICANT_TOPIC_CHARS;
   bool _is_ext_occupied;
   bool _is_int_occupied;
   bool _is_res_occupied;
+  typedef bool Motion_sensor_state;
+  typedef std::map<Sensor_mini_id, Motion_sensor_state> Motion_sensors_state_map;
+  Motion_sensors_state_map _extern_motion_sensors_state_map;
+  Motion_sensors_state_map _intern_motion_sensors_state_map;
+  Motion_sensors_state_map _reserved_motion_sensors_state_map;
+
+  typedef std::map<Sensor_mini_id, Motion_sensors_state_map*> Motion_sensors_maps;
+  Motion_sensors_maps _motion_sensors_maps;
   
   ///this method is called by consume_message when a message is present in the queue
   ///check the message type and call the appropriate handlers
@@ -88,8 +97,7 @@ class Notification_logic_controller : public Alarm_system{
 
   typedef bool Is_gate_opened;
   Is_gate_opened is_gate_opened(const mqtt::const_message_ptr &zigbee_message_ptr);
-  typedef bool Is_room_occupied;
-  Is_room_occupied is_room_occupied(const mqtt::const_message_ptr &zigbee_message_ptr);
+  Motion_sensor_state check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
   
   // ///handler called by classify_message when the message present in the queue is
   // ///associated to a sensor that requests a rich notification
@@ -126,6 +134,10 @@ class Notification_logic_controller : public Alarm_system{
 				  Sensor_type sensor_type,
 				  Sensor_mini_ids &sensor_mini_ids);
   int parse_number_of_levels(const boost::property_tree::ptree &pt) const;
+  void update_motion_sensor_state(const Sensor_mini_id &topic_info,
+				  Motion_sensor_state motion_sensor_state);
+  typedef bool Is_ring_occupied;
+  Is_ring_occupied is_ring_occupied(const Sensor_mini_id &topic_info);
 public:
   Notification_logic_controller(Area_protection &area_protection,
 				Synchronized_queue<mqtt::const_message_ptr> &queue,

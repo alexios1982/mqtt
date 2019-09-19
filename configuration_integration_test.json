@@ -110,7 +110,7 @@
           {
             "id_secret_device": "window_r",
             "name": "sensore finesta ufficio alessandro",
-            "sensor_type": 1,
+            "sensor_type": 2,
             "url": null
           }
         ],

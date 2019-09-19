@@ -111,7 +111,7 @@ target_link_libraries(test_alarm_system_state_machine PUBLIC
   ${BOOST_SYSTEM}
   )
 
-add_executable (test_configuration_file test_configuration_file.cc
+add_executable (test_notification_logic_controller test_notification_logic_controller.cc
   ../src/Publisher.cc
   ../src/Notification_logic_controller.cc
   ../src/Area_protection.cc
@@ -129,7 +129,7 @@ find_package(Threads REQUIRED)
 find_package(OpenCV REQUIRED)
 #######################################################################
 
-target_link_libraries(test_configuration_file PUBLIC
+target_link_libraries(test_notification_logic_controller PUBLIC
   ${BOOST_FILESYSTEM}
   ${BOOST_SYSTEM}
   ${MQTT_LIB}
