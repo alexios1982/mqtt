@@ -71,7 +71,9 @@ class Notification_logic_controller : public Alarm_system{
   std::map<Ai_result_position_pair, Proc_events_ptr_2> _ai_result_position_proc_events_map;
   std::vector<int> _jpeg_params;
   int _ai_response_counter;
+  const int _WHICH_FRAME;
   const int _NUMBER_OF_FRAMES_TO_SEND;
+  const int _NUMBER_OF_AI_RESPONSES;
   const int _SIGNIFICANT_TOPIC_CHARS;
   bool _is_ext_occupied;
   bool _is_int_occupied;
@@ -147,7 +149,9 @@ public:
 				//with input bitrate=2000000 and resolution=1920x1080
 				//JPEG_QUALITY = 60 gives decode message of about 112KB
 				const int JPEG_QUALITY = 60,
-				const int NUMBER_OF_FRAMES_TO_SEND = 3);
+				const int WHICH_FRAME = 2,
+				const int NUMBER_OF_FRAMES_TO_SEND = 3,
+				const int NUMBER_OF_AI_RESPONSES = 1);
   ///this method check the presence of a message in the queue and start
   ///classify_message in a thread to take the required actions
   void consume_message();

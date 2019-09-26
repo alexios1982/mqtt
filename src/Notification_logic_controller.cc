@@ -21,7 +21,9 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
 							     //							     std::map<std::string, std::string> &sensor_cam,  
 							     //							     std::map<std::string, std::string> &cam_path,
 							     const int JPEG_QUALITY,
-							     const int NUMBER_OF_FRAMES_TO_SEND):
+							     const int WHICH_FRAME,
+							     const int NUMBER_OF_FRAMES_TO_SEND,
+							     const int NUMBER_OF_AI_RESPONSES):
   _area_protection{area_protection},
   _queue{queue},
   _publisher{publisher},
@@ -29,7 +31,9 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
   // _cam_path{},
   _sensor_cam_path{},
   _ai_response_counter{0},
+  _WHICH_FRAME{WHICH_FRAME},
   _NUMBER_OF_FRAMES_TO_SEND{NUMBER_OF_FRAMES_TO_SEND},
+  _NUMBER_OF_AI_RESPONSES{NUMBER_OF_AI_RESPONSES},
   _SIGNIFICANT_TOPIC_CHARS{8},
   _is_ext_occupied{false},
   _is_int_occupied{false},
@@ -528,18 +532,18 @@ Notification_logic_controller::Ai_result Notification_logic_controller::decode_a
 
 void Notification_logic_controller::send_video_chunk(const Ext_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  send_rich_notifications(evt._sensor_mini_id, 3, 2);
+  send_rich_notifications(evt._sensor_mini_id, _WHICH_FRAME, _NUMBER_OF_FRAMES_TO_SEND - 1);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 void Notification_logic_controller::send_video_chunk(const Int_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  send_rich_notifications(evt._sensor_mini_id, 3, 2);
+  send_rich_notifications(evt._sensor_mini_id, _WHICH_FRAME, _NUMBER_OF_FRAMES_TO_SEND - 1);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
 void Notification_logic_controller::send_video_chunk(const Res_door_open_sensor_sig &evt){
   boost::ignore_unused(evt);
-  send_rich_notifications(evt._sensor_mini_id, 3, 2);
+  send_rich_notifications(evt._sensor_mini_id, _WHICH_FRAME, _NUMBER_OF_FRAMES_TO_SEND - 1);
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
@@ -582,7 +586,7 @@ void Notification_logic_controller::send_classified_notification_as(char alarm_l
 }
 
 void Notification_logic_controller::increase_ai_response_counter(){
-  _ai_response_counter += _NUMBER_OF_FRAMES_TO_SEND;
+  _ai_response_counter += _NUMBER_OF_AI_RESPONSES;
   D(std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "  << reset << std::endl);
 }
 
