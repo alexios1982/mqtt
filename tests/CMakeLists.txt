@@ -116,6 +116,13 @@ add_executable (test_notification_logic_controller test_notification_logic_contr
   ../src/Notification_logic_controller.cc
   ../src/Area_protection.cc
   ../src/Alarm_system_state_machine.cc
+  )
+
+add_executable (test_configuration_file test_configuration_file.cc
+  ../src/Publisher.cc
+  ../src/Notification_logic_controller.cc
+  ../src/Area_protection.cc
+  ../src/Alarm_system_state_machine.cc
 )
 
 ####################################################################
@@ -130,6 +137,15 @@ find_package(OpenCV REQUIRED)
 #######################################################################
 
 target_link_libraries(test_notification_logic_controller PUBLIC
+  ${BOOST_FILESYSTEM}
+  ${BOOST_SYSTEM}
+  ${MQTT_LIB}
+  base64
+  Utils
+  Threads::Threads
+  ${OpenCV_LIBS})
+
+target_link_libraries(test_configuration_file PUBLIC
   ${BOOST_FILESYSTEM}
   ${BOOST_SYSTEM}
   ${MQTT_LIB}

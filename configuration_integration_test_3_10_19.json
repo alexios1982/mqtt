@@ -1,0 +1,116 @@
+{
+  "address": "via luigi schiavonetti",
+  "city": "roma",
+  "control_unit": 6754046610,
+  "name": "ufficio",
+  "ring": {
+    "external": [
+      {
+        "description": "ingresso ufficio",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam01",
+                "name": "telecamera ingresso ring esterno",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-1:5347757331287:stream/cam01/1562253513733"
+              },
+              {
+                "id_secret_device": "01ccfa8f",
+                "name": "sensore porta ring esterno",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "gate di ingresso principale"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "0202c411",
+            "name": "sensore movimento ring esterno",
+            "sensor_type": 1,
+            "url": null
+          }
+        ],
+        "name": "ingresso principale",
+        "room_type": "12"
+      }
+    ],
+    "internal": [
+      {
+        "description": "stanza interna",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "cam03",
+                "name": "telecamera porta ring interno",
+                "sensor_type": 3,
+                "url": "arn:aws:kinesisvideo:us-east-1:5347757331287:stream/cam03/1562253513733"
+              },
+              {
+                "id_secret_device": "01ccf6bb",
+                "name": "sensore porta",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "gate ring interno"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "01cc6f28",
+            "name": "sensore movimento ring interno",
+            "sensor_type": 1,
+            "url": null
+          },
+          {
+            "id_secret_device": "01cc9efa",
+            "name": "sensore finestra ring interno",
+            "sensor_type": 2,
+            "url": null
+          }
+        ],
+        "name": "stanza interna sviluppatori nel ring interno",
+        "room_type": "12"
+      }
+    ],
+    "reserved": [
+      {
+        "description": "stanza ristoro nel ring riservato",
+        "gate": [
+          {
+            "devices": [
+              {
+                "id_secret_device": "foscam",
+                "name": "foscam",
+                "sensor_type": 3,
+                "url": "not assigned"
+              },
+              {
+                "id_secret_device": "01cc815a",
+                "name": "sensore porta ring riservato",
+                "sensor_type": 0,
+                "url": null
+              }
+            ],
+            "name": "gate ingresso nel ring riservato"
+          }
+        ],
+        "devices": [
+          {
+            "id_secret_device": "019534ae",
+            "name": "sensore di movimento ring riservato",
+            "sensor_type": 1,
+            "url": null
+          }
+        ],
+        "name": "stanza ristoro",
+        "room_type": 1
+      }
+    ]
+  }
+}
