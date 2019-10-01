@@ -148,7 +148,7 @@ public:
 				//std::map<std::string, std::string> &cam_path,
 				//with input bitrate=2000000 and resolution=1920x1080
 				//JPEG_QUALITY = 60 gives decode message of about 112KB
-				const int JPEG_QUALITY = 60,
+				const int JPEG_QUALITY = 45,
 				const int WHICH_FRAME = 2,
 				const int NUMBER_OF_FRAMES_TO_SEND = 3,
 				const int NUMBER_OF_AI_RESPONSES = 1);

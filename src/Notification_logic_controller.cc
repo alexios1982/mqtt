@@ -93,8 +93,9 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
 	update_motion_sensor_state(topic_info, false);
 	//triggering Clear_ext/Clear_int/Clear_res signals
 	//( (it->second).second )();
-	if( !is_ring_occupied(topic_info) )
+	if( !is_ring_occupied(topic_info) ){
 	  ( ( (it->second)._proc_events_ptr_pair ).second )();
+	}
       }
       break;
     }
@@ -206,18 +207,45 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
     cap.set(CV_CAP_PROP_POS_MSEC, 500);
     cv::Mat frame;
     bool b_success = cap.read(frame);
-    if ( !b_success) {
+
+    // if ( !b_success) {
+    //   std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
+    // 		<< reset << "Cannot read the frame from video file" << std::endl;
+    //   exit(1);
+    // }
+    // std::string mp4_complete_filename = (to_send_ptr->second).string();
+    // std::string jpeg_complete_filename( mp4_complete_filename.replace(mp4_complete_filename.find_last_of('.'), std::string::npos, ".jpeg") );
+      
+    // imwrite(jpeg_complete_filename, frame, _jpeg_params);
+    
+    // pt.put( "media", base64_file_converter(jpeg_complete_filename) );
+    // last_jpeg_file = jpeg_complete_filename;
+
+    //
+    if(b_success){
+      std::string mp4_complete_filename = (to_send_ptr->second).string();
+      std::string jpeg_complete_filename( mp4_complete_filename.replace(mp4_complete_filename.find_last_of('.'), std::string::npos, ".jpeg") );
+
+      std::vector<int> jpeg_params;
+      jpeg_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+      
+      std::size_t found = mp4_complete_filename.find("foscam");
+      if (found != std::string::npos)
+	jpeg_params.push_back(45);
+      else
+	jpeg_params.push_back(60);
+      imwrite(jpeg_complete_filename, frame, jpeg_params);
+    
+      pt.put( "media", base64_file_converter(jpeg_complete_filename) );
+      last_jpeg_file = jpeg_complete_filename;
+    }
+    else{
       std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
 		<< reset << "Cannot read the frame from video file" << std::endl;
-      exit(1);
+      //as Ai waits an exact number of files, in case of error we send a fake image with nobody
+      pt.put( "media", base64_file_converter("/home/pi/gstreamer_projects/multifiles_saving/fake_image.jpg") );
     }
-    std::string mp4_complete_filename = (to_send_ptr->second).string();
-    std::string jpeg_complete_filename( mp4_complete_filename.replace(mp4_complete_filename.find_last_of('.'), std::string::npos, ".jpeg") );
-      
-    imwrite(jpeg_complete_filename, frame, _jpeg_params);
-    
-    pt.put( "media", base64_file_converter(jpeg_complete_filename) );
-    last_jpeg_file = jpeg_complete_filename;
+    //
   }
   else{
     std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
@@ -718,7 +746,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::DOOR,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids)
-    _sensor_infos_map[item] = { Sensor_type::DOOR, 'e', std::make_pair( [this, &item](){ return process_event_verbose(Ext_door_open_sensor_sig{item}); }, [this](){ return; } ) };
+    _sensor_infos_map[item] = { Sensor_type::DOOR, 'e', std::make_pair( [this, item](){ return process_event_verbose(Ext_door_open_sensor_sig{item}); }, [this](){ return; } ) };
 
   sensor_mini_ids.clear();
   associate_sensor_to_events(pt,
@@ -726,7 +754,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::MOTION,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids){
-    _sensor_infos_map[item] = { Sensor_type::MOTION, 'e', std::make_pair( [this, &item](){ return process_event_verbose(Ext_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
+    _sensor_infos_map[item] = { Sensor_type::MOTION, 'e', std::make_pair( [this, item](){ return process_event_verbose(Ext_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_ext{}); } ) };
     _extern_motion_sensors_state_map[item] = false;
     _motion_sensors_maps[item] = &_extern_motion_sensors_state_map; 
   }
@@ -737,7 +765,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::DOOR,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids)
-    _sensor_infos_map[item] = { Sensor_type::DOOR, 'i',  std::make_pair( [this, &item](){ return process_event_verbose(Int_door_open_sensor_sig{item}); }, [this](){ return; } )} ;
+    _sensor_infos_map[item] = { Sensor_type::DOOR, 'i',  std::make_pair( [this, item](){ return process_event_verbose(Int_door_open_sensor_sig{item}); }, [this](){ return; } )} ;
 
   sensor_mini_ids.clear();
   associate_sensor_to_events(pt,
@@ -745,7 +773,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::MOTION,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids){
-    _sensor_infos_map[item] = { Sensor_type::MOTION, 'i', std::make_pair( [this, &item](){ return process_event_verbose(Int_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
+    _sensor_infos_map[item] = { Sensor_type::MOTION, 'i', std::make_pair( [this, item](){ return process_event_verbose(Int_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_int{}); } ) };
     _intern_motion_sensors_state_map[item] = false;
     _motion_sensors_maps[item] = &_intern_motion_sensors_state_map;
   }
@@ -756,7 +784,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::WINDOW,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids)
-    _sensor_infos_map[item] = { Sensor_type::WINDOW, 'i', std::make_pair( [this, &item](){ return process_event_verbose(Int_wind_open_sensor_sig{item}); }, [this](){ return; } ) };
+    _sensor_infos_map[item] = { Sensor_type::WINDOW, 'i', std::make_pair( [this, item](){ return process_event_verbose(Int_wind_open_sensor_sig{item}); }, [this](){ return; } ) };
 
   sensor_mini_ids.clear();
   associate_sensor_to_events(pt,
@@ -764,7 +792,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::DOOR,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids)
-    _sensor_infos_map[item] = { Sensor_type::DOOR, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_door_open_sensor_sig{item}); }, [this](){ return; } ) };
+    _sensor_infos_map[item] = { Sensor_type::DOOR, 'r', std::make_pair( [this, item](){ return process_event_verbose(Res_door_open_sensor_sig{item}); }, [this](){ return; } ) };
 
   sensor_mini_ids.clear();
   associate_sensor_to_events(pt,
@@ -772,7 +800,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::MOTION,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids){
-    _sensor_infos_map[item] = { Sensor_type::MOTION, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
+    _sensor_infos_map[item] = { Sensor_type::MOTION, 'r', std::make_pair( [this, item](){ return process_event_verbose(Res_motion_sensor_sig{item}); }, [this](){ return process_event_verbose(Clear_res{}); } ) };
     _reserved_motion_sensors_state_map[item] = false;
     _motion_sensors_maps[item] = &_reserved_motion_sensors_state_map;
   }
@@ -783,7 +811,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   			     Sensor_type::WINDOW,
   			     sensor_mini_ids);
   for(auto item : sensor_mini_ids)
-    _sensor_infos_map[item] = { Sensor_type::WINDOW, 'r', std::make_pair( [this, &item](){ return process_event_verbose(Res_wind_open_sensor_sig{item}); }, [this](){ return; } ) };
+    _sensor_infos_map[item] = { Sensor_type::WINDOW, 'r', std::make_pair( [this, item](){ return process_event_verbose(Res_wind_open_sensor_sig{item}); }, [this](){ return; } ) };
   ////////////////////////////////////////////////////////////////////////////////////////
   
   // //just for testing in test_configuration_file.cc
@@ -807,6 +835,24 @@ void Notification_logic_controller::load_configuration(const std::string &config
   _ai_result_position_proc_events_map[std::make_pair(Ai_result::MONITORED, 'r')] = [this](const std::string &mmuid){ return process_event_verbose(Rec_monit_in_res{mmuid}); };
 
   _hub_id = "hub_di_tizio_caio_sempronio";
+
+
+  for(auto item : _sensor_cam_path)
+    std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " sensor: " << item.first << "   cam: " << item.second << '\n'; 
+  
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " printing sensor_infos_map" << '\n'; 
+  for(auto item : _sensor_infos_map)
+    std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " sensor id: " << item.first << " -> sensor type: " << static_cast<int>( (item.second)._sensor_type ) << " sensor position: " << (item.second)._position << '\n'; 
+
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " number of levels: " << get_number_of_levels() << '\n'; 
+
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " printing _motion_sensors_maps" << '\n'; 
+  for(auto outer_value : _motion_sensors_maps){
+    std::cout << outer_value.first << " -> " << outer_value.second << '\n';
+    for( auto inner_value : *(outer_value.second) )
+      std::cout << '\t' << inner_value.first << " -> " << std::boolalpha << inner_value.second << '\n';
+  }
+
   
   process_event_verbose(Initialization_completed{});
 }
@@ -815,7 +861,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
 void Notification_logic_controller::init_sensor_cam_path(const boost::property_tree::ptree &pt){
   typedef std::pair<Sensor_mini_id, Cam_directory> Sensor_cam_pair;
   Sensor_cam_pair sensor_cam_pair;
-  std::string base_path{"/home/pi/gstreamer/multifiles_saving/"};
+  std::string base_path{"/home/pi/gstreamer_projects/multifiles_saving/"};
   try{
     //int i = 0;
     //let's retrieve the ptree under the ring path

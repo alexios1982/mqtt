@@ -1,0 +1,523 @@
+pi@raspberrypi:~/mqtt/mqtt $ ./bin/alarm_system
+Connecting to the ZIGBEE MQTT server...
+Connecting to the PUBLISHER MQTT server...
+Waiting for the connection...
+
+[Subscriber_callback_listener::connected].
+Connection success
+
+Subscribing to topic 'zigbee2mqtt/#'
+	    for client zigbee_subscribe_client using QoS1
+	    [Subscription_listener::on_success]. Subscription_listener success for token: [1]
+	    					 token topic: 'zigbee2mqtt/#', ...
+
+  ... CONNECTION TO SERVER IS OK
+  Connecting to the REMOTE MQTT server...[Alarm_sytem::on_entry].
+  [Waiting_for_configuration::on_entry].
+  [Waiting_for_risk::on_entry].
+  [None::on_entry].
+  [Idle::on_entry].
+  [Notification_logic_controller::load_configuration sensor: 01cc815a   cam: /home/pi/gstreamer_projects/multifiles_saving/foscam
+  [Notification_logic_controller::load_configuration sensor: 01ccf6bb   cam: /home/pi/gstreamer_projects/multifiles_saving/cam03
+  [Notification_logic_controller::load_configuration sensor: 01ccfa8f   cam: /home/pi/gstreamer_projects/multifiles_saving/cam01
+  [Notification_logic_controller::load_configuration printing sensor_infos_map
+  [Notification_logic_controller::load_configuration sensor id: 019534ae -> sensor type: 1 sensor position: r
+  [Notification_logic_controller::load_configuration sensor id: 01cc6f28 -> sensor type: 1 sensor position: i
+  [Notification_logic_controller::load_configuration sensor id: 01cc815a -> sensor type: 0 sensor position: r
+  [Notification_logic_controller::load_configuration sensor id: 01cc9efa -> sensor type: 2 sensor position: i
+  [Notification_logic_controller::load_configuration sensor id: 01ccf6bb -> sensor type: 0 sensor position: i
+  [Notification_logic_controller::load_configuration sensor id: 01ccfa8f -> sensor type: 0 sensor position: e
+  [Notification_logic_controller::load_configuration sensor id: 0202c411 -> sensor type: 1 sensor position: e
+  [Notification_logic_controller::load_configuration number of levels: 3
+  [Notification_logic_controller::load_configuration printing _motion_sensors_maps
+  019534ae -> 0x7ed36140
+  	   019534ae -> false
+	   01cc6f28 -> 0x7ed36128
+	   	    01cc6f28 -> false
+		    0202c411 -> 0x7ed36110
+		    	     0202c411 -> false
+			     [Green_alarm::on_entry].
+			     process_event_verbose
+			     ::print_current_states. Current states -> Green_alarm
+			     ::print_current_states. Current states -> Waiting_for_risk
+			     ::print_current_states. Current states -> None
+			     ::print_current_states. Current states -> Idle
+
+
+print_current_state
+::print_current_states. Current states -> Green_alarm
+::print_current_states. Current states -> Waiting_for_risk
+::print_current_states. Current states -> None
+::print_current_states. Current states -> Idle
+
+
+[Notification_logic_controller::classify_message] opic_info is: e/config
+36m[Notification_logic_controller::classify_message] topic_info is: ge/state
+
+[Subscriber_callback_listener::connected].
+Connection success
+
+Subscribing to topic 'hub_test/ai_reply'
+	    for client remote_subscriber_client using QoS1
+	    [Subscription_listener::on_success]. Subscription_listener success for token: [1]
+	    					 token topic: 'hub_test/ai_reply', ...
+
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":39}
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":49}
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:11 2019
+just once
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:11_cam03_6.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:13_cam03_8.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:15_cam03_10.mp4
+[Notification_logic_controller::send_rich_notification]. curr: m03_10.mp4 last:
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:15_cam03_10.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 99487
+[Notification_logic_controller::send_notification]. publishing ...
+[Publisher_action_listener::on_success].	    Listener success for token: 0
+7779.61 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:19 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:17_cam03_0.mp4
+[Notification_logic_controller::send_rich_notification]. curr: am03_0.mp4 last: m03_10.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:17_cam03_0.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 99638
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:20 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:19_cam03_2.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: am03_2.mp4 last: am03_0.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:19_cam03_2.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 100171
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_video_chunk].
+[Evaluating_risk::on_entry].
+[Alarm_sytem::trigger_red_alarm].
+[Intern::on_entry].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+[Red_alarm_notified::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Intern
+::print_current_states. Current states -> Waiting_for_ai_response
+10823.7 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":47}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":42}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":55}
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:36 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:35_foscam_5.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:37_foscam_7.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:38_foscam_8.mp4
+[Notification_logic_controller::send_rich_notification]. curr: scam_8.mp4 last: am03_2.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:38_foscam_8.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 98924
+[Notification_logic_controller::send_notification]. publishing ...
+4724.38 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:41 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:39_foscam_9.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: scam_9.mp4 last: scam_8.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":44}
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:39_foscam_9.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 98622
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:42 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:41_foscam_11.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: cam_11.mp4 last: scam_9.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:41_foscam_11.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 93656
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_video_chunk].
+[Reserved::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+7690.2 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":23}
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:47 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:45_cam03_4.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:47_cam03_6.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:48_cam03_7.mp4
+[Notification_logic_controller::send_rich_notification]. curr: am03_7.mp4 last: cam_11.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:48_cam03_7.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 96052
+[Notification_logic_controller::send_notification]. publishing ...
+4161.98 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:51 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:49_cam03_8.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: am03_8.mp4 last: am03_7.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":49}
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:49_cam03_8.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 99250
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:06:52 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:06:51_cam03_10.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: m03_10.mp4 last: am03_8.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:06:51_cam03_10.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 98246
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_video_chunk].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+7184.52 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":31}
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:10:31 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:30_cam03_1.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:31_cam03_2.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:33_cam03_4.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":47}
+[Notification_logic_controller::send_rich_notification]. curr: am03_4.mp4 last: m03_10.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:10:33_cam03_4.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 91888
+[Notification_logic_controller::send_notification]. publishing ...
+5315.43 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:10:36 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:34_cam03_5.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: am03_5.mp4 last: am03_4.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:10:34_cam03_5.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 91754
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:10:37 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:36_cam03_7.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: am03_7.mp4 last: am03_5.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":42}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.063176 ms
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:10:36_cam03_7.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 91541
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:10:39 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:38_foscam_8.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:39_foscam_9.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:40_foscam_10.mp4
+[Notification_logic_controller::send_rich_notification]. curr: cam_10.mp4 last: am03_7.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:10:40_foscam_10.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 98218
+[Notification_logic_controller::send_notification]. publishing ...
+2738.52 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:10:42 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:41_foscam_11.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":36}
+[Notification_logic_controller::send_rich_notification]. curr: cam_11.mp4 last: cam_10.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:10:41_foscam_11.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 99597
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:10:44 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:10:42_foscam_0.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: scam_0.mp4 last: cam_11.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:10:42_foscam_0.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 96279
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_video_chunk].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+14059.8 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":55}
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:11:04 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:02_foscam_8.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:04_foscam_10.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:06_foscam_0.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":34}
+[Notification_logic_controller::send_rich_notification]. curr: scam_0.mp4 last: scam_0.mp4
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+4218.8 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:11:08 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:08_foscam_2.mp4
+[Notification_logic_controller::send_rich_notification]. curr: scam_2.mp4 last: scam_0.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:11:08_foscam_2.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 90539
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:11:11 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:10_foscam_4.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":31}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.063333 ms
+[Notification_logic_controller::send_rich_notification]. curr: scam_4.mp4 last: scam_2.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:11:10_foscam_4.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 91199
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:11:13 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:11_cam03_6.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:13_cam03_8.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":57}
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:14_cam03_9.mp4
+[Notification_logic_controller::send_rich_notification]. curr: am03_9.mp4 last: scam_4.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:11:14_cam03_9.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 96235
+[Notification_logic_controller::send_notification]. publishing ...
+[Publisher_action_listener::on_success].	    Listener success for token: 0
+4372.58 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:11:17 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:16_cam03_11.mp4
+[Notification_logic_controller::send_rich_notification]. curr: m03_11.mp4 last: am03_9.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:11:16_cam03_11.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 98771
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:11:19 2019
+[Publisher_action_listener::on_success].		 Listener success for token: 0
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-09-30_14:11:18_cam03_1.mp4
+[Notification_logic_controller::send_rich_notification]. curr: am03_1.mp4 last: m03_11.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-09-30_14:11:18_cam03_1.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 91535
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_video_chunk].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+16098.1 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":23}
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Mon Sep 30 14:12:05 2019
+[Notification_logic_controller::select_video_chunk]. current filename:
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":28}
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":28}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.137239 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":28}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":55}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.160103 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":39}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.119322 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":57}
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":39}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.141197 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":49}
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":34}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.86843 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":34}
+[Notification_logic_controller::classify_message] topic_info is: 0202c411
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":47}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.334842 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":5}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.173957 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":31}
+[Notification_logic_controller::classify_message] topic_info is: 0202c411
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":39}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.472861 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":47}
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":44}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.131093 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":44}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":39}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.255154 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":47}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.120051 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":49}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":44}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.055937 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":60}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":52}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":42}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.114791 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":42}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":39}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.137447 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":23}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.18453 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":31}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":52}
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":39}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.123437 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":23}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.125311 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":18}
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":18}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> Evaluating_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+0.12052 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccfa8f
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":31}
+^C

@@ -91,8 +91,8 @@ const std::string ZIGBEE_SUBSCRIBER_ALL_TOPICS { "zigbee2mqtt/#" };
 const std::string REMOTE_SERVER_ADDRESS { "ssl://a2x7fkplgngdk8-ats.iot.us-east-1.amazonaws.com:8883" };
 const std::string REMOTE_PUBLISHER_ID { "remote_publisher_client" };
 const std::string REMOTE_SUBSCRIBER_ID { "remote_subscriber_client" };
-const std::string REMOTE_PUBLISHER_TOPIC { "ai_request" };
-const std::string REMOTE_SUBSCRIBER_TOPIC {"ai_reply"};
+const std::string REMOTE_PUBLISHER_TOPIC { "hub_test/ai_request" };
+const std::string REMOTE_SUBSCRIBER_TOPIC {"hub_test/ai_reply"};
 
 
 const int QOS = 1;
@@ -210,7 +210,7 @@ int main(int argc, char* argv[]){
   // t.detach();
   Area_protection area_protection;
 
-  std::string configuration_file = "test_configuration_with_reserved_and_multiple_gates.json";
+  std::string configuration_file = "configuration_integration_test_3_10_19.json";
   
   //Notification_logic_controller notification_logic_controller{area_protection, queue, publisher, sensor_cam, cam_path};
   Notification_logic_controller notification_logic_controller{area_protection, queue, publisher};
