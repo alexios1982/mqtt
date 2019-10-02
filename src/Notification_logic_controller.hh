@@ -69,9 +69,9 @@ class Notification_logic_controller : public Alarm_system{
   typedef std::pair<Ai_result, Position> Ai_result_position_pair;
   typedef std::function<void(std::string)> Proc_events_ptr_2;
   std::map<Ai_result_position_pair, Proc_events_ptr_2> _ai_result_position_proc_events_map;
-  std::vector<int> _jpeg_params;
   int _ai_response_counter;
   const int _WHICH_FRAME;
+  const int _JPEG_QUALITY;
   const int _NUMBER_OF_FRAMES_TO_SEND;
   const int _NUMBER_OF_AI_RESPONSES;
   const int _SIGNIFICANT_TOPIC_CHARS;
@@ -108,7 +108,8 @@ class Notification_logic_controller : public Alarm_system{
 
   mqtt::const_message_ptr prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr,
 						    File_type file_type,
-						    const std::string &sensor_mini_id);
+						    const std::string &sensor_mini_id,
+						    int foscam_jpeg_quality);
   
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a classified notification  
@@ -148,7 +149,7 @@ public:
 				//std::map<std::string, std::string> &cam_path,
 				//with input bitrate=2000000 and resolution=1920x1080
 				//JPEG_QUALITY = 60 gives decode message of about 112KB
-				const int JPEG_QUALITY = 45,
+				const int JPEG_QUALITY = 60,
 				const int WHICH_FRAME = 2,
 				const int NUMBER_OF_FRAMES_TO_SEND = 3,
 				const int NUMBER_OF_AI_RESPONSES = 1);
