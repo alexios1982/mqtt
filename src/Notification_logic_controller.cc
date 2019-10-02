@@ -124,9 +124,9 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
   std::unique_ptr<Dir_handler::Time_path_pair> to_send_ptr = select_video_chunk(sensor_mini_id, which);
   std::string to_send_filename = ( (to_send_ptr->second).filename() ).string();
   if( !( to_send_filename.empty() ) ){
-    //we take only the last 10 chars because the filename is very
+    //we take only the last 14 chars because the filename is very
     //long and the comparison between the entire filename can be heavy
-    std::string curr_short_filename = to_send_filename.substr(to_send_filename.size() - 10);
+    std::string curr_short_filename = to_send_filename.substr(to_send_filename.size() - 14);
     D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
        << "curr: " << curr_short_filename << " last: " << last_sent_short_filename << std::endl);
     if(curr_short_filename != last_sent_short_filename){
