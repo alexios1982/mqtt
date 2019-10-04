@@ -141,26 +141,28 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
     // }
     // else{
     //   D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-    // 	 << "Video alredy sent" << std::endl );
+    // 	 << "Video already sent" << std::endl );
     // }
     int size{0}, i{0};
     mqtt::const_message_ptr message_to_send{};
     do{
-      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, 45 - 5*i++);
+      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, _JPEG_QUALITY - 5*i);
+      ++i;
       size = ( message_to_send->to_string() ).size(); 
     }while( (size > 127000) && (i < 3) );
     if(message_to_send->get_topic() != ""){
-      last_sent_short_filename = curr_short_filename;
+      if(curr_short_filename == last_sent_short_filename)
+	D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
+	   << "Video already sent" << std::endl );
+      else
+	last_sent_short_filename = curr_short_filename;
       D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
 	<< "message_to_send size is: " << size << '\n';)
-	// //print on standard error only for integration test of 08/08/2019
+	// //print on standard error only for integration test of 03/10/2019
 	// std::cerr << "message" << std::endl;
 	// std::cerr << message_to_send->get_payload() << std::endl;
 	send_notification(message_to_send);
     }
-    if(curr_short_filename == last_sent_short_filename)
-      D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-	 << "Video alredy sent" << std::endl );
   }else{
     std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
 	      <<"Video to publish is an empty string: sending a null message" << std::endl;
@@ -187,7 +189,7 @@ void Notification_logic_controller::send_rich_notifications(const std::string &s
     send_rich_notification(sensor_mini_id, 0, file_type);
 }
 
-mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id, int foscam_jpeg_quality){
+mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id, int jpeg_quality){
   using namespace std::chrono;
   boost::property_tree::ptree pt;
   pt.put("ts", duration_cast<milliseconds>(
@@ -246,10 +248,13 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
       jpeg_params.push_back(CV_IMWRITE_JPEG_QUALITY);
       
       std::size_t found = mp4_complete_filename.find("foscam");
-      if (found != std::string::npos)
-	jpeg_params.push_back(foscam_jpeg_quality);
+      //for foscam cam jpeg quality must be set to a lower level to have payload of 128KB
+      if (found != std::string::npos){
+	jpeg_quality -= 10;
+	jpeg_params.push_back(jpeg_quality);
+      }
       else
-	jpeg_params.push_back(_JPEG_QUALITY);
+	jpeg_params.push_back(jpeg_quality);
       imwrite(jpeg_complete_filename, frame, jpeg_params);
     
       pt.put( "media", base64_file_converter(jpeg_complete_filename) );
@@ -259,6 +264,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
       std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
 		<< reset << "Cannot read the frame from video file" << std::endl;
       //as Ai waits an exact number of files, in case of error we send a fake image with nobody
+      to_send_filename = "fake_image.jpg";
       pt.put( "media", base64_file_converter("/home/pi/gstreamer_projects/multifiles_saving/fake_image.jpg") );
     }
     //
@@ -273,7 +279,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
   //if we put assignment here, we have double sending of the same file
   //last_sent_short_filename = curr_short_filename;
   D( std::cout << error << "[Notification_logic_controller::" << __func__ << "]. " << reset
-     << "filename: " << to_send_filename /*<< " time: " << std::ctime(&now)*/ << std::endl);
+     << "filename: " << to_send_filename /*<< " time: " << std::ctime(&now)*/ << " with quality: " << jpeg_quality << std::endl);
   return mqtt::make_message( _publisher.get_topic(), ss.str() );
 }
 
@@ -443,7 +449,7 @@ void Notification_logic_controller::update_area_protection(){
 void Notification_logic_controller::analyze_ai_response(const mqtt::const_message_ptr &message_ptr){
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n');
   std::string payload{message_ptr->get_payload()};
-  // //print in standard error only for integration test of 08/08/2019
+  // //print in standard error only for integration test of 03/10/2019
   // std::cerr << "message" << std::endl;
   // std::cerr <<  payload << std::endl;
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << payload << std::endl);
@@ -563,7 +569,7 @@ Notification_logic_controller::Ai_result Notification_logic_controller::decode_a
 //       return mqtt::make_message( _publisher.get_topic(), ss.str() );
 //     }else{
 //       D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
-// 	 << "Video alredy sent" << std::endl );
+// 	 << "Video already sent" << std::endl );
 //       return mqtt::make_message("", "");
 //     }
 //   }
@@ -604,7 +610,7 @@ void Notification_logic_controller::send_classified_notification_av(char alarm_l
   pt.put("srcid", mmuid);
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
-  // //print in standard error only for integration test of 08/08/2019
+  // //print in standard error only for integration test of 03/10/2019
   // std::cerr << "message" << std::endl;
   // std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
@@ -623,7 +629,7 @@ void Notification_logic_controller::send_classified_notification_as(char alarm_l
   pt.put("srcid", sensor_mini_id);
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
-  // //print in standard error only for integration test of 08/08/2019
+  // //print in standard error only for integration test of 03/10/2019
   // std::cerr << "message" << std::endl;
   // std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );

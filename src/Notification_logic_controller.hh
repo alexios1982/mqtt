@@ -109,7 +109,7 @@ class Notification_logic_controller : public Alarm_system{
   mqtt::const_message_ptr prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr,
 						    File_type file_type,
 						    const std::string &sensor_mini_id,
-						    int foscam_jpeg_quality);
+						    int jpeg_quality);
   
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a classified notification  
@@ -150,7 +150,7 @@ public:
 				//with input bitrate=2000000 and resolution=1920x1080
 				//JPEG_QUALITY = 60 gives decode message of about 112KB
 				const int JPEG_QUALITY = 60,
-				const int WHICH_FRAME = 2,
+				const int WHICH_FRAME = 1,
 				const int NUMBER_OF_FRAMES_TO_SEND = 3,
 				const int NUMBER_OF_AI_RESPONSES = 1);
   ///this method check the presence of a message in the queue and start

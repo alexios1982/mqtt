@@ -66,12 +66,6 @@
             "name": "sensore movimento ring interno",
             "sensor_type": 1,
             "url": null
-          },
-          {
-            "id_secret_device": "01cc9efa",
-            "name": "sensore finestra ring interno",
-            "sensor_type": 2,
-            "url": null
           }
         ],
         "name": "stanza interna sviluppatori nel ring interno",
@@ -102,9 +96,15 @@
         ],
         "devices": [
           {
-            "id_secret_device": "019534ae",
+            "id_secret_device": "01cc762e",
             "name": "sensore di movimento ring riservato",
             "sensor_type": 1,
+            "url": null
+          },
+          {
+            "id_secret_device": "01cc9efa",
+            "name": "sensore finestra ring riservato",
+            "sensor_type": 2,
             "url": null
           }
         ],

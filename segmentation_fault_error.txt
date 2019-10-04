@@ -1,0 +1,578 @@
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:17:25_cam03_6.mp4
+[Notification_logic_controller::send_rich_notification]. curr: 25_cam03_6.mp4 last: 5_foscam_9.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":68}
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:17:25_cam03_6.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 116889
+[Notification_logic_controller::send_notification]. publishing ...
+[Publisher_action_listener::on_success].	    Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+4656.42 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:17:27 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:17:26_cam03_7.mp4
+[Notification_logic_controller::send_rich_notification]. curr: 26_cam03_7.mp4 last: 25_cam03_6.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:17:26_cam03_7.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 114843
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:17:29 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:17:28_cam03_9.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 28_cam03_9.mp4 last: 26_cam03_7.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:17:28_cam03_9.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 111084
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+8727.3 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: ai_reply
+[Notification_logic_controller::analyze_ai_response]. topic: hub_test/ai_reply
+[Notification_logic_controller::analyze_ai_response]. payload: {"ring": "i", "muuid": "ee9ed3bf-a00e-4a36-bcf0-af72cb655c33", "owner": 0, "monitored": 0, "unknown": 1}
+[Notification_logic_controller::analyze_ai_response].  time: Wed Oct  2 15:17:31 2019
+
+0
+[Alarm_sytem::int_presence_flag_update_and_trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+[Idle::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+[Publisher_action_listener::on_success].  Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":28}
+[Alarm_sytem::send_video_chunk_and_trigger_red_alarm].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:23:40 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:23:39_foscam_23.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:23:40_foscam_0.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:23:41_foscam_1.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":2}
+[Notification_logic_controller::send_rich_notification]. curr: 1_foscam_1.mp4 last: 28_cam03_9.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:23:41_foscam_1.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 98586
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+4255.85 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:23:44 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:23:44_foscam_4.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 4_foscam_4.mp4 last: 1_foscam_1.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:23:44_foscam_4.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 93993
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:23:46 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:23:45_foscam_5.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 5_foscam_5.mp4 last: 4_foscam_4.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:23:45_foscam_5.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 97347
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+8258.26 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: ai_reply
+[Notification_logic_controller::analyze_ai_response]. topic: hub_test/ai_reply
+[Notification_logic_controller::analyze_ai_response]. payload: {"ring": "r", "muuid": "5a14547d-c61a-4819-b567-60b1bb567974", "owner": 0, "monitored": 0, "unknown": 1}
+[Notification_logic_controller::analyze_ai_response].  time: Wed Oct  2 15:23:49 2019
+
+0
+[Alarm_sytem::res_presence_flag_update_and_trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+[Idle::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+[Publisher_action_listener::on_success].  Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":15}
+[Alarm_sytem::send_video_chunk_and_trigger_red_alarm].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:25:41 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:25:39_foscam_23.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:25:40_foscam_0.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:25:42_foscam_2.mp4
+[Notification_logic_controller::send_rich_notification]. curr: 2_foscam_2.mp4 last: 5_foscam_5.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:25:42_foscam_2.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 99567
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+3254.1 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:25:44 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:25:43_foscam_3.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 3_foscam_3.mp4 last: 2_foscam_2.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:25:43_foscam_3.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 99821
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:25:46 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:25:45_foscam_5.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 5_foscam_5.mp4 last: 3_foscam_3.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:25:45_foscam_5.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 95666
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+7209.46 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: ai_reply
+[Notification_logic_controller::analyze_ai_response]. topic: hub_test/ai_reply
+[Notification_logic_controller::analyze_ai_response]. payload: {"ring": "r", "muuid": "c83f3541-6525-4e3f-b6d1-8a344ad43aff", "owner": 0, "monitored": 0, "unknown": 1}
+[Notification_logic_controller::analyze_ai_response].  time: Wed Oct  2 15:25:48 2019
+
+0
+[Alarm_sytem::res_presence_flag_update_and_trigger_red_alarm].
+[Publisher_action_listener::on_success].	Listener success for token: 0
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+[Idle::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":42}
+[Alarm_sytem::send_video_chunk_and_trigger_red_alarm].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:27:49 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:27:49_cam03_6.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:27:51_cam03_8.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:27:53_cam03_10.mp4
+[Notification_logic_controller::send_rich_notification]. curr: 3_cam03_10.mp4 last: 5_foscam_5.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:27:53_cam03_10.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 105987
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+6504.75 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:27:56 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:27:55_cam03_0.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 55_cam03_0.mp4 last: 3_cam03_10.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:27:55_cam03_0.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 105683
+[Notification_logic_controller::send_notification]. publishing ...
+[Publisher_action_listener::on_success].	    Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:27:57 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:27:56_cam03_1.mp4
+[Notification_logic_controller::send_rich_notification]. curr: 56_cam03_1.mp4 last: 55_cam03_0.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":26}
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:27:56_cam03_1.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 106242
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+9396.13 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: ai_reply
+[Notification_logic_controller::analyze_ai_response]. topic: hub_test/ai_reply
+[Notification_logic_controller::analyze_ai_response]. payload: {"ring": "i", "muuid": "cf5ad695-1735-4c21-bff6-e8114e1bc4e4", "owner": 0, "monitored": 0, "unknown": 1}
+[Notification_logic_controller::analyze_ai_response].  time: Wed Oct  2 15:27:59 2019
+
+0
+[Alarm_sytem::int_presence_flag_update_and_trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+[Idle::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+[Publisher_action_listener::on_success].  Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":39}
+[Alarm_sytem::send_video_chunk_and_trigger_red_alarm].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:30:06 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:30:05_foscam_3.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:30:06_foscam_4.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:30:08_foscam_6.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01cc815a
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":0}
+[Notification_logic_controller::send_rich_notification]. curr: 8_foscam_6.mp4 last: 56_cam03_1.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:30:08_foscam_6.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 89212
+[Notification_logic_controller::send_notification]. publishing ...
+[Publisher_action_listener::on_success].	    Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+4828.44 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:30:10 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:30:10_foscam_8.mp4
+[Notification_logic_controller::send_rich_notification]. curr: 0_foscam_8.mp4 last: 8_foscam_6.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:30:10_foscam_8.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 97297
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:30:14 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:30:13_foscam_11.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: _foscam_11.mp4 last: 0_foscam_8.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:30:13_foscam_11.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 95092
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+10959.1 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":63}
+[Notification_logic_controller::classify_message] topic_info is: ai_reply
+[Notification_logic_controller::analyze_ai_response]. topic: hub_test/ai_reply
+[Notification_logic_controller::analyze_ai_response]. payload: {"ring": "r", "muuid": "f1c1d02a-6faf-4676-8a05-684d231edd14", "owner": 0, "monitored": 0, "unknown": 1}
+[Notification_logic_controller::analyze_ai_response].  time: Wed Oct  2 15:30:17 2019
+
+0
+[Alarm_sytem::res_presence_flag_update_and_trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+[Idle::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+[Publisher_action_listener::on_success].  Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":73}
+[Alarm_sytem::trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+1.06718 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":73}
+[Alarm_sytem::trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.896088 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 019534ae
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":39}
+[Alarm_sytem::trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.930359 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 0202c411
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":13}
+[Alarm_sytem::trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.975567 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":70}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.332914 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":76}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.452549 ms
+[Notification_logic_controller::classify_message] topic_info is: 0202c411
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":70}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.353591 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":78}
+[Alarm_sytem::trigger_red_alarm].
+[Publisher_action_listener::on_success].	Listener success for token: 0
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.742079 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":78}
+[Alarm_sytem::trigger_red_alarm].
+[Publisher_action_listener::on_success].	Listener success for token: 0
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.95489 ms
+[Notification_logic_controller::classify_message] topic_info is: 0202c411
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":47}
+[Alarm_sytem::trigger_red_alarm].
+[Publisher_action_listener::on_success].	Listener success for token: 0
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+2.33509 ms
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":49}
+[Alarm_sytem::send_video_chunk_and_trigger_red_alarm].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:30:56 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:30:56_cam03_1.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:30:58_cam03_3.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:00_cam03_5.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":57}
+[Notification_logic_controller::send_rich_notification]. curr: 00_cam03_5.mp4 last: _foscam_11.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:31:00_cam03_5.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 107645
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+6302.47 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:31:03 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:01_cam03_6.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 01_cam03_6.mp4 last: 00_cam03_5.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:31:01_cam03_6.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 106132
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:31:04 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:02_cam03_7.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 02_cam03_7.mp4 last: 01_cam03_6.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:31:02_cam03_7.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 105967
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+8180.34 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: ai_reply
+[Notification_logic_controller::analyze_ai_response]. topic: hub_test/ai_reply
+[Notification_logic_controller::analyze_ai_response]. payload: {"ring": "i", "muuid": "b6e9a671-302c-4af4-89b2-4bc19a76096a", "owner": 0, "monitored": 0, "unknown": 1}
+[Notification_logic_controller::analyze_ai_response].  time: Wed Oct  2 15:31:05 2019
+
+0
+[Alarm_sytem::int_presence_flag_update_and_trigger_red_alarm].
+[Publisher_action_listener::on_success].	Listener success for token: 0
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Waiting_for_ai_response
+[Idle::on_entry].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":81}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.325467 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":81}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.312446 ms
+[Notification_logic_controller::classify_message] topic_info is: 0202c411
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":21}
+[Alarm_sytem::trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+[Publisher_action_listener::on_success].  Listener success for token: 0
+3.64003 ms
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":81}
+[Alarm_sytem::trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+1.78061 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":81}
+[Alarm_sytem::trigger_red_alarm].
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+1.22786 ms
+[Publisher_action_listener::on_success].	Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":false,"linkquality":65}
+[Alarm_sytem::send_video_chunk_and_trigger_red_alarm].
+[Notification_logic_controller::send_rich_notifications]. Send the first rich notification
+[Notification_logic_controller::send_rich_notifications]. time spent for the first message
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:31:45 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:44_cam03_1.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:46_cam03_3.mp4
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:47_cam03_4.mp4
+[Notification_logic_controller::classify_message] topic_info is: 01ccf6bb
+[Notification_logic_controller::is_gate_opened]. payload: '{"contact":true,"linkquality":55}
+[Notification_logic_controller::send_rich_notification]. curr: 47_cam03_4.mp4 last: 02_cam03_7.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:31:47_cam03_4.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 114971
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+4320.27 ms
+[Notification_logic_controller::send_rich_notifications]. Send the other 2 notifications
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:31:50 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:49_cam03_6.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::send_rich_notification]. curr: 49_cam03_6.mp4 last: 47_cam03_4.mp4
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:31:49_cam03_6.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 114840
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_rich_notification]. The current local time is: Wed Oct  2 15:31:51 2019
+[Notification_logic_controller::select_video_chunk]. current filename: 2019-10-02_15:31:50_cam03_7.mp4
+[Publisher_action_listener::on_success].	     Listener success for token: 0
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":73}
+[Notification_logic_controller::classify_message] topic_info is: 01cc6f28
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":false,"tamper":false,"battery_low":false,"linkquality":76}
+rocess_event_verbose93mprocess_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk0.189895
+::print_current_states. Current states ->  msReserved
+
+::print_current_states. Current states -> Idle
+0.409424 ms
+[Notification_logic_controller::send_rich_notification]. curr: 50_cam03_7.mp4 last: 49_cam03_6.mp4
+[Notification_logic_controller::classify_message] topic_info is: 019534ae
+[Notification_logic_controller::check_motion_sensor_state]. payload: '{"occupancy":true,"tamper":false,"battery_low":false,"linkquality":21}
+process_event_verbose
+::print_current_states. Current states -> Red_alarm_notified
+::print_current_states. Current states -> High_risk
+::print_current_states. Current states -> Reserved
+::print_current_states. Current states -> Idle
+0.185676 ms
+[Notification_logic_controller::prepare_rich_notification]. filename: 2019-10-02_15:31:50_cam03_7.mp4
+[Notification_logic_controller::send_rich_notification] message_to_send size is: 117985
+[Notification_logic_controller::send_notification]. publishing ...
+[Notification_logic_controller::send_rich_notification]. Video alredy sent
+[Notification_logic_controller::send_video_chunk].
+[Notification_logic_controller::increase_ai_response_counter].
+[Waiting_for_ai_response::on_entry].
+Errore di segmentazione
