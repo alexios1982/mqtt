@@ -130,7 +130,7 @@ class Notification_logic_controller : public Alarm_system{
 			      File_type file_type);
   void decrease_ai_response_counter();
   void increase_ai_response_counter();
-  void init_sensor_cam_path(const boost::property_tree::ptree &pt);
+  void init_sensor_cam_path_and_save_urls(const boost::property_tree::ptree &pt);
   typedef std::vector<Sensor_mini_id> Sensor_mini_ids;  
   void associate_sensor_to_events(const boost::property_tree::ptree &pt,
 				  const std::string &ring_type,
