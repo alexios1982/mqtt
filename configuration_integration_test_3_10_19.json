@@ -11,7 +11,7 @@
           {
             "devices": [
               {
-                "id_secret_device": "cam01",
+                "id_secret_device": "raspicam_01",
                 "name": "telecamera ingresso ring esterno",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-1:5347757331287:stream/cam01/1562253513733"
@@ -45,7 +45,7 @@
           {
             "devices": [
               {
-                "id_secret_device": "cam03",
+                "id_secret_device": "raspicam_02",
                 "name": "telecamera porta ring interno",
                 "sensor_type": 3,
                 "url": "arn:aws:kinesisvideo:us-east-1:5347757331287:stream/cam03/1562253513733"
@@ -79,7 +79,7 @@
           {
             "devices": [
               {
-                "id_secret_device": "foscam",
+                "id_secret_device": "foscam_01",
                 "name": "foscam",
                 "sensor_type": 3,
                 "url": "not assigned"
