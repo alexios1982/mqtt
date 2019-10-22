@@ -14,6 +14,7 @@
 #include <boost/uuid/uuid_generators.hpp> // generators
 #include <boost/uuid/uuid_io.hpp>       
 #include <boost/lexical_cast.hpp>
+#include <fstream> 
 
 Notification_logic_controller::Notification_logic_controller(Area_protection &area_protection,
 							     Synchronized_queue<mqtt::const_message_ptr> &queue,
@@ -761,7 +762,7 @@ void Notification_logic_controller::load_configuration(const std::string &config
   //setting the number of state machine's levels
   set_number_of_levels( parse_number_of_levels(pt) );
   //setting the paths where cam we'll save videos 
-  init_sensor_cam_path(pt);
+  init_sensor_cam_path_and_save_urls(pt);
 
   //setting the map with the statemachine action trigger
   Sensor_mini_ids sensor_mini_ids;
@@ -882,10 +883,17 @@ void Notification_logic_controller::load_configuration(const std::string &config
 }
 
 
-void Notification_logic_controller::init_sensor_cam_path(const boost::property_tree::ptree &pt){
+void Notification_logic_controller::init_sensor_cam_path_and_save_urls(const boost::property_tree::ptree &pt){
   typedef std::pair<Sensor_mini_id, Cam_directory> Sensor_cam_pair;
   Sensor_cam_pair sensor_cam_pair;
   std::string base_path{"/home/pi/gstreamer_projects/multifiles_saving/"};
+  std::ofstream outf("urls.dat");
+  // If we couldn't open the output file stream for writing
+  if (!outf){
+    // Print an error and exit
+    std::cerr << error << "[Notification_logic_controller::" << __func__ << reset << ". urls.dat could not be opened for writing!" << std::endl;
+    exit(4);
+  }
   try{
     //int i = 0;
     //let's retrieve the ptree under the ring path
@@ -911,8 +919,10 @@ void Notification_logic_controller::init_sensor_cam_path(const boost::property_t
 	      if( static_cast<Sensor_type>( (gate_devices_child.second).get<int>("sensor_type") )
 		  ==
 		  Sensor_type::CAM
-		  )
+		  ){
 		sensor_cam_pair.second = base_path + (gate_devices_child.second).get<std::string>("id_secret_device");
+		outf << (gate_devices_child.second).get<std::string>("url") << std::endl;
+		}
 	      else
 		sensor_cam_pair.first = (gate_devices_child.second).get<std::string>("id_secret_device");		  
 	    }

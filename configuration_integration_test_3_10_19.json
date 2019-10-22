@@ -82,7 +82,7 @@
                 "id_secret_device": "foscam_01",
                 "name": "foscam",
                 "sensor_type": 3,
-                "url": "not assigned"
+                "url": "arn:aws:kinesisvideo:us-east-1:207757331287:stream/kinesis/1569861498137"
               },
               {
                 "id_secret_device": "01cc815a",

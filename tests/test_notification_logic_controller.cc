@@ -13,7 +13,7 @@ int main(int argc, char **argv){
   boost::ignore_unused(argv);
 
   //std::string configuration_file{"configuration_integration_test.json"};
-  std::string configuration_file{"test_configuration_with_reserved_and_multiple_gates.json"};
+  std::string configuration_file{"configuration_integration_test_3_10_19.json"};
   
   Area_protection fake_area_protection;
   Synchronized_queue<mqtt::const_message_ptr> fake_queue;
@@ -49,27 +49,27 @@ int main(int argc, char **argv){
       std::cout << '\t' << inner_value.first << " -> " << std::boolalpha << inner_value.second << '\n';
   }
 
-  std::string extern_motion_sensor{"0x20_motion"};
+  std::string extern_motion_sensor{"0202c411"};
   std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor: " << extern_motion_sensor << " occupied: " << notification_logic_controller.is_ring_occupied(extern_motion_sensor) << '\n';
 
   std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " setting to true " << extern_motion_sensor << '\n';
   notification_logic_controller.update_motion_sensor_state(extern_motion_sensor, true);
   std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor: " << extern_motion_sensor << " occupied: " << notification_logic_controller.is_ring_occupied(extern_motion_sensor) << '\n';
 
-  std::string extern_motion_sensor_2{"0x22_motion"};
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " setting to true " << extern_motion_sensor_2 << '\n';
-  notification_logic_controller.update_motion_sensor_state(extern_motion_sensor_2, true);
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor_2: " << extern_motion_sensor_2 << " occupied: " << notification_logic_controller.is_ring_occupied(extern_motion_sensor_2) << '\n';
+  std::string intern_motion_sensor{"01cc6f28"};
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " setting to true " << intern_motion_sensor << '\n';
+  notification_logic_controller.update_motion_sensor_state(intern_motion_sensor, true);
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor_2: " << intern_motion_sensor << " occupied: " << notification_logic_controller.is_ring_occupied(intern_motion_sensor) << '\n';
 
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " setting to false " << extern_motion_sensor_2 << '\n';
-  notification_logic_controller.update_motion_sensor_state(extern_motion_sensor_2, false);
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " setting to false " << intern_motion_sensor << '\n';
+  notification_logic_controller.update_motion_sensor_state(intern_motion_sensor, false);
   std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor: " << extern_motion_sensor << " occupied: " << notification_logic_controller.is_ring_occupied(extern_motion_sensor) << '\n';
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor_2: " << extern_motion_sensor_2 << " occupied: " << notification_logic_controller.is_ring_occupied(extern_motion_sensor_2) << '\n';
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor_2: " << intern_motion_sensor << " occupied: " << notification_logic_controller.is_ring_occupied(intern_motion_sensor) << '\n';
 
   std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " setting to false " << extern_motion_sensor << '\n';
   notification_logic_controller.update_motion_sensor_state(extern_motion_sensor, false);
   std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor: " << extern_motion_sensor << " occupied: " << notification_logic_controller.is_ring_occupied(extern_motion_sensor) << '\n';
-  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor: " << extern_motion_sensor_2 << " occupied: " << notification_logic_controller.is_ring_occupied(extern_motion_sensor_2) << '\n';
+  std::cout << warning << "[Notification_logic_controller::" << __func__ << reset << " is ring associated to the sensor: " << intern_motion_sensor << " occupied: " << notification_logic_controller.is_ring_occupied(intern_motion_sensor) << '\n';
 
   return 0;
 }
