@@ -159,8 +159,8 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
       D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
 	<< "message_to_send size is: " << size << '\n';)
 	// //print on standard error only for integration test of 03/10/2019
-	// std::cerr << "message" << std::endl;
-	// std::cerr << message_to_send->get_payload() << std::endl;
+	std::cerr << "message" << std::endl;
+	std::cerr << message_to_send->get_payload() << std::endl;
 	send_notification(message_to_send);
     }
   }else{
@@ -221,8 +221,10 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
 		<< reset << "Cannot open the video file" << std::endl;
       exit(1);
     }
-    //let's go to 0.5 second in the video
-    cap.set(CV_CAP_PROP_POS_MSEC, 500);
+    // //let's go to 0.5 second in the video
+    // //Maybe it's too late for foscam that can produce shorter videos
+    // cap.set(CV_CAP_PROP_POS_MSEC, 500);
+    cap.set(CV_CAP_PROP_POS_MSEC, 200);
     cv::Mat frame;
     bool b_success = cap.read(frame);
 
@@ -450,8 +452,8 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n');
   std::string payload{message_ptr->get_payload()};
   // //print in standard error only for integration test of 03/10/2019
-  // std::cerr << "message" << std::endl;
-  // std::cerr <<  payload << std::endl;
+  std::cerr << "message" << std::endl;
+  std::cerr <<  payload << std::endl;
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << payload << std::endl);
   std::time_t now;
   std::time (&now);
@@ -611,8 +613,8 @@ void Notification_logic_controller::send_classified_notification_av(char alarm_l
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
   // //print in standard error only for integration test of 03/10/2019
-  // std::cerr << "message" << std::endl;
-  // std::cerr << ss.str() << std::endl;
+  std::cerr << "message" << std::endl;
+  std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
@@ -630,8 +632,8 @@ void Notification_logic_controller::send_classified_notification_as(char alarm_l
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
   // //print in standard error only for integration test of 03/10/2019
-  // std::cerr << "message" << std::endl;
-  // std::cerr << ss.str() << std::endl;
+  std::cerr << "message" << std::endl;
+  std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
