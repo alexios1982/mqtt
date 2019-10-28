@@ -147,7 +147,10 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
     int size{0}, i{0};
     mqtt::const_message_ptr message_to_send{};
     do{
-      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, _JPEG_QUALITY - 5*i);
+      //attention: the set extraction time only works if we send 3 messages:
+      //we will extract a 800 ms for the first video, at 425 ms for the second video
+      //and 50 ms for the third one
+      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, _JPEG_QUALITY - 5*i, 800 - 375*i);
       ++i;
       size = ( message_to_send->to_string() ).size(); 
     }while( (size > 127000) && (i < 3) );
@@ -160,8 +163,8 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
       D(std::cout << info << "[Notification_logic_controller::" << __func__ << "] " << reset
 	<< "message_to_send size is: " << size << '\n';)
 	// //print on standard error only for integration test of 03/10/2019
-	std::cerr << "message" << std::endl;
-	std::cerr << message_to_send->get_payload() << std::endl;
+	// std::cerr << "message" << std::endl;
+	// std::cerr << message_to_send->get_payload() << std::endl;
 	send_notification(message_to_send);
     }
   }else{
@@ -190,7 +193,7 @@ void Notification_logic_controller::send_rich_notifications(const std::string &s
     send_rich_notification(sensor_mini_id, 0, file_type);
 }
 
-mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id, int jpeg_quality){
+mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id, int jpeg_quality, int extraction_time){
   using namespace std::chrono;
   boost::property_tree::ptree pt;
   pt.put("ts", duration_cast<milliseconds>(
@@ -225,7 +228,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
     // //let's go to 0.5 second in the video
     // //Maybe it's too late for foscam that can produce shorter videos
     // cap.set(CV_CAP_PROP_POS_MSEC, 500);
-    cap.set(CV_CAP_PROP_POS_MSEC, 200);
+    cap.set(CV_CAP_PROP_POS_MSEC, extraction_time);
     cv::Mat frame;
     bool b_success = cap.read(frame);
 
@@ -453,8 +456,8 @@ void Notification_logic_controller::analyze_ai_response(const mqtt::const_messag
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "topic: " << message_ptr->get_topic() << '\n');
   std::string payload{message_ptr->get_payload()};
   // //print in standard error only for integration test of 03/10/2019
-  std::cerr << "message" << std::endl;
-  std::cerr <<  payload << std::endl;
+  // std::cerr << "message" << std::endl;
+  // std::cerr <<  payload << std::endl;
   D(std::cout << warning << "[Notification_logic_controller::" << __func__ << "]. " << reset << "payload: " << payload << std::endl);
   std::time_t now;
   std::time (&now);
@@ -614,8 +617,8 @@ void Notification_logic_controller::send_classified_notification_av(char alarm_l
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
   // //print in standard error only for integration test of 03/10/2019
-  std::cerr << "message" << std::endl;
-  std::cerr << ss.str() << std::endl;
+  // std::cerr << "message" << std::endl;
+  // std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
@@ -633,8 +636,8 @@ void Notification_logic_controller::send_classified_notification_as(char alarm_l
   std::stringstream ss;
   boost::property_tree::json_parser::write_json(ss, pt);
   // //print in standard error only for integration test of 03/10/2019
-  std::cerr << "message" << std::endl;
-  std::cerr << ss.str() << std::endl;
+  // std::cerr << "message" << std::endl;
+  // std::cerr << ss.str() << std::endl;
   _publisher.publish( mqtt::make_message("alarm", ss.str() ) );
 }
 
@@ -938,6 +941,11 @@ void Notification_logic_controller::init_sensor_cam_path_and_save_urls(const boo
   catch(std::exception &e){
     std::cerr << error << "[Notification_logic_controller::" << __func__ << reset << "Error: " << e.what() << std::endl;
   }
+  //If I don't explicitly close the ofstream istance, no file is created.
+  //the documentation says that the file would be created when the ofstream istance
+  //go out of scope and is destroyed. This is not the case, probably because Notification_logi_controller
+  //is never closed during the alrm_system execution
+  outf.close();
 }
 
 void Notification_logic_controller::associate_sensor_to_events(const boost::property_tree::ptree &pt,
