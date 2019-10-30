@@ -75,6 +75,8 @@ class Notification_logic_controller : public Alarm_system{
   const int _NUMBER_OF_FRAMES_TO_SEND;
   const int _NUMBER_OF_AI_RESPONSES;
   const int _SIGNIFICANT_TOPIC_CHARS;
+  const int _MAX_PAYLOAD_SIZE;
+  const int _START_EXTRACTION_TIME;
   bool _is_ext_occupied;
   bool _is_int_occupied;
   bool _is_res_occupied;

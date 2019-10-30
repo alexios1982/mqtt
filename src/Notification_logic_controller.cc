@@ -37,6 +37,8 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
   _NUMBER_OF_FRAMES_TO_SEND{NUMBER_OF_FRAMES_TO_SEND},
   _NUMBER_OF_AI_RESPONSES{NUMBER_OF_AI_RESPONSES},
   _SIGNIFICANT_TOPIC_CHARS{8},
+  _MAX_PAYLOAD_SIZE{127000},
+  _START_EXTRACTION_TIME{800},
   _is_ext_occupied{false},
   _is_int_occupied{false},
   _is_res_occupied{false}{}
@@ -150,10 +152,10 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
       //attention: the set extraction time only works if we send 3 messages:
       //we will extract a 800 ms for the first video, at 425 ms for the second video
       //and 50 ms for the third one
-      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, _JPEG_QUALITY - 5*i, 800 - 375*i);
+      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, _JPEG_QUALITY - 5*i, _START_EXTRACTION_TIME - 375*i);
       ++i;
       size = ( message_to_send->to_string() ).size(); 
-    }while( (size > 127000) && (i < 3) );
+    }while( (size > _MAX_PAYLOAD_SIZE) && (i < _NUMBER_OF_FRAMES_TO_SEND) );
     if(message_to_send->get_topic() != ""){
       if(curr_short_filename == last_sent_short_filename)
 	D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
