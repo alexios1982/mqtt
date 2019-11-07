@@ -123,6 +123,10 @@ add_executable (test_configuration_file test_configuration_file.cc
   ../src/Notification_logic_controller.cc
   ../src/Area_protection.cc
   ../src/Alarm_system_state_machine.cc
+  )
+
+add_executable (test_sensors_handling test_sensors_handling.cc
+  ../src/Sensors_handling.cc
 )
 
 ####################################################################
@@ -153,3 +157,11 @@ target_link_libraries(test_configuration_file PUBLIC
   Utils
   Threads::Threads
   ${OpenCV_LIBS})
+
+target_link_libraries(test_sensors_handling PUBLIC
+  ${BOOST_FILESYSTEM}
+  ${BOOST_SYSTEM}
+  ${MQTT_LIB}
+  Utils
+  Threads::Threads
+  )

@@ -38,7 +38,6 @@ Notification_logic_controller::Notification_logic_controller(Area_protection &ar
   _NUMBER_OF_AI_RESPONSES{NUMBER_OF_AI_RESPONSES},
   _SIGNIFICANT_TOPIC_CHARS{8},
   _MAX_PAYLOAD_SIZE{127000},
-  _START_EXTRACTION_TIME{800},
   _is_ext_occupied{false},
   _is_int_occupied{false},
   _is_res_occupied{false}{}
@@ -115,6 +114,8 @@ void Notification_logic_controller::classify_message(const mqtt::const_message_p
 
 void Notification_logic_controller::send_rich_notification(const std::string &sensor_mini_id,
 							   int which,
+							   int start_jpeg_quality,
+							   float tot_frames_percentage,
 							   File_type file_type){
   static std::string last_sent_short_filename{};
   std::time_t now;
@@ -150,12 +151,12 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
     mqtt::const_message_ptr message_to_send{};
     do{
       //attention: the set extraction time only works if we send 3 messages:
-      //we will extract a 800 ms for the first video, at 425 ms for the second video
-      //and 50 ms for the third one
-      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, _JPEG_QUALITY - 5*i, _START_EXTRACTION_TIME - 375*i);
+      //we will extract a 700 ms for the first video, at 400 ms for the second video
+      //and 100 ms for the third one
+      message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, start_jpeg_quality - 5*i, tot_frames_percentage);
       ++i;
       size = ( message_to_send->to_string() ).size(); 
-    }while( (size > _MAX_PAYLOAD_SIZE) && (i < _NUMBER_OF_FRAMES_TO_SEND) );
+    }while( (size > _MAX_PAYLOAD_SIZE) /*&& (i < _NUMBER_OF_FRAMES_TO_SEND)*/ );
     if(message_to_send->get_topic() != ""){
       if(curr_short_filename == last_sent_short_filename)
 	D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
@@ -186,16 +187,16 @@ void Notification_logic_controller::send_rich_notifications(const std::string &s
     D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
        << "time spent for the first message" << std::endl );
     D(Time_spent<> first_message_timer);
-    send_rich_notification(sensor_mini_id, which, file_type);
+    send_rich_notification(sensor_mini_id, which, _JPEG_QUALITY, 1, file_type);
   }
   //sending the others
   D( std::cout << info << "[Notification_logic_controller::" << __func__ << "]. " << reset
      << "Send the other "<< how_many_later << " notifications" << std::endl );
   for(int iter{0}; iter < how_many_later; ++iter)
-    send_rich_notification(sensor_mini_id, 0, file_type);
+    send_rich_notification(sensor_mini_id, 0, _JPEG_QUALITY, 0.5 - 0.5*iter, file_type);
 }
 
-mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id, int jpeg_quality, int extraction_time){
+mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr, File_type file_type, const std::string &sensor_mini_id, int jpeg_quality, float tot_frames_percentage){
   using namespace std::chrono;
   boost::property_tree::ptree pt;
   pt.put("ts", duration_cast<milliseconds>(
@@ -230,24 +231,22 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
     // //let's go to 0.5 second in the video
     // //Maybe it's too late for foscam that can produce shorter videos
     // cap.set(CV_CAP_PROP_POS_MSEC, 500);
-    cap.set(CV_CAP_PROP_POS_MSEC, extraction_time);
+    //cap.set(CV_CAP_PROP_POS_MSEC, 1);
+    bool b_success = false;
+    double total_frames = cap.get(CV_CAP_PROP_FRAME_COUNT);
     cv::Mat frame;
-    bool b_success = cap.read(frame);
-
-    // if ( !b_success) {
-    //   std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
-    // 		<< reset << "Cannot read the frame from video file" << std::endl;
-    //   exit(1);
-    // }
-    // std::string mp4_complete_filename = (to_send_ptr->second).string();
-    // std::string jpeg_complete_filename( mp4_complete_filename.replace(mp4_complete_filename.find_last_of('.'), std::string::npos, ".jpeg") );
-      
-    // imwrite(jpeg_complete_filename, frame, _jpeg_params);
-    
-    // pt.put( "media", base64_file_converter(jpeg_complete_filename) );
-    // last_jpeg_file = jpeg_complete_filename;
-
-    //
+    //Sometimes foscam producess video with only one frame
+    //from which opencv can't extract images. In this case
+    //it is useless trying to extract frame because opencv is
+    //slow in this case and we would lose other events
+    std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "
+	      << reset << "Total frames: "<< total_frames << '\n';
+    if(total_frames > 2){
+      std::cout << info << "[Notification_logic_controller::" << __func__ << "]. "
+	      << reset << "Extraction at frame: " << (total_frames - 2)*tot_frames_percentage << std::endl;
+      cap.set( CV_CAP_PROP_POS_FRAMES, round( (total_frames - 2)*tot_frames_percentage ) );
+      b_success = cap.read(frame);
+    }
     if(b_success){
       std::string mp4_complete_filename = (to_send_ptr->second).string();
       std::string jpeg_complete_filename( mp4_complete_filename.replace(mp4_complete_filename.find_last_of('.'), std::string::npos, ".jpeg") );
@@ -274,6 +273,13 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
       //as Ai waits an exact number of files, in case of error we send a fake image with nobody
       to_send_filename = "fake_image.jpg";
       pt.put( "media", base64_file_converter("/home/pi/gstreamer_projects/multifiles_saving/fake_image.jpg") );
+      //saving the mp4 where is failure for debugging
+      std::ifstream src( (to_send_ptr->second).string(), std::ios::binary );
+      std::ofstream dest("failure.mp4", std::ios::binary);
+      dest << src.rdbuf();
+      //if(src && dest)
+      std::cerr << error << "[Notification_logic_controller::" << __func__ << "]. "
+		<< reset << "Video failure" << std::endl;	
     }
     //
   }

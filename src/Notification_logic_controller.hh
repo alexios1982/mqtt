@@ -76,7 +76,6 @@ class Notification_logic_controller : public Alarm_system{
   const int _NUMBER_OF_AI_RESPONSES;
   const int _SIGNIFICANT_TOPIC_CHARS;
   const int _MAX_PAYLOAD_SIZE;
-  const int _START_EXTRACTION_TIME;
   bool _is_ext_occupied;
   bool _is_int_occupied;
   bool _is_res_occupied;
@@ -112,7 +111,7 @@ class Notification_logic_controller : public Alarm_system{
 						    File_type file_type,
 						    const std::string &sensor_mini_id,
 						    int jpeg_quality,
-						    int extraction_time);
+						    float tot_frames_percentage);
   
   ///handler called by classify_message when the message present in the queue is
   ///associated to a sensor that requests a classified notification  
@@ -130,6 +129,8 @@ class Notification_logic_controller : public Alarm_system{
 			       File_type file_type=JPEG);
   void send_rich_notification(const std::string &sensor_mini_id,
 			      int which,
+			      int start_jpeg_quality,
+			      float tot_frames_percentage,
 			      File_type file_type);
   void decrease_ai_response_counter();
   void increase_ai_response_counter();
