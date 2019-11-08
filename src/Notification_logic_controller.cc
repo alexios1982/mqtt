@@ -150,9 +150,6 @@ void Notification_logic_controller::send_rich_notification(const std::string &se
     int size{0}, i{0};
     mqtt::const_message_ptr message_to_send{};
     do{
-      //attention: the set extraction time only works if we send 3 messages:
-      //we will extract a 700 ms for the first video, at 400 ms for the second video
-      //and 100 ms for the third one
       message_to_send = prepare_rich_notification(to_send_ptr, file_type, sensor_mini_id, start_jpeg_quality - 5*i, tot_frames_percentage);
       ++i;
       size = ( message_to_send->to_string() ).size(); 
@@ -272,7 +269,7 @@ mqtt::const_message_ptr Notification_logic_controller::prepare_rich_notification
 		<< reset << "Cannot read the frame from video file" << std::endl;
       //as Ai waits an exact number of files, in case of error we send a fake image with nobody
       to_send_filename = "fake_image.jpg";
-      pt.put( "media", base64_file_converter("/home/pi/gstreamer_projects/multifiles_saving/fake_image.jpg") );
+      pt.put( "media", base64_file_converter("/home/pi/gstreamer_projects/multifiles_saving/blank_image.jpg") );
       //saving the mp4 where is failure for debugging
       std::ifstream src( (to_send_ptr->second).string(), std::ios::binary );
       std::ofstream dest("failure.mp4", std::ios::binary);

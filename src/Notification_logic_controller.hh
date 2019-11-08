@@ -12,8 +12,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
-//#include "Sensor.hh"
-
  
 class Notification_logic_controller : public Alarm_system{
   enum class Sensor_type{
@@ -32,22 +30,11 @@ class Notification_logic_controller : public Alarm_system{
     OWNER,
     MONITORED  
   };
-  // struct Contact_sensor_state{
-  //   bool is_a_duplicate;
-  //   bool actual_contact;
-  // };
-  // struct Motion_sensor_state{
-  //   bool is_a_duplicate;
-  //   bool actual_occupancy;
-  // };
+
   typedef std::function<void()> Proc_events_ptr;
   typedef std::pair<Proc_events_ptr, Proc_events_ptr> Proc_events_ptr_pair;
   typedef std::string Sensor_mini_id;
   typedef char Position;  
-  // typedef std::map<Sensor_mini_id, Proc_events_ptr_pair> Sensor_proc_events_pair_map;
-  // typedef std::map<Sensor_mini_id, Sensor_type> Sensor_type_map;
-  // Sensor_type_map _sensor_type_map;
-  // Sensor_proc_events_pair_map _sensor_proc_events_map;
   struct Sensor_infos{
     Sensor_type _sensor_type;
     Position _position;
@@ -60,12 +47,8 @@ class Notification_logic_controller : public Alarm_system{
   Synchronized_queue<mqtt::const_message_ptr> &_queue;
   Publisher &_publisher;
   typedef std::string Cam_directory;
-  // typedef std::string Cam_name;
-  // std::map<Sensor_mini_id, Cam_name> _sensor_cam;
-  // std::map<Cam_name, Cam_directory> _cam_path;
   std::map<Sensor_mini_id, Cam_directory> _sensor_cam_path;
   std::string _hub_id;
-  //std::map<Sensor_mini_id, Position> _sensor_position_map;
   typedef std::pair<Ai_result, Position> Ai_result_position_pair;
   typedef std::function<void(std::string)> Proc_events_ptr_2;
   std::map<Ai_result_position_pair, Proc_events_ptr_2> _ai_result_position_proc_events_map;
@@ -87,26 +70,45 @@ class Notification_logic_controller : public Alarm_system{
 
   typedef std::map<Sensor_mini_id, Motion_sensors_state_map*> Motion_sensors_maps;
   Motion_sensors_maps _motion_sensors_maps;
-  
-  ///this method is called by consume_message when a message is present in the queue
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  ///this method is called by consume_message method when a message is present in the queue
   ///check the message type and call the appropriate handlers
+  ///@param[in] zigbee_message_ptr: zigbee message received fro zigbee2mqtt to be parsed
+  ////////////////////////////////////////////////////////////////////////////////////////
   void classify_message(const mqtt::const_message_ptr &zigbee_message_ptr);
 
   // ///the door sensor sent two messages associate to the same event
   // ///this metod is used to recognize this case
+  // ///this methods are no longer necessary because we can set "debounce" property
+  // ///in /opt/zigbee2mqtt/data/configuration.yaml
   // //bool is_a_door_sensor_notification_duplicate(const mqtt::const_message_ptr &zigbee_message_ptr);
   // Contact_sensor_state check_contact_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
   // Motion_sensor_state check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
 
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  ///this method is called by classify_message when the message came from a contact sensor
+  ///to check if the associated gate (DOOR OR WINDOW) is closed or opened
+  ///@param[in] zigbee_message_ptr: zigbee message received from zigbee2mqtt to be parsed
+  ///@return Is_gate_opened: boolean value that is true if gate is opened and false otherwise
+  ////////////////////////////////////////////////////////////////////////////////////////
   typedef bool Is_gate_opened;
   Is_gate_opened is_gate_opened(const mqtt::const_message_ptr &zigbee_message_ptr);
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  ///this method is called by classify_message when the message came from a motion sensor
+  ///to check if the area covered by the sensor is occupied (true) or not (false)
+  ///@param[in] zigbee_message_ptr: zigbee message received from zigbee2mqtt to be parsed
+  ///@return Motion_sensor_state: boolean value that is true covered by the sensor is occupied (true) or not (false)
+  ////////////////////////////////////////////////////////////////////////////////////////  
   Motion_sensor_state check_motion_sensor_state(const mqtt::const_message_ptr &zigbee_message_ptr);
   
   // ///handler called by classify_message when the message present in the queue is
   // ///associated to a sensor that requests a rich notification
   // mqtt::const_message_ptr prepare_rich_notification(const mqtt::const_message_ptr &zigbee_message_ptr,
   // 						    const std::string &sensor_mini_id);
-
+  
+  ///handler called by classify_message when the message present in the queue is
+  ///associated to a sensor that requests a rich notification
   mqtt::const_message_ptr prepare_rich_notification(const std::unique_ptr<Dir_handler::Time_path_pair> &to_send_ptr,
 						    File_type file_type,
 						    const std::string &sensor_mini_id,
